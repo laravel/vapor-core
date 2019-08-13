@@ -1,0 +1,64 @@
+{
+    "name": "laravel/vapor-core",
+    "description": "The kernel and invokation handlers for Laravel Vapor",
+    "keywords": [
+        "laravel",
+        "vapor"
+    ],
+    "homepage": "https://github.com/laravel/vapor-core",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Taylor Otwell",
+            "email": "taylor@laravel.com"
+        }
+    ],
+    "require": {
+        "php": "^7.1",
+        "aws/aws-sdk-php": "^3.80",
+        "guzzlehttp/guzzle": "^6.3",
+        "hollodotme/fast-cgi-client": "^2.7",
+        "illuminate/container": "^5.8|^6.0",
+        "illuminate/http": "^5.8|^6.0",
+        "illuminate/queue": "^5.8|^6.0",
+        "illuminate/support": "^5.8|^6.0",
+        "monolog/monolog": "^1.24",
+        "riverline/multipart-parser": "^2.0",
+        "symfony/process": "^4.2",
+        "symfony/psr-http-message-bridge": "^1.2",
+        "zendframework/zend-diactoros": "^2.1"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.2",
+        "orchestra/testbench": "~3.8.0",
+        "phpunit/phpunit": "^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Laravel\\Vapor\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Laravel\\Vapor\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        },
+        "laravel": {
+            "providers": [
+                "Laravel\\Vapor\\VaporServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
