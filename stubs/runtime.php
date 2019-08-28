@@ -31,6 +31,8 @@ $zip->extractTo('/tmp/vendor');
 
 $zip->close();
 
+unlink('/tmp/vendor.zip');
+
 require '/tmp/vendor/autoload.php';
 
 /*
