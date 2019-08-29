@@ -1,15 +1,8 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Download the vendor directory
-|--------------------------------------------------------------------------
-|
-| To be able to run the application, we are going to download the vendor
-| archive from the s3 bucket and extract it. The vendor directory will
-| be available for the application to use from now on.
-|
-*/
+$appRoot = $_ENV['LAMBDA_TASK_ROOT'];
+
+/* START_VENDOR_DOWNLOADING */
 
 fwrite(STDERR, 'Downloading the vendor archive');
 
@@ -33,7 +26,9 @@ $zip->close();
 
 unlink('/tmp/vendor.zip');
 
-require '/tmp/vendor/autoload.php';
+/* END_VENDOR_DOWNLOADING */
+
+require $appRoot.'/vendor/autoload.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -51,5 +46,4 @@ if (isset($_ENV['APP_RUNNING_IN_CONSOLE']) &&
     return require __DIR__.'/cliRuntime.php';
 } else {
     return require __DIR__.'/fpmRuntime.php';
-    // return require __DIR__.'/httpRuntime.php';
 }
