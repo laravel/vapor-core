@@ -105,7 +105,7 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
         }
 
         throw new InvalidArgumentException(
-            "Unable to issue signed URL. Missing environment variables: ".implode(', ', $missing)
+            "Unable to issue signed URL. Missing environment variables: ".implode(', ', array_keys($missing))
         );
     }
 

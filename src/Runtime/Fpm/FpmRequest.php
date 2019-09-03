@@ -122,6 +122,14 @@ class FpmRequest implements ProvidesRequestData
                     return count($values) === 1
                         ? [$key => $values[0]]
                         : [(substr($key, -2) == '[]' ? substr($key, 0, -2) : $key) => $values];
+                })->map(function ($values) use ($event) {
+                    if (! isset($event['requestContext']['elb'])) {
+                        return $values;
+                    }
+
+                    return ! is_array($values) ? urldecode($values) : array_map(function ($value) {
+                        return urldecode($value);
+                    }, $values);
                 })->all()
         );
     }

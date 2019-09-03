@@ -27,6 +27,7 @@ class VaporQueueTest extends TestCase
                 'displayName' => FakeJob::class,
                 'job' => 'Illuminate\Queue\CallQueuedHandler@call',
                 'maxTries' => null,
+                'delay' => null,
                 'timeout' => null,
                 'timeoutAt' => null,
                 'data' => [

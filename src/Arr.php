@@ -47,7 +47,7 @@ class Arr
         $pointer = &$array;
 
         foreach ($segments as $key => $segment) {
-            // If this is our firsr time through the loop we will just grab the initial
+            // If this is our first time through the loop we will just grab the initial
             // key's part of the array. After this we will start digging deeper into
             // the array as needed until we get to the correct depth in the array.
             if ($key === 0) {
