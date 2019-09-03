@@ -22,7 +22,7 @@
         "illuminate/http": "^5.8|^6.0",
         "illuminate/queue": "^5.8|^6.0",
         "illuminate/support": "^5.8|^6.0",
-        "monolog/monolog": "^1.24",
+        "monolog/monolog": "^1.24|^2.0",
         "riverline/multipart-parser": "^2.0",
         "symfony/process": "^4.2",
         "symfony/psr-http-message-bridge": "^1.2",
