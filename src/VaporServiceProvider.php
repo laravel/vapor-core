@@ -2,11 +2,9 @@
 
 namespace Laravel\Vapor;
 
-use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Vapor\Queue\VaporConnector;
 use Laravel\Vapor\Console\Commands\VaporWorkCommand;
 use Laravel\Vapor\Http\Controllers\SignedStorageUrlController;
 
@@ -26,28 +24,6 @@ class VaporServiceProvider extends ServiceProvider
         if (($_ENV['VAPOR_SERVERLESS_DB'] ?? null) === 'true') {
             Schema::defaultStringLength(191);
         }
-
-        if ($this->app->resolved('queue')) {
-            call_user_func($this->queueExtender());
-        } else {
-            $this->app->afterResolving(
-                'queue', $this->queueExtender()
-            );
-        }
-    }
-
-    /**
-     * Get the queue extension callback.
-     *
-     * @return \Closure
-     */
-    protected function queueExtender()
-    {
-        return function () {
-            Queue::extend('sqs', function () {
-                return new VaporConnector;
-            });
-        };
     }
 
     /**
