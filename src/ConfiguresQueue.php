@@ -3,6 +3,8 @@
 namespace Laravel\Vapor;
 
 use Laravel\Vapor\Queue\VaporWorker;
+use Illuminate\Support\Facades\Queue;
+use Laravel\Vapor\Queue\VaporConnector;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 
 trait ConfiguresQueue
@@ -14,6 +16,12 @@ trait ConfiguresQueue
      */
     protected function ensureQueueIsConfigured()
     {
+        $this->app->resolving('queue', function ($queue) {
+            $queue->extend('sqs', function () {
+                return new VaporConnector;
+            });
+        });
+        
         if ($this->app->bound('queue.vaporWorker')) {
             return;
         }
