@@ -43,7 +43,7 @@ unlink('/tmp/vendor.zip');
 |
 */
 
-require $appRoot.'/vendor/autoload.php';
+require '/tmp/vendor/autoload.php';
 
 if (isset($_ENV['APP_RUNNING_IN_CONSOLE']) &&
     $_ENV['APP_RUNNING_IN_CONSOLE'] === 'true') {
