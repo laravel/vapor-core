@@ -4,7 +4,7 @@ $appRoot = $_ENV['LAMBDA_TASK_ROOT'];
 
 /*
 |--------------------------------------------------------------------------
-| Downlaod The Vendor Directory
+| Download The Vendor Directory
 |--------------------------------------------------------------------------
 |
 | For applications which are loading their vendor directory on container
