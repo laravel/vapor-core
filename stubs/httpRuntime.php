@@ -26,7 +26,7 @@ error_reporting(E_ALL);
 
 Secrets::addToEnvironment(
     $_ENV['VAPOR_SSM_PATH'],
-    json_decode($_ENV['VAPOR_SSM_VARIABLES'] ?? '[]', true)
+    require __DIR__.'/vaporSecrets.php'
 );
 /*
 |--------------------------------------------------------------------------
