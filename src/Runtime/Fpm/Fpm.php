@@ -103,6 +103,8 @@ class Fpm
             $this->killExistingFpm();
         }
 
+        fwrite(STDERR, 'Ensuring ready to start FPM');
+
         $this->ensureReadyToStart();
 
         $this->fpm = new Process([
@@ -229,6 +231,8 @@ class Fpm
      */
     protected function killExistingFpm()
     {
+        fwrite(STDERR, 'Killing existing FPM');
+
         if (! file_exists(static::PID_FILE)) {
             return unlink(static::SOCKET);
         }

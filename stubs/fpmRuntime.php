@@ -23,6 +23,8 @@ error_reporting(E_ALL);
 |
 */
 
+fwrite(STDERR, 'Preparing to add secrets to runtime');
+
 $secrets = Secrets::addToEnvironment(
     $_ENV['VAPOR_SSM_PATH'],
     json_decode($_ENV['VAPOR_SSM_VARIABLES'] ?? '[]', true)
@@ -38,6 +40,8 @@ $secrets = Secrets::addToEnvironment(
 | wait for this socket to become ready before continuing execution.
 |
 */
+
+fwrite(STDERR, 'Preparing to boot FPM');
 
 $fpm = Fpm::boot(
     __DIR__.'/httpHandler.php', $secrets
