@@ -4,7 +4,7 @@ $appRoot = $_ENV['LAMBDA_TASK_ROOT'];
 
 /*
 |--------------------------------------------------------------------------
-| Downlaod The Vendor Directory
+| Download The Vendor Directory
 |--------------------------------------------------------------------------
 |
 | For applications which are loading their vendor directory on container
@@ -15,15 +15,10 @@ $appRoot = $_ENV['LAMBDA_TASK_ROOT'];
 
 fwrite(STDERR, 'Downloading the application vendor archive...');
 
-exec(
-    sprintf('/opt/awscli/aws s3 presign s3://%s/%s-vendor.zip --expires-in 300',
-        $_ENV['VAPOR_ARTIFACT_BUCKET_NAME'],
-        $_ENV['VAPOR_ARTIFACT_NAME']
-    ),
-    $output
-);
-
-file_put_contents('/tmp/vendor.zip', fopen($output[0], 'r'));
+exec(sprintf('/opt/awscli/aws s3 cp s3://%s/%s-vendor.zip /tmp/vendor.zip',
+    $_ENV['VAPOR_ARTIFACT_BUCKET_NAME'],
+    $_ENV['VAPOR_ARTIFACT_NAME']
+));
 
 $zip = new ZipArchive;
 $zip->open('/tmp/vendor.zip');
