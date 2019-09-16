@@ -7,10 +7,6 @@ use Laravel\Vapor\Runtime\CliHandlerFactory;
 use Laravel\Vapor\Runtime\StorageDirectories;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
 
-ini_set('display_errors', '1');
-
-error_reporting(E_ALL);
-
 /*
 |--------------------------------------------------------------------------
 | Inject SSM Secrets Into Environment

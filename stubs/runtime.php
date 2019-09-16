@@ -1,7 +1,10 @@
 <?php
 
-$appRoot = $_ENV['LAMBDA_TASK_ROOT'];
+ini_set('display_errors', '1');
 
+error_reporting(E_ALL);
+
+$appRoot = $_ENV['LAMBDA_TASK_ROOT'];
 
 require $appRoot.'/vendor/autoload.php';
 
