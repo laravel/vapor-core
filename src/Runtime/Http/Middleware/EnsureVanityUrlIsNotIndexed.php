@@ -15,7 +15,7 @@ class EnsureVanityUrlIsNotIndexed
     {
         $response = $next($request);
 
-        return $request->getHttpHost() === $_ENV['APP_VANITY_URL']
+        return 'https://'.$request->getHttpHost() === $_ENV['APP_VANITY_URL']
                     ? $response->header('X-Robots-Tag', 'noindex, nofollow')
                     : $response;
     }
