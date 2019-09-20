@@ -25,8 +25,7 @@ error_reporting(E_ALL);
 */
 
 Secrets::addToEnvironment(
-    $_ENV['VAPOR_SSM_PATH'],
-    require __DIR__.'/vaporSecrets.php'
+    $_ENV['VAPOR_SSM_PATH']
 );
 /*
 |--------------------------------------------------------------------------

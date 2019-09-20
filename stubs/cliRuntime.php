@@ -19,8 +19,7 @@ use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
 */
 
 Secrets::addToEnvironment(
-    $_ENV['VAPOR_SSM_PATH'],
-    require __DIR__.'/vaporSecrets.php'
+    $_ENV['VAPOR_SSM_PATH']
 );
 
 /*
