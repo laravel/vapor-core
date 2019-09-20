@@ -10,17 +10,17 @@ class Secrets
      * Add all of the secret parameters at the given path to the environment.
      *
      * @param  string  $path
-     * @param  array  $parameters
+     * @param  array|null  $parameters
      * @param  string  $file
      * @return array
      */
-    public static function addToEnvironment($path, array $parameters, $file)
+    public static function addToEnvironment($path, $parameters, $file)
     {
-        if (empty($parameters) && file_exists($file)) {
+        if (! $parameters && file_exists($file)) {
             $parameters = require $file;
         }
 
-        return tap(static::all($path, $parameters), function ($variables) {
+        return tap(static::all($path, (array) $parameters), function ($variables) {
             foreach ($variables as $key => $value) {
                 echo "Injecting secret [{$key}] into runtime.\r";
 
