@@ -29,6 +29,7 @@ Secrets::addToEnvironment(
     json_decode($_ENV['VAPOR_SSM_VARIABLES'] ?? '[]', true),
     __DIR__.'/vaporSecrets.php'
 );
+
 /*
 |--------------------------------------------------------------------------
 | Listen For Lambda Invocations
