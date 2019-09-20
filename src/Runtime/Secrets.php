@@ -10,14 +10,14 @@ class Secrets
      * Add all of the secret parameters at the given path to the environment.
      *
      * @param  string  $path
+     * @param  array  $parameters
+     * @param  string  $file
      * @return array
      */
-    public static function addToEnvironment($path)
+    public static function addToEnvironment($path, array $parameters, $file)
     {
-        $parameters = json_decode($_ENV['VAPOR_SSM_VARIABLES'] ?? '[]', true);
-
-        if (empty($parameters) && file_exists(__DIR__.'/vaporSecrets.php')) {
-            $parameters = require __DIR__.'/vaporSecrets.php';
+        if (empty($parameters) && file_exists($file)) {
+            $parameters = require $file;
         }
 
         return tap(static::all($path, $parameters), function ($variables) {

@@ -22,7 +22,9 @@ use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
 fwrite(STDERR, 'Preparing to add secrets to runtime');
 
 $secrets = Secrets::addToEnvironment(
-    $_ENV['VAPOR_SSM_PATH']
+    $_ENV['VAPOR_SSM_PATH'],
+    json_decode($_ENV['VAPOR_SSM_VARIABLES'] ?? '[]', true),
+    __DIR__.'/vaporSecrets.php'
 );
 
 /*
