@@ -3,14 +3,15 @@
 namespace Laravel\Vapor\Runtime\Handlers;
 
 use Illuminate\Contracts\Console\Kernel;
-use Laravel\Vapor\Runtime\StorageDirectories;
-use Laravel\Vapor\Runtime\ArrayLambdaResponse;
 use Laravel\Vapor\Contracts\LambdaEventHandler;
+use Laravel\Vapor\Runtime\ArrayLambdaResponse;
+use Laravel\Vapor\Runtime\StorageDirectories;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 class QueueHandler implements LambdaEventHandler
 {
+
     /**
      * The cached application instance.
      *
@@ -25,16 +26,21 @@ class QueueHandler implements LambdaEventHandler
      */
     public function __construct()
     {
-        if (! isset(static::$app)) {
-            static::$app = require $_ENV['LAMBDA_TASK_ROOT'].'/bootstrap/app.php';
+        if (!isset(static::$app)) {
+            static::$app = require $_ENV['LAMBDA_TASK_ROOT'] . '/bootstrap/app.php';
         }
+    }
+
+    public function supports(array $event)
+    {
+        return isset($event['Records'][0]['messageId']);
     }
 
     /**
      * Handle an incoming Lambda event.
      *
-     * @param  array  $event
-     * @param  \Laravel\Vapor\Contracts\LambdaResponse
+     * @param array $event
+     * @param \Laravel\Vapor\Contracts\LambdaResponse
      * @return ArrayLambdaResponse
      */
     public function handle(array $event)
@@ -52,7 +58,7 @@ class QueueHandler implements LambdaEventHandler
             $consoleKernel = static::$app->make(Kernel::class);
 
             $consoleInput = new StringInput(
-                'vapor:work '.base64_encode(json_encode($event['Records'][0])).' '.$commandOptions.' --no-interaction'
+                'vapor:work ' . base64_encode(json_encode($event['Records'][0])) . ' ' . $commandOptions . ' --no-interaction'
             );
 
             $consoleKernel->terminate($consoleInput, $status = $consoleKernel->handle(

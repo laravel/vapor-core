@@ -2,20 +2,26 @@
 
 namespace Laravel\Vapor\Runtime\Handlers;
 
-use Throwable;
 use GuzzleHttp\Client;
 use Illuminate\Support\Str;
-use Symfony\Component\Process\Process;
-use Laravel\Vapor\Runtime\ArrayLambdaResponse;
 use Laravel\Vapor\Contracts\LambdaEventHandler;
+use Laravel\Vapor\Runtime\ArrayLambdaResponse;
+use Symfony\Component\Process\Process;
+use Throwable;
 
 class CliHandler implements LambdaEventHandler
 {
+
+    public function supports(array $event)
+    {
+        return isset($event['cli']);
+    }
+
     /**
      * Handle an incoming Lambda event.
      *
-     * @param  array $event
-     * @param  \Laravel\Vapor\Contracts\LambdaResponse
+     * @param array $event
+     * @param \Laravel\Vapor\Contracts\LambdaResponse
      * @return ArrayLambdaResponse
      */
     public function handle(array $event)
@@ -29,7 +35,7 @@ class CliHandler implements LambdaEventHandler
         )->setTimeout(null);
 
         $process->run(function ($type, $line) use (&$output) {
-            if (! Str::containsAll($line, ['{"message":', '"level":'])) {
+            if (!Str::containsAll($line, ['{"message":', '"level":'])) {
                 $output[] = $line;
             }
 
@@ -50,13 +56,13 @@ class CliHandler implements LambdaEventHandler
     /**
      * Ping the given callback URL.
      *
-     * @param  string  $callback
-     * @param  array  $response
+     * @param string $callback
+     * @param array $response
      * @return void
      */
     protected function ping($callback, $response)
     {
-        if (! isset($callback)) {
+        if (!isset($callback)) {
             return;
         }
 

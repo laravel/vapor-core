@@ -2,13 +2,16 @@
 
 namespace Laravel\Vapor;
 
-use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Vapor\Queue\VaporConnector;
+use Laravel\Vapor\Console\Commands\HandleS3EventCommand;
 use Laravel\Vapor\Console\Commands\VaporWorkCommand;
 use Laravel\Vapor\Http\Controllers\SignedStorageUrlController;
+use Laravel\Vapor\Queue\VaporConnector;
+use Laravel\Vapor\Runtime\Handlers\CliHandler;
+use Laravel\Vapor\Runtime\Handlers\QueueHandler;
 
 class VaporServiceProvider extends ServiceProvider
 {
@@ -22,6 +25,7 @@ class VaporServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->ensureRoutesAreDefined();
+
 
         if (($_ENV['VAPOR_SERVERLESS_DB'] ?? null) === 'true') {
             Schema::defaultStringLength(191);
@@ -67,6 +71,7 @@ class VaporServiceProvider extends ServiceProvider
         $this->ensureMixIsConfigured();
 
         $this->registerCommands();
+        $this->registerCliHandlers();
     }
 
     /**
@@ -88,7 +93,7 @@ class VaporServiceProvider extends ServiceProvider
      */
     protected function registerCommands()
     {
-        if (! $this->app->runningInConsole()) {
+        if (!$this->app->runningInConsole()) {
             return;
         }
 
@@ -97,5 +102,16 @@ class VaporServiceProvider extends ServiceProvider
         });
 
         $this->commands(['command.vapor.work']);
+    }
+
+    /**
+     * Register CliHandlers used by CliHandlerFactory
+     *
+     * @return void
+     */
+    protected function registerCliHandlers()
+    {
+        $this->app->tag(CliHandler::class, 'cli-handler');
+        $this->app->tag(QueueHandler::class, 'cli-handler');
     }
 }
