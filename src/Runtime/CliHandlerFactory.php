@@ -14,8 +14,8 @@ class CliHandlerFactory
      */
     public static function make(array $event)
     {
-        foreach (app()->tagged('cli-handler') as $cliHandler) {
-            if ($cliHandler->supports($event)) return $cliHandler;
+        foreach (app()->tagged('cli-handler') as $handler) {
+            if ($handler->supports($event)) return $handler;
         }
 
         return new UnknownEventHandler;

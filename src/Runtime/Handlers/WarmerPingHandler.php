@@ -7,6 +7,12 @@ use Laravel\Vapor\Contracts\LambdaEventHandler;
 
 class WarmerPingHandler implements LambdaEventHandler
 {
+
+    public function supports(array $event)
+    {
+        return isset($event['vaporWarmerPing']);
+    }
+
     /**
      * Handle an incoming Lambda event.
      *

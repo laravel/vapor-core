@@ -11,6 +11,12 @@ use Laravel\Vapor\Contracts\LambdaEventHandler;
 
 class WarmerHandler implements LambdaEventHandler
 {
+
+    public function supports(array $event)
+    {
+        return isset($event['vaporWarmer']);
+    }
+
     /**
      * Handle an incoming Lambda event.
      *

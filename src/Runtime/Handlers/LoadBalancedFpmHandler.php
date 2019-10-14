@@ -6,6 +6,12 @@ use Laravel\Vapor\Runtime\Fpm\LoadBalancedFpmLambdaResponse;
 
 class LoadBalancedFpmHandler extends FpmHandler
 {
+
+    public function supports(array $event)
+    {
+        return isset($event['requestContext']['elb']);
+    }
+
     /**
      * Covert FPM response to Lambda-ready response.
      *

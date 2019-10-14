@@ -11,7 +11,11 @@ use Laravel\Vapor\Console\Commands\VaporWorkCommand;
 use Laravel\Vapor\Http\Controllers\SignedStorageUrlController;
 use Laravel\Vapor\Queue\VaporConnector;
 use Laravel\Vapor\Runtime\Handlers\CliHandler;
+use Laravel\Vapor\Runtime\Handlers\FpmHandler;
+use Laravel\Vapor\Runtime\Handlers\LoadBalancedFpmHandler;
 use Laravel\Vapor\Runtime\Handlers\QueueHandler;
+use Laravel\Vapor\Runtime\Handlers\WarmerHandler;
+use Laravel\Vapor\Runtime\Handlers\WarmerPingHandler;
 
 class VaporServiceProvider extends ServiceProvider
 {
@@ -71,7 +75,9 @@ class VaporServiceProvider extends ServiceProvider
         $this->ensureMixIsConfigured();
 
         $this->registerCommands();
+
         $this->registerCliHandlers();
+        $this->registerHttpHandlers();
     }
 
     /**
@@ -114,4 +120,19 @@ class VaporServiceProvider extends ServiceProvider
         $this->app->tag(CliHandler::class, 'cli-handler');
         $this->app->tag(QueueHandler::class, 'cli-handler');
     }
+
+    /**
+     * Register CliHandlers used by CliHandlerFactory
+     *
+     * @return void
+     */
+    protected function registerHttpHandlers()
+    {
+        $this->app->tag(WarmerHandler::class, 'http-handler');
+        $this->app->tag(WarmerPingHandler::class, 'http-handler');
+        $this->app->tag(LoadBalancedFpmHandler::class, 'http-handler');
+        $this->app->tag(FpmHandler::class, 'http-handler');
+    }
+
+
 }

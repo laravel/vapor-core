@@ -9,6 +9,13 @@ use Laravel\Vapor\Contracts\LambdaEventHandler;
 
 class FpmHandler implements LambdaEventHandler
 {
+
+    public function supports(array $event)
+    {
+        return isset($event['httpMethod']);
+    }
+
+
     /**
      * Handle an incoming Lambda event.
      *
