@@ -17,7 +17,7 @@
         "php": "^7.1",
         "aws/aws-sdk-php": "^3.80",
         "guzzlehttp/guzzle": "^6.3",
-        "hollodotme/fast-cgi-client": "^2.7",
+        "hollodotme/fast-cgi-client": "^3.1",
         "illuminate/container": "^6.0",
         "illuminate/http": "^6.0",
         "illuminate/queue": "^6.0",

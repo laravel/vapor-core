@@ -6,7 +6,6 @@ use Exception;
 use Throwable;
 use hollodotme\FastCGI\Client;
 use Symfony\Component\Process\Process;
-use hollodotme\FastCGI\SocketConnections\UnixDomainSocket;
 
 class Fpm
 {
@@ -77,7 +76,7 @@ class Fpm
             @unlink(static::SOCKET);
         }
 
-        $client = new Client(new UnixDomainSocket(static::SOCKET, 1000, 30000));
+        $client = new Client();
 
         return static::$instance = tap(new static($client, $handler, $serverVariables), function ($fpm) {
             $fpm->start();

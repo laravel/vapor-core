@@ -3,6 +3,7 @@
 namespace Laravel\Vapor\Runtime\Fpm;
 
 use hollodotme\FastCGI\Client;
+use hollodotme\FastCGI\SocketConnections\UnixDomainSocket;
 
 class FpmApplication
 {
@@ -32,6 +33,8 @@ class FpmApplication
      */
     public function handle(FpmRequest $request)
     {
-        return new FpmResponse($this->client->sendRequest($request));
+        return new FpmResponse(
+            $this->client->sendRequest(new UnixDomainSocket(Fpm::SOCKET, 1000, 30000), $request)
+        );
     }
 }
