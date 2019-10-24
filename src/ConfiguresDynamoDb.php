@@ -13,7 +13,8 @@ trait ConfiguresDynamoDb
      */
     protected function ensureDynamoDbIsConfigured()
     {
-        if (! isset($_ENV['VAPOR_MAINTENANCE_MODE'])) {
+        // Ensure we are running on Vapor...
+        if (! isset($_ENV['VAPOR_SSM_PATH'])) {
             return;
         }
 
