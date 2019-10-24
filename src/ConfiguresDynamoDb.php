@@ -25,6 +25,6 @@ trait ConfiguresDynamoDb
             'region' => $_ENV['AWS_DEFAULT_REGION'] ?? 'us-east-1',
             'table' => $_ENV['DYNAMODB_CACHE_TABLE'] ?? 'cache',
             'endpoint' => $_ENV['DYNAMODB_ENDPOINT'] ?? null,
-        ], Config::get('cache.stores.dynamodb',) ?? []));
+        ], Config::get('cache.stores.dynamodb') ?? []));
     }
 }
