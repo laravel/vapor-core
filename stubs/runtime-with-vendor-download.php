@@ -4,6 +4,8 @@ ini_set('display_errors', '1');
 
 error_reporting(E_ALL);
 
+mkdir('/tmp/opcache');
+
 $appRoot = $_ENV['LAMBDA_TASK_ROOT'];
 
 /*
