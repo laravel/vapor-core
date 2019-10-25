@@ -21,6 +21,12 @@ class RedirectStaticAssets
             ]);
         }
 
+        if ($request->path() === 'robots.txt') {
+            return new RedirectResponse($_ENV['ASSET_URL'].'/robots.txt', 302, [
+                'Cache-Control' => 'public, max-age=3600',
+            ]);
+        }
+
         return $next($request);
     }
 }

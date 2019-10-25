@@ -8,10 +8,6 @@ use Laravel\Vapor\Runtime\HttpHandlerFactory;
 use Laravel\Vapor\Runtime\StorageDirectories;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
 
-ini_set('display_errors', '1');
-
-error_reporting(E_ALL);
-
 /*
 |--------------------------------------------------------------------------
 | Inject SSM Secrets Into Environment
@@ -23,9 +19,12 @@ error_reporting(E_ALL);
 |
 */
 
+fwrite(STDERR, 'Preparing to add secrets to runtime');
+
 $secrets = Secrets::addToEnvironment(
     $_ENV['VAPOR_SSM_PATH'],
-    json_decode($_ENV['VAPOR_SSM_VARIABLES'] ?? '[]', true)
+    json_decode($_ENV['VAPOR_SSM_VARIABLES'] ?? '[]', true),
+    __DIR__.'/vaporSecrets.php'
 );
 
 /*
@@ -38,6 +37,8 @@ $secrets = Secrets::addToEnvironment(
 | wait for this socket to become ready before continuing execution.
 |
 */
+
+fwrite(STDERR, 'Preparing to boot FPM');
 
 $fpm = Fpm::boot(
     __DIR__.'/httpHandler.php', $secrets
