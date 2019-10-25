@@ -68,9 +68,9 @@ class Fpm
     public function __construct(Client $client, UnixDomainSocket $socketConnection, string $handler, array $serverVariables = [])
     {
         $this->client = $client;
-        $this->socketConnection = $socketConnection;
         $this->handler = $handler;
         $this->serverVariables = $serverVariables;
+        $this->socketConnection = $socketConnection;
     }
 
     /**
@@ -86,10 +86,9 @@ class Fpm
             @unlink(static::SOCKET);
         }
 
-        $client = new Client();
         $socketConnection = new UnixDomainSocket(self::SOCKET, 1000, 30000);
 
-        return static::$instance = tap(new static($client, $socketConnection, $handler, $serverVariables), function ($fpm) {
+        return static::$instance = tap(new static(new Client, $socketConnection, $handler, $serverVariables), function ($fpm) {
             $fpm->start();
         });
     }
@@ -164,7 +163,7 @@ class Fpm
     public function handle($request)
     {
         return (new FpmApplication($this->client, $this->socketConnection))
-                ->handle($request);
+                    ->handle($request);
     }
 
     /**
