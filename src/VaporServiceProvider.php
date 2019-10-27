@@ -63,9 +63,9 @@ class VaporServiceProvider extends ServiceProvider
         );
 
         $this->ensureRedisIsConfigured();
+        $this->ensureDynamoDbIsConfigured();
         $this->ensureQueueIsConfigured();
         $this->ensureSqsIsConfigured();
-        $this->ensureDynamoDbIsConfigured();
         $this->ensureMixIsConfigured();
 
         $this->registerCommands();
