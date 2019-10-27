@@ -4,14 +4,14 @@ namespace Laravel\Vapor;
 
 use Illuminate\Support\Facades\Config;
 
-trait ConfiguresSQS
+trait ConfiguresSqs
 {
     /**
      * Ensure SQS is properly configured.
      *
      * @return void
      */
-    protected function ensureSQSIsConfigured()
+    protected function ensureSqsIsConfigured()
     {
         // Ensure we are running on Vapor...
         if (! isset($_ENV['VAPOR_SSM_PATH'])) {

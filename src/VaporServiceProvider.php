@@ -12,7 +12,7 @@ use Laravel\Vapor\Http\Controllers\SignedStorageUrlController;
 
 class VaporServiceProvider extends ServiceProvider
 {
-    use ConfiguresDynamoDb, ConfiguresQueue, ConfiguresRedis, ConfiguresSQS, DefinesRoutes;
+    use ConfiguresDynamoDb, ConfiguresQueue, ConfiguresRedis, ConfiguresSqs, DefinesRoutes;
 
     /**
      * Bootstrap any application services.
@@ -64,8 +64,8 @@ class VaporServiceProvider extends ServiceProvider
 
         $this->ensureRedisIsConfigured();
         $this->ensureQueueIsConfigured();
+        $this->ensureSqsIsConfigured();
         $this->ensureDynamoDbIsConfigured();
-        $this->ensureSQSIsConfigured();
         $this->ensureMixIsConfigured();
 
         $this->registerCommands();
