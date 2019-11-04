@@ -75,6 +75,10 @@ class FpmRequest implements ProvidesRequestData
             $event, $headers, $serverVariables, $requestBody
         );
 
+        $headers = static::ensureSourceIpAddressIsSet(
+            $event, $headers
+        );
+
         foreach ($headers as $header => $value) {
             $serverVariables['HTTP_'.strtoupper(str_replace('-', '_', $header))] = $value;
         }
@@ -212,5 +216,21 @@ class FpmRequest implements ProvidesRequestData
         }
 
         return [$headers, $serverVariables];
+    }
+
+    /**
+     * Ensure the request headers contain a source IP address.
+     *
+     * @param  array  $event
+     * @param  array  $headers
+     * @return array
+     */
+    protected static function ensureSourceIpAddressIsSet(array $event, array $headers)
+    {
+        if (isset($event['requestContext']['identity']['sourceIp'])) {
+            $headers['x-vapor-source-ip'] = $event['requestContext']['identity']['sourceIp'];
+        }
+
+        return $headers;
     }
 }
