@@ -86,7 +86,7 @@ class Fpm
             @unlink(static::SOCKET);
         }
 
-        $socketConnection = new UnixDomainSocket(self::SOCKET, 1000, 30000);
+        $socketConnection = new UnixDomainSocket(self::SOCKET, 1000, 900000);
 
         return static::$instance = tap(new static(new Client, $socketConnection, $handler, $serverVariables), function ($fpm) {
             $fpm->start();
