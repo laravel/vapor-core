@@ -2,7 +2,7 @@
 
 namespace Laravel\Vapor\Runtime\Fpm;
 
-use Symfony\Component\HttpFoundation\Response;
+use Laravel\Vapor\Runtime\Response;
 
 class LoadBalancedFpmLambdaResponse extends FpmLambdaResponse
 {
@@ -18,7 +18,7 @@ class LoadBalancedFpmLambdaResponse extends FpmLambdaResponse
         return [
             'isBase64Encoded' => $requiresEncoding,
             'statusCode' => $this->status,
-            'statusDescription' => $this->status.' '.Response::$statusTexts[$this->status],
+            'statusDescription' => $this->status.' '.Response::statusText($this->status),
             'multiValueHeaders' => empty($this->headers) ? [] : $this->prepareHeaders($this->headers),
             'body' => $requiresEncoding ? base64_encode($this->body) : $this->body,
         ];

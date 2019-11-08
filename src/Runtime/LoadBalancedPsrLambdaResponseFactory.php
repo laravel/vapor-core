@@ -3,7 +3,6 @@
 namespace Laravel\Vapor\Runtime;
 
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\HttpFoundation\Response;
 
 class LoadBalancedPsrLambdaResponseFactory
 {
@@ -26,7 +25,7 @@ class LoadBalancedPsrLambdaResponseFactory
         return new ArrayLambdaResponse([
             'isBase64Encoded' => $requiresEncoding,
             'statusCode' => $response->getStatusCode(),
-            'statusDescription' => $response->getStatusCode().' '.Response::$statusTexts[$response->getStatusCode()],
+            'statusDescription' => $response->getStatusCode().' '.Response::statusText($response->getStatusCode()),
             'multiValueHeaders' => $headers,
             'body' => $requiresEncoding ? base64_encode($body) : $body,
         ]);
