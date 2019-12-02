@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Config;
 trait ConfiguresAssets
 {
     /**
-     * Ensure Redis is properly configured.
+     * Ensure the asset path is properly configured.
      *
      * @return void
      */
