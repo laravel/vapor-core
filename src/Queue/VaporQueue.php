@@ -31,9 +31,9 @@ class VaporQueue extends SqsQueue
      * Create a payload string from the given job and data.
      *
      * @param  string  $job
-     * @param  string   $queue
-     * @param  mixed   $data
-     * @return string
+     * @param  string  $queue
+     * @param  mixed  $data
+     * @return array
      */
     protected function createPayloadArray($job, $queue, $data = '')
     {
