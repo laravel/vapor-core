@@ -118,6 +118,7 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
     {
         $config = [
             'region' => $_ENV['AWS_DEFAULT_REGION'],
+            'url' => $_ENV['AWS_URL'] ?? null,
             'version' => 'latest',
             'signature_version' => 'v4',
         ];
