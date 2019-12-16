@@ -61,7 +61,7 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
         return $client->getCommand('putObject', array_filter([
             'Bucket' => $bucket,
             'Key' => $key,
-            'ACL' => $this->defaultVisibility(),
+            'ACL' => $request->input('visibility') ?: $this->defaultVisibility(),
             'ContentType' => $request->input('content_type') ?: 'application/octet-stream',
             'CacheControl' => $request->input('cache_control') ?: null,
             'Expires' => $request->input('expires') ?: null,
