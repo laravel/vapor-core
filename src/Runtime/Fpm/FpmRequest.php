@@ -122,7 +122,7 @@ class FpmRequest implements ProvidesRequestData
 
         return http_build_query(
             collect($event['multiValueQueryStringParameters'] ?? [])
-                ->mapWithKeys(function ($values, $key) use ($event){
+                ->mapWithKeys(function ($values, $key) use ($event) {
                     $key = ! isset($event['requestContext']['elb']) ? $key : urldecode($key);
 
                     return count($values) === 1
