@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Vapor\Contracts\SignedStorageUrlController as SignedStorageUrlControllerContract;
 
@@ -21,6 +22,8 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
     public function store(Request $request)
     {
         $this->ensureEnvironmentVariablesAreAvailable($request);
+        
+        Auth::shouldUse($request->input('guard'));
 
         Gate::authorize('uploadFiles', [
             $request->user(),
