@@ -52,8 +52,8 @@ class CliHandlerFactoryTest extends TestCase
 
         $test = $this;
 
-        Artisan::command('s3:command {payload}', function () use ($test) {
-            $payload = json_decode(base64_decode($this->argument('payload')), true);
+        Artisan::command('s3:command {payload}', function ($payload) use ($test) {
+            $payload = json_decode(base64_decode($payload), true);
 
             $test->assertTrue($payload['Records'][0]['s3']['bucket']['name'] === 'test-bucket');
         });
