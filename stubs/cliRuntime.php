@@ -6,6 +6,7 @@ use Laravel\Vapor\Runtime\LambdaContainer;
 use Laravel\Vapor\Runtime\CliHandlerFactory;
 use Laravel\Vapor\Runtime\StorageDirectories;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
+use Laravel\Vapor\Runtime\Handlers\CliHandler;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,6 +63,8 @@ $lambdaRuntime = LambdaRuntime::fromEnvironmentVariable();
 
 while (true) {
     $lambdaRuntime->nextInvocation(function ($invocationId, $event) use ($invocations) {
+        $event = CliHandler::intercept($event);
+
         return CliHandlerFactory::make($event)
                         ->handle($event)
                         ->toApiGatewayFormat();

@@ -23,8 +23,10 @@ class CliHandler implements LambdaEventHandler
         $output = [];
 
         $process = Process::fromShellCommandline(
-            sprintf("/opt/bin/php %s/artisan %s --no-interaction 2>&1",
-                $_ENV['LAMBDA_TASK_ROOT'], trim($event['cli'])
+            sprintf(
+                "/opt/bin/php %s/artisan %s --no-interaction 2>&1",
+                $_ENV['LAMBDA_TASK_ROOT'],
+                trim($event['cli'])
             )
         )->setTimeout(null);
 
@@ -65,5 +67,35 @@ class CliHandler implements LambdaEventHandler
         } catch (Throwable $e) {
             //
         }
+    }
+
+    /**
+     * Intercept incoming events to check if it should be handled by the CliHandler.
+     *
+     * @param array $event
+     * @return array
+     */
+    public static function intercept(array $event)
+    {
+        if (! file_exists($_ENV['LAMBDA_TASK_ROOT'] . '/vapor/cli.php')) {
+            return;
+        }
+
+        $commandCallbacks = require $_ENV['LAMBDA_TASK_ROOT'].'/vapor/cli.php';
+
+        foreach ($commandCallbacks as $command => $callback) {
+            if ($callback($event) === true) {
+                if (Str::contains($command, '{payload}')) {
+                    $payload = base64_encode(json_encode($event));
+                    $command = str_replace('{payload}', $payload, $command);
+                }
+
+                $event['cli'] = $command;
+                
+                break;
+            }
+        }
+
+        return $event;
     }
 }
