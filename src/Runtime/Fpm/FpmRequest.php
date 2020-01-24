@@ -2,6 +2,7 @@
 
 namespace Laravel\Vapor\Runtime\Fpm;
 
+use Illuminate\Support\Arr;
 use hollodotme\FastCGI\Interfaces\ProvidesRequestData;
 
 class FpmRequest implements ProvidesRequestData
@@ -157,7 +158,7 @@ class FpmRequest implements ProvidesRequestData
         return array_change_key_case(
             collect($event['multiValueHeaders'] ?? [])
                 ->mapWithKeys(function ($headers, $name) {
-                    return [$name => $headers[0]];
+                    return [$name => Arr::last($headers)];
                 })->all(), CASE_LOWER
         );
     }
