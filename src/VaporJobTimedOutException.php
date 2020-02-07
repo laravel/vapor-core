@@ -10,10 +10,11 @@ class VaporJobTimedOutException extends Exception
     /**
      * Create a new exception instance.
      *
+     * @param string $name
      * @param Throwable|null $previous
      */
-    public function __construct(Throwable $previous = null)
+    public function __construct($name, Throwable $previous = null)
     {
-        parent::__construct("A queued job has timed out. It will be retried again.", 0, $previous);
+        parent::__construct($name. ' has timed out. It will be retried again.', 0, $previous);
     }
 }

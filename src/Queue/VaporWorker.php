@@ -20,8 +20,8 @@ class VaporWorker extends Worker
     {
         pcntl_async_signals(true);
 
-        pcntl_signal(SIGALRM, function (){
-            throw new VaporJobTimedOutException();
+        pcntl_signal(SIGALRM, function () use ($job) {
+            throw new VaporJobTimedOutException($job->resolveName());
         });
 
         pcntl_alarm(
