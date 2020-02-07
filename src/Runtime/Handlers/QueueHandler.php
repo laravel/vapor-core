@@ -40,8 +40,9 @@ class QueueHandler implements LambdaEventHandler
     public function handle(array $event)
     {
         $commandOptions = trim(sprintf(
-            '--delay=%s --tries=%s %s',
+            '--delay=%s --timeout=%s --tries=%s %s',
             $_ENV['SQS_DELAY'] ?? 3,
+            $_ENV['QUEUE_TIMEOUT'] ?? 0,
             $_ENV['SQS_TRIES'] ?? 3,
             ($_ENV['SQS_FORCE'] ?? false) ? '--force' : ''
         ));

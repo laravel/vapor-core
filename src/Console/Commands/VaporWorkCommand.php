@@ -21,6 +21,7 @@ class VaporWorkCommand extends Command
     protected $signature = 'vapor:work
                             {message : The Base64 encoded message payload}
                             {--delay=0 : The number of seconds to delay failed jobs}
+                            {--timeout=0 : The number of seconds a child process can run}
                             {--tries=0 : Number of times to attempt a job before logging it failed}
                             {--force : Force the worker to run even in maintenance mode}';
 
@@ -167,7 +168,7 @@ class VaporWorkCommand extends Command
     {
         return new WorkerOptions(
             $this->option('delay'), $memory = 512,
-            $timeout = 0, $sleep = 0,
+            $this->option('timeout'), $sleep = 0,
             $this->option('tries'), $this->option('force'),
             $stopWhenEmpty = false
         );
