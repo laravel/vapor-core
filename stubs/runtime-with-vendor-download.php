@@ -26,10 +26,7 @@ exec(sprintf('/opt/awscli/aws s3 cp s3://%s/%s-vendor.zip /tmp/vendor.zip',
     $_ENV['VAPOR_ARTIFACT_NAME']
 ));
 
-$zip = new ZipArchive;
-$zip->open('/tmp/vendor.zip');
-$zip->extractTo('/tmp/vendor');
-$zip->close();
+exec('unzip /tmp/vendor.zip -d /tmp/vendor');
 
 unlink('/tmp/vendor.zip');
 
