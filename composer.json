@@ -24,7 +24,7 @@
         "illuminate/support": "^6.0|^7.0",
         "monolog/monolog": "^1.12|^2.0",
         "riverline/multipart-parser": "^2.0",
-        "symfony/process": "^5.0",
+        "symfony/process": "^4.4|^5.0",
         "symfony/psr-http-message-bridge": "^1.2",
         "zendframework/zend-diactoros": "^2.1"
     },
