@@ -97,7 +97,7 @@ class VaporServiceProvider extends ServiceProvider
             return;
         }
 
-        $this->app[ConsoleKernel::class]->command('vapor:handle {payload}',function (){
+        $this->app[ConsoleKernel::class]->command('vapor:handle {payload}',function () {
             throw new InvalidArgumentException(
                 'Unknown event type. Please fine a vapor:handle command to handle custom events.'
             );
