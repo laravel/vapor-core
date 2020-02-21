@@ -16,12 +16,8 @@ class CliHandlerFactory
      */
     public static function make(array $event)
     {
-        if (isset($event['cli'])) {
-            return new CliHandler;
-        } elseif (isset($event['Records'][0]['messageId'])) {
-            return new QueueHandler;
-        } else {
-            return new UnknownEventHandler;
-        }
+        return isset($event['Records'][0]['messageId'])
+                    ? new QueueHandler
+                    : new CliHandler;
     }
 }
