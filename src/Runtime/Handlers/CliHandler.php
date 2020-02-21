@@ -24,7 +24,8 @@ class CliHandler implements LambdaEventHandler
 
         $process = Process::fromShellCommandline(
             sprintf("/opt/bin/php %s/artisan %s --no-interaction 2>&1",
-                $_ENV['LAMBDA_TASK_ROOT'], trim($event['cli'])
+                $_ENV['LAMBDA_TASK_ROOT'],
+                trim($event['cli'] ?? 'vapor:handle '.base64_encode(json_encode($event)))
             )
         )->setTimeout(null);
 

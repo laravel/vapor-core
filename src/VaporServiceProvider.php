@@ -2,12 +2,14 @@
 
 namespace Laravel\Vapor;
 
+use InvalidArgumentException;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Vapor\Queue\VaporConnector;
 use Laravel\Vapor\Console\Commands\VaporWorkCommand;
+use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
 use Laravel\Vapor\Http\Controllers\SignedStorageUrlController;
 
 class VaporServiceProvider extends ServiceProvider
@@ -94,6 +96,12 @@ class VaporServiceProvider extends ServiceProvider
         if (! $this->app->runningInConsole()) {
             return;
         }
+
+        $this->app[ConsoleKernel::class]->command('vapor:handle {payload}',function (){
+            throw new InvalidArgumentException(
+                'Unknown event type. Please fine a vapor:handle command to handle custom events.'
+            );
+        });
 
         $this->app->singleton('command.vapor.work', function ($app) {
             return new VaporWorkCommand($app['queue.vaporWorker']);
