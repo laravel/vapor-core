@@ -27,7 +27,7 @@
         "symfony/process": "^4.3|^5.0",
         "laminas/laminas-diactoros": "^2.2",
         "nyholm/psr7": "^1.0",
-        "symfony/psr-http-message-bridge": "^2.0"
+        "symfony/psr-http-message-bridge": "^1.0|^2.0"
     },
     "require-dev": {
         "mockery/mockery": "^1.2",
