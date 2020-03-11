@@ -25,7 +25,8 @@ class VaporConnector implements ConnectorInterface
         return new VaporQueue(
             new SqsClient($config),
             $config['queue'],
-            $config['prefix'] ?? ''
+            $config['prefix'] ?? '',
+            $config['suffix'] ?? ''
         );
     }
 
