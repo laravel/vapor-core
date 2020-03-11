@@ -12,8 +12,12 @@ use Laravel\Vapor\Contracts\LambdaEventHandler;
 use Laravel\Vapor\Runtime\Http\PsrRequestFactory;
 use Laravel\Vapor\Runtime\PsrLambdaResponseFactory;
 use Illuminate\Console\Application as ConsoleApplication;
-use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
+use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
+use Laminas\Diactoros\ResponseFactory;
+use Laminas\Diactoros\ServerRequestFactory;
+use Laminas\Diactoros\StreamFactory;
+use Laminas\Diactoros\UploadedFileFactory;
 
 class AppHandler implements LambdaEventHandler
 {
@@ -33,7 +37,12 @@ class AppHandler implements LambdaEventHandler
             ));
 
             return $this->marshalResponse(
-                (new DiactorosFactory)->createResponse($response)
+                (new PsrHttpFactory(
+                    new ServerRequestFactory,
+                    new StreamFactory,
+                    new UploadedFileFactory,
+                    new ResponseFactory
+                ))->createResponse($response)
             );
         } finally {
             if (isset($app)) {
@@ -57,7 +66,7 @@ class AppHandler implements LambdaEventHandler
     /**
      * Marshal the PSR-7 response to a Lambda response.
      *
-     * @param  Psr\Http\Message\ResponseInterface  $response
+     * @param  \Psr\Http\Message\ResponseInterface  $response
      * @return \Laravel\Vapor\Runtime\ArrayLambdaResponse
      */
     protected function marshalResponse(ResponseInterface $response)
