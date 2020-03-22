@@ -120,6 +120,7 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
             'region' => $_ENV['AWS_DEFAULT_REGION'],
             'version' => 'latest',
             'signature_version' => 'v4',
+            'endpoint' => $_ENV['AWS_ENDPOINT'] ?? null;
         ];
 
         if (! isset($_ENV['AWS_LAMBDA_FUNCTION_VERSION'])) {
@@ -128,8 +129,6 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
                 'secret' => $_ENV['AWS_SECRET_ACCESS_KEY'] ?? null,
                 'token' => $_ENV['AWS_SESSION_TOKEN'] ?? null,
             ]);
-
-            $config['endpoint'] = $_ENV['AWS_ENDPOINT'] ?? null;
         }
 
         return S3Client::factory($config);
