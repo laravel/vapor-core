@@ -120,7 +120,7 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
             'region' => $_ENV['AWS_DEFAULT_REGION'],
             'version' => 'latest',
             'signature_version' => 'v4',
-            'endpoint' => $_ENV['AWS_ENDPOINT'] ?? null;
+            'endpoint' => $_ENV['AWS_ENDPOINT'] ?? null,
         ];
 
         if (! isset($_ENV['AWS_LAMBDA_FUNCTION_VERSION'])) {
