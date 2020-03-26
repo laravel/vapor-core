@@ -2,22 +2,22 @@
 
 namespace Laravel\Vapor\Runtime\Handlers;
 
-use Illuminate\Http\Request;
-use Illuminate\Container\Container;
-use Laravel\Vapor\Runtime\HttpKernel;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Facade;
-use Psr\Http\Message\ResponseInterface;
-use Laravel\Vapor\Contracts\LambdaEventHandler;
-use Laravel\Vapor\Runtime\Http\PsrRequestFactory;
-use Laravel\Vapor\Runtime\PsrLambdaResponseFactory;
 use Illuminate\Console\Application as ConsoleApplication;
-use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
-use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
+use Illuminate\Container\Container;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Facade;
 use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\Diactoros\StreamFactory;
 use Laminas\Diactoros\UploadedFileFactory;
+use Laravel\Vapor\Contracts\LambdaEventHandler;
+use Laravel\Vapor\Runtime\Http\PsrRequestFactory;
+use Laravel\Vapor\Runtime\HttpKernel;
+use Laravel\Vapor\Runtime\PsrLambdaResponseFactory;
+use Psr\Http\Message\ResponseInterface;
+use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
+use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 
 class AppHandler implements LambdaEventHandler
 {

@@ -2,8 +2,8 @@
 
 namespace Laravel\Vapor\Runtime\Fpm;
 
-use Illuminate\Support\Arr;
 use hollodotme\FastCGI\Interfaces\ProvidesRequestData;
+use Illuminate\Support\Arr;
 
 class FpmRequest implements ProvidesRequestData
 {

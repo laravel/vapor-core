@@ -1,11 +1,11 @@
 <?php
 
-use Laravel\Vapor\Runtime\Secrets;
-use Laravel\Vapor\Runtime\LambdaRuntime;
-use Laravel\Vapor\Runtime\LambdaContainer;
-use Laravel\Vapor\Runtime\CliHandlerFactory;
-use Laravel\Vapor\Runtime\StorageDirectories;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
+use Laravel\Vapor\Runtime\CliHandlerFactory;
+use Laravel\Vapor\Runtime\LambdaContainer;
+use Laravel\Vapor\Runtime\LambdaRuntime;
+use Laravel\Vapor\Runtime\Secrets;
+use Laravel\Vapor\Runtime\StorageDirectories;
 
 /*
 |--------------------------------------------------------------------------

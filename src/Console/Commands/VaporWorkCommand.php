@@ -2,12 +2,12 @@
 
 namespace Laravel\Vapor\Console\Commands;
 
-use InvalidArgumentException;
 use Illuminate\Console\Command;
-use Laravel\Vapor\Queue\VaporJob;
-use Illuminate\Queue\WorkerOptions;
-use Laravel\Vapor\Queue\VaporWorker;
 use Illuminate\Queue\Events\JobFailed;
+use Illuminate\Queue\WorkerOptions;
+use InvalidArgumentException;
+use Laravel\Vapor\Queue\VaporJob;
+use Laravel\Vapor\Queue\VaporWorker;
 
 class VaporWorkCommand extends Command
 {

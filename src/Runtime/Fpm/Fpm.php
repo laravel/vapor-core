@@ -3,10 +3,10 @@
 namespace Laravel\Vapor\Runtime\Fpm;
 
 use Exception;
-use Throwable;
 use hollodotme\FastCGI\Client;
-use Symfony\Component\Process\Process;
 use hollodotme\FastCGI\SocketConnections\UnixDomainSocket;
+use Symfony\Component\Process\Process;
+use Throwable;
 
 class Fpm
 {

@@ -2,12 +2,12 @@
 
 namespace Laravel\Vapor\Runtime\Handlers;
 
-use Throwable;
 use GuzzleHttp\Client;
 use Illuminate\Support\Str;
-use Symfony\Component\Process\Process;
-use Laravel\Vapor\Runtime\ArrayLambdaResponse;
 use Laravel\Vapor\Contracts\LambdaEventHandler;
+use Laravel\Vapor\Runtime\ArrayLambdaResponse;
+use Symfony\Component\Process\Process;
+use Throwable;
 
 class CliHandler implements LambdaEventHandler
 {

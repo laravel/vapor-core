@@ -3,8 +3,8 @@
 namespace Laravel\Vapor\Queue;
 
 use Aws\Sqs\SqsClient;
-use Illuminate\Support\Arr;
 use Illuminate\Queue\Connectors\ConnectorInterface;
+use Illuminate\Support\Arr;
 
 class VaporConnector implements ConnectorInterface
 {

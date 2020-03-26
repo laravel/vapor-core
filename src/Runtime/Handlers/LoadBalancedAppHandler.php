@@ -2,9 +2,9 @@
 
 namespace Laravel\Vapor\Runtime\Handlers;
 
-use Psr\Http\Message\ResponseInterface;
 use Laravel\Vapor\Runtime\Http\LoadBalancedPsrRequestFactory;
 use Laravel\Vapor\Runtime\LoadBalancedPsrLambdaResponseFactory;
+use Psr\Http\Message\ResponseInterface;
 
 class LoadBalancedAppHandler extends AppHandler
 {

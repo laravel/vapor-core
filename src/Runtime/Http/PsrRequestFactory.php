@@ -2,13 +2,13 @@
 
 namespace Laravel\Vapor\Runtime\Http;
 
-use Zend\Diactoros\Stream;
-use Illuminate\Support\Str;
-use Zend\Diactoros\UploadedFile;
-use Zend\Diactoros\ServerRequest;
-use Illuminate\Support\Collection;
-use Riverline\MultiPartParser\Part;
 use Illuminate\Support\Arr as SupportArr;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
+use Riverline\MultiPartParser\Part;
+use Zend\Diactoros\ServerRequest;
+use Zend\Diactoros\Stream;
+use Zend\Diactoros\UploadedFile;
 
 class PsrRequestFactory
 {

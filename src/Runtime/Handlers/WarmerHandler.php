@@ -2,12 +2,12 @@
 
 namespace Laravel\Vapor\Runtime\Handlers;
 
-use Throwable;
-use GuzzleHttp\Promise;
 use Aws\Lambda\LambdaClient;
-use Laravel\Vapor\Runtime\Logger;
-use Laravel\Vapor\Runtime\ArrayLambdaResponse;
+use GuzzleHttp\Promise;
 use Laravel\Vapor\Contracts\LambdaEventHandler;
+use Laravel\Vapor\Runtime\ArrayLambdaResponse;
+use Laravel\Vapor\Runtime\Logger;
+use Throwable;
 
 class WarmerHandler implements LambdaEventHandler
 {
