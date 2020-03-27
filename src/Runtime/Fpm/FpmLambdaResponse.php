@@ -2,8 +2,8 @@
 
 namespace Laravel\Vapor\Runtime\Fpm;
 
-use stdClass;
 use Laravel\Vapor\Contracts\LambdaResponse;
+use stdClass;
 
 class FpmLambdaResponse implements LambdaResponse
 {

@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Http\Request;
-use Laravel\Vapor\Runtime\HttpKernel;
 use Laravel\Vapor\Runtime\Handlers\HttpHandler;
+use Laravel\Vapor\Runtime\HttpKernel;
 
 /**
  * Laravel - A PHP Framework For Web Artisans

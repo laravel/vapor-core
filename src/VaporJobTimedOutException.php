@@ -2,8 +2,8 @@
 
 namespace Laravel\Vapor;
 
-use Throwable;
 use Exception;
+use Throwable;
 
 class VaporJobTimedOutException extends Exception
 {

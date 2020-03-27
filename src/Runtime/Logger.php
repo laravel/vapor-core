@@ -2,9 +2,9 @@
 
 namespace Laravel\Vapor\Runtime;
 
+use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger as MonologLogger;
-use Monolog\Formatter\JsonFormatter;
 
 class Logger
 {

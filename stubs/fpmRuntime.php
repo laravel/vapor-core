@@ -1,12 +1,12 @@
 <?php
 
-use Laravel\Vapor\Runtime\Fpm\Fpm;
-use Laravel\Vapor\Runtime\Secrets;
-use Laravel\Vapor\Runtime\LambdaRuntime;
-use Laravel\Vapor\Runtime\LambdaContainer;
-use Laravel\Vapor\Runtime\HttpHandlerFactory;
-use Laravel\Vapor\Runtime\StorageDirectories;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
+use Laravel\Vapor\Runtime\Fpm\Fpm;
+use Laravel\Vapor\Runtime\HttpHandlerFactory;
+use Laravel\Vapor\Runtime\LambdaContainer;
+use Laravel\Vapor\Runtime\LambdaRuntime;
+use Laravel\Vapor\Runtime\Secrets;
+use Laravel\Vapor\Runtime\StorageDirectories;
 
 /*
 |--------------------------------------------------------------------------

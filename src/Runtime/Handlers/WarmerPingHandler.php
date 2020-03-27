@@ -2,8 +2,8 @@
 
 namespace Laravel\Vapor\Runtime\Handlers;
 
-use Laravel\Vapor\Runtime\ArrayLambdaResponse;
 use Laravel\Vapor\Contracts\LambdaEventHandler;
+use Laravel\Vapor\Runtime\ArrayLambdaResponse;
 
 class WarmerPingHandler implements LambdaEventHandler
 {

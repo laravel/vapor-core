@@ -4,7 +4,6 @@ namespace Laravel\Vapor\Runtime;
 
 use Laravel\Vapor\Runtime\Handlers\CliHandler;
 use Laravel\Vapor\Runtime\Handlers\QueueHandler;
-use Laravel\Vapor\Runtime\Handlers\UnknownEventHandler;
 
 class CliHandlerFactory
 {

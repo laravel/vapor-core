@@ -2,10 +2,10 @@
 
 namespace Laravel\Vapor\Runtime\Handlers;
 
+use Laravel\Vapor\Contracts\LambdaEventHandler;
 use Laravel\Vapor\Runtime\Fpm\Fpm;
 use Laravel\Vapor\Runtime\Fpm\FpmLambdaResponse;
 use Laravel\Vapor\Runtime\Fpm\FpmRequest;
-use Laravel\Vapor\Contracts\LambdaEventHandler;
 
 class FpmHandler implements LambdaEventHandler
 {

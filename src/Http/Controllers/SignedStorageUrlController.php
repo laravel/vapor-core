@@ -3,11 +3,11 @@
 namespace Laravel\Vapor\Http\Controllers;
 
 use Aws\S3\S3Client;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use InvalidArgumentException;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Laravel\Vapor\Contracts\SignedStorageUrlController as SignedStorageUrlControllerContract;
 
 class SignedStorageUrlController extends Controller implements SignedStorageUrlControllerContract
