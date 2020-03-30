@@ -22,10 +22,7 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
     {
         $this->ensureEnvironmentVariablesAreAvailable($request);
 
-        Gate::authorize('uploadFiles', [
-            $request->user(),
-            $bucket = $request->input('bucket') ?: $_ENV['AWS_BUCKET']
-        ]);
+        $this->authorize($request, $bucket = $request->input('bucket') ?: $_ENV['AWS_BUCKET']);
 
         $client = $this->storageClient();
 
@@ -107,6 +104,21 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
         throw new InvalidArgumentException(
             "Unable to issue signed URL. Missing environment variables: ".implode(', ', array_keys($missing))
         );
+    }
+
+    /**
+     * Authorize the request.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  string                   $bucket
+     * @return void
+     */
+    protected function authorize(Request $request, $bucket)
+    {
+        Gate::authorize('uploadFiles', [
+            $request->user(),
+            $bucket
+        ]);
     }
 
     /**
