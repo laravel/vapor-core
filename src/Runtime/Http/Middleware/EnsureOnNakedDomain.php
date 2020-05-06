@@ -16,14 +16,14 @@ class EnsureOnNakedDomain
      */
     public function handle($request, $next)
     {
-        if (config('vapor.redirect_www') &&
+        if (config('vapor.redirect_to_root') &&
             strpos($request->getHost(), 'www.') === 0) {
             return new RedirectResponse(Str::replaceFirst(
                 'www.', '', $request->fullUrl()
             ), 301);
         }
 
-        if (! config('vapor.redirect_www') &&
+        if (! config('vapor.redirect_to_root') &&
             strpos($request->getHost(), 'www.') === false) {
             return new RedirectResponse(
                 'www.'.$request->fullUrl(),
