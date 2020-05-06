@@ -2,6 +2,7 @@
 
 namespace Laravel\Vapor\Queue;
 
+use AsyncAws\Sqs\Enum\QueueAttributeName;
 use AsyncAws\Sqs\SqsClient;
 use Illuminate\Contracts\Queue\Queue as QueueContract;
 use Illuminate\Queue\Jobs\SqsJob;
@@ -56,7 +57,7 @@ class AsyncAwsSqsQueue extends Queue implements QueueContract
     {
         $response = $this->sqs->getQueueAttributes([
             'QueueUrl' => $this->getQueue($queue),
-            'AttributeNames' => ['ApproximateNumberOfMessages'],
+            'AttributeNames' => [QueueAttributeName::APPROXIMATE_NUMBER_OF_MESSAGES],
         ]);
 
         $attributes = $response->getAttributes();

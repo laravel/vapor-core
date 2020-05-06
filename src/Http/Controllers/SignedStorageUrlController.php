@@ -114,18 +114,17 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
      */
     protected function storageClient()
     {
-        $config = [
-            'region' => $_ENV['AWS_DEFAULT_REGION'],
-        ];
-
+        $config = [];
         if (! isset($_ENV['AWS_LAMBDA_FUNCTION_VERSION'])) {
-            $config['credentials'] = array_filter([
+            $config = array_filter([
                 'accessKeyId' => $_ENV['AWS_ACCESS_KEY_ID'] ?? null,
                 'accessKeySecret' => $_ENV['AWS_SECRET_ACCESS_KEY'] ?? null,
                 'sessionToken' => $_ENV['AWS_SESSION_TOKEN'] ?? null,
                 'endpoint' => $_ENV['AWS_URL'] ?? null,
             ]);
         }
+
+        $config['region'] = $_ENV['AWS_DEFAULT_REGION'];
 
         return new S3Client($config);
     }
