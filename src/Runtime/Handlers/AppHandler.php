@@ -7,14 +7,11 @@ use Illuminate\Container\Container;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Facade;
-use Laminas\Diactoros\ResponseFactory;
-use Laminas\Diactoros\ServerRequestFactory;
-use Laminas\Diactoros\StreamFactory;
-use Laminas\Diactoros\UploadedFileFactory;
 use Laravel\Vapor\Contracts\LambdaEventHandler;
 use Laravel\Vapor\Runtime\Http\PsrRequestFactory;
 use Laravel\Vapor\Runtime\HttpKernel;
 use Laravel\Vapor\Runtime\PsrLambdaResponseFactory;
+use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
@@ -36,12 +33,13 @@ class AppHandler implements LambdaEventHandler
                 (new HttpFoundationFactory)->createRequest($this->marshalRequest($event))
             ));
 
+            $psr17Factory = new Psr17Factory();
             return $this->marshalResponse(
                 (new PsrHttpFactory(
-                    new ServerRequestFactory,
-                    new StreamFactory,
-                    new UploadedFileFactory,
-                    new ResponseFactory
+                    $psr17Factory,
+                    $psr17Factory,
+                    $psr17Factory,
+                    $psr17Factory
                 ))->createResponse($response)
             );
         } finally {

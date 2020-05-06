@@ -25,7 +25,6 @@
         "monolog/monolog": "^1.12|^2.0",
         "riverline/multipart-parser": "^2.0",
         "symfony/process": "^4.3|^5.0",
-        "laminas/laminas-diactoros": "^2.2",
         "nyholm/psr7": "^1.0",
         "symfony/psr-http-message-bridge": "^1.0|^2.0"
     },
