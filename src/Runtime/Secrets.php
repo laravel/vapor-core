@@ -2,7 +2,7 @@
 
 namespace Laravel\Vapor\Runtime;
 
-use Aws\Ssm\SsmClient;
+use AsyncAws\Ssm\SsmClient;
 
 class Secrets
 {
@@ -42,9 +42,8 @@ class Secrets
             return [];
         }
 
-        $ssm = SsmClient::factory([
+        $ssm = new SsmClient([
             'region' => $_ENV['AWS_DEFAULT_REGION'],
-            'version' => 'latest',
         ]);
 
         return collect($parameters)->chunk(10)->reduce(function ($carry, $parameters) use ($ssm, $path) {
@@ -56,7 +55,7 @@ class Secrets
             ]);
 
             return array_merge($carry, static::parseSecrets(
-                $ssmResponse['Parameters'] ?? []
+                $ssmResponse->getParameters()
             ));
         }, []);
     }
@@ -64,15 +63,15 @@ class Secrets
     /**
      * Parse the secret names and values into an array.
      *
-     * @param  array  $secrets
+     * @param \AsyncAws\Ssm\ValueObject\Parameter[]  $secrets
      * @return array
      */
     protected static function parseSecrets(array $secrets)
     {
         return collect($secrets)->mapWithKeys(function ($secret) {
-            $segments = explode('/', $secret['Name']);
+            $segments = explode('/', $secret->getName());
 
-            return [$segments[count($segments) - 1] => $secret['Value']];
+            return [$segments[count($segments) - 1] => $secret->getValue()];
         })->all();
     }
 }

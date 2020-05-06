@@ -2,11 +2,12 @@
 
 namespace Laravel\Vapor\Runtime\Handlers;
 
-use Aws\Lambda\LambdaClient;
-use GuzzleHttp\Promise;
+use AsyncAws\Core\Result;
+use AsyncAws\Lambda\LambdaClient;
 use Laravel\Vapor\Contracts\LambdaEventHandler;
 use Laravel\Vapor\Runtime\ArrayLambdaResponse;
 use Laravel\Vapor\Runtime\Logger;
+use Symfony\Component\HttpClient\HttpClient;
 use Throwable;
 
 class WarmerHandler implements LambdaEventHandler
@@ -22,9 +23,8 @@ class WarmerHandler implements LambdaEventHandler
         try {
             Logger::info('Executing warming requests...');
 
-            Promise\settle(
-                $this->buildPromises($this->lambdaClient(), $event)
-            )->wait();
+            $promises = $this->buildPromises($this->lambdaClient(), $event);
+            foreach (Result::wait($promises) as $result) {};
         } catch (Throwable $e) {
             Logger::error($e->getMessage(), ['exception' => $e]);
         }
@@ -37,7 +37,7 @@ class WarmerHandler implements LambdaEventHandler
     /**
      * Build the array of warmer invocation promises.
      *
-     * @param  \Aws\Lambda\LambdaClient  $lambda
+     * @param  \AsyncAws\Lambda\LambdaClient  $lambda
      * @param  array  $event
      * @return array
      */
@@ -45,7 +45,7 @@ class WarmerHandler implements LambdaEventHandler
     {
         return collect(range(1, $event['concurrency'] - 1))
                 ->mapWithKeys(function ($i) use ($lambda, $event) {
-                    return ['warmer-'.$i => $lambda->invokeAsync([
+                    return ['warmer-'.$i => $lambda->invoke([
                         'FunctionName' => $event['functionName'],
                         'Qualifier' => $event['functionAlias'],
                         'LogType' => 'None',
@@ -57,17 +57,14 @@ class WarmerHandler implements LambdaEventHandler
     /**
      * Get the Lambda client instance.
      *
-     * @return \Aws\Lambda\LambdaClient
+     * @return \AsyncAws\Lambda\LambdaClient
      */
     protected function lambdaClient()
     {
-        return new LambdaClient([
-            'region' => $_ENV['AWS_DEFAULT_REGION'],
-            'version' => 'latest',
-            'http' => [
-                'timeout' => 5,
-                'connect_timeout' => 5,
-            ],
-        ]);
+        return new LambdaClient(
+            ['region' => $_ENV['AWS_DEFAULT_REGION']],
+            null,
+            HttpClient::create(['timeout'=>5])
+        );
     }
 }

@@ -15,8 +15,10 @@
     ],
     "require": {
         "php": "^7.1",
-        "aws/aws-sdk-php": "^3.80",
-        "guzzlehttp/guzzle": "^6.3",
+        "async-aws/lambda": "^0.4.1",
+        "async-aws/s3": "^1.0",
+        "async-aws/sqs": "^1.0",
+        "async-aws/ssm": "^0.1.1",
         "hollodotme/fast-cgi-client": "3.0.1",
         "illuminate/container": "^6.0|^7.0",
         "illuminate/http": "^6.0|^7.0",

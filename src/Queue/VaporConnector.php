@@ -2,9 +2,9 @@
 
 namespace Laravel\Vapor\Queue;
 
-use Aws\Sqs\SqsClient;
+use AsyncAws\Sqs\SqsClient;
 use Illuminate\Queue\Connectors\ConnectorInterface;
-use Illuminate\Support\Arr;
+use Symfony\Component\HttpClient\HttpClient;
 
 class VaporConnector implements ConnectorInterface
 {
@@ -16,34 +16,17 @@ class VaporConnector implements ConnectorInterface
      */
     public function connect(array $config)
     {
-        $config = $this->getDefaultConfiguration($config);
-
+        $clientConfig = [];
         if ($config['key'] && $config['secret']) {
-            $config['credentials'] = Arr::only($config, ['key', 'secret', 'token']);
+            $clientConfig['accessKeyId'] = $config['key'] ?? null;
+            $clientConfig['accessKeySecret'] = $config['secret'] ?? null;
+            $clientConfig['sessionToken'] = $config['token'] ?? null;
         }
 
         return new VaporQueue(
-            new SqsClient($config),
+            new SqsClient($clientConfig, null, HttpClient::create(['timeout'=>60])),
             $config['queue'],
-            $config['prefix'] ?? '',
-            $config['suffix'] ?? ''
+            $config['prefix'] ?? ''
         );
-    }
-
-    /**
-     * Get the default configuration for SQS.
-     *
-     * @param  array  $config
-     * @return array
-     */
-    protected function getDefaultConfiguration(array $config)
-    {
-        return array_merge([
-            'version' => 'latest',
-            'http' => [
-                'timeout' => 60,
-                'connect_timeout' => 60,
-            ],
-        ], $config);
     }
 }

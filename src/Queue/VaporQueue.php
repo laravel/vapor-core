@@ -2,9 +2,7 @@
 
 namespace Laravel\Vapor\Queue;
 
-use Illuminate\Queue\SqsQueue;
-
-class VaporQueue extends SqsQueue
+class VaporQueue extends AsyncAwsSqsQueue
 {
     /**
      * Pop the next job off of the queue.
@@ -19,9 +17,9 @@ class VaporQueue extends SqsQueue
             'AttributeNames' => ['ApproximateReceiveCount'],
         ]);
 
-        if (! is_null($response['Messages']) && count($response['Messages']) > 0) {
+        foreach($response->getMessages() as $message) {
             return new VaporJob(
-                $this->container, $this->sqs, $response['Messages'][0],
+                $this->container, $this->sqs, $message,
                 $this->connectionName, $queue
             );
         }

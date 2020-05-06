@@ -2,7 +2,8 @@
 
 namespace Laravel\Vapor\Http\Controllers;
 
-use Aws\S3\S3Client;
+use AsyncAws\S3\Input\PutObjectRequest;
+use AsyncAws\S3\S3Client;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Gate;
@@ -31,34 +32,31 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
 
         $uuid = (string) Str::uuid();
 
-        $signedRequest = $client->createPresignedRequest(
+        $url = $client->presign(
             $this->createCommand($request, $client, $bucket, $key = ('tmp/'.$uuid)),
-            '+5 minutes'
+            new \DateTimeImmutable('+5 minutes')
         );
-
-        $uri = $signedRequest->getUri();
 
         return response()->json([
             'uuid' => $uuid,
             'bucket' => $bucket,
             'key' => $key,
-            'url' => 'https://'.$uri->getHost().$uri->getPath().'?'.$uri->getQuery(),
-            'headers' => $this->headers($request, $signedRequest),
+            'url' => $url,
+            'headers' => ['Content-Type' => $request->input('content_type') ?: 'application/octet-stream']
         ], 201);
     }
 
     /**
-     * Create a command for the PUT operation.
+     * Create the input for the PUT operation.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Aws\S3\S3Client  $client
      * @param  string  $bucket
      * @param  string  $key
-     * @return \Aws\Command
+     * @return \AsyncAws\S3\Input\PutObjectRequest
      */
-    protected function createCommand(Request $request, S3Client $client, $bucket, $key)
+    protected function createCommand(Request $request, $bucket, $key)
     {
-        return $client->getCommand('putObject', array_filter([
+        return new PutObjectRequest(array_filter([
             'Bucket' => $bucket,
             'Key' => $key,
             'ACL' => $request->input('visibility') ?: $this->defaultVisibility(),
@@ -112,26 +110,23 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
     /**
      * Get the S3 storage client instance.
      *
-     * @return \Aws\S3\S3Client
+     * @return \AsyncAws\S3\S3Client
      */
     protected function storageClient()
     {
         $config = [
             'region' => $_ENV['AWS_DEFAULT_REGION'],
-            'version' => 'latest',
-            'signature_version' => 'v4',
         ];
 
         if (! isset($_ENV['AWS_LAMBDA_FUNCTION_VERSION'])) {
             $config['credentials'] = array_filter([
-                'key' => $_ENV['AWS_ACCESS_KEY_ID'] ?? null,
-                'secret' => $_ENV['AWS_SECRET_ACCESS_KEY'] ?? null,
-                'token' => $_ENV['AWS_SESSION_TOKEN'] ?? null,
-                'url' => $_ENV['AWS_URL'] ?? null,
+                'accessKeyId' => $_ENV['AWS_ACCESS_KEY_ID'] ?? null,
+                'accessKeySecret' => $_ENV['AWS_SECRET_ACCESS_KEY'] ?? null,
+                'sessionToken' => $_ENV['AWS_SESSION_TOKEN'] ?? null,
             ]);
         }
 
-        return S3Client::factory($config);
+        return new S3Client($config);
     }
 
     /**
