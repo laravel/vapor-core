@@ -64,6 +64,8 @@ class VaporServiceProvider extends ServiceProvider
             SignedStorageUrlController::class
         );
 
+        $this->configure();
+        $this->offerPublishing();
         $this->ensureAssetPathsAreConfigured();
         $this->ensureRedisIsConfigured();
         $this->ensureDynamoDbIsConfigured();
@@ -72,6 +74,32 @@ class VaporServiceProvider extends ServiceProvider
         $this->ensureMixIsConfigured();
 
         $this->registerCommands();
+    }
+
+    /**
+     * Setup the configuration for Horizon.
+     *
+     * @return void
+     */
+    protected function configure()
+    {
+        $this->mergeConfigFrom(
+            __DIR__.'/../config/vapor.php', 'vapor'
+        );
+    }
+
+    /**
+     * Setup the resource publishing groups for Horizon.
+     *
+     * @return void
+     */
+    protected function offerPublishing()
+    {
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../config/vapor.php' => config_path('vapor.php'),
+            ], 'vapor-config');
+        }
     }
 
     /**
