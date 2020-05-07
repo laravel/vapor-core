@@ -16,6 +16,10 @@ class EnsureOnNakedDomain
      */
     public function handle($request, $next)
     {
+        if ('https://'.$request->getHttpHost() === $_ENV['APP_VANITY_URL']) {
+            return $next($request);
+        }
+
         if (config('vapor.redirect_to_root') &&
             strpos($request->getHost(), 'www.') === 0) {
             return new RedirectResponse(Str::replaceFirst(
@@ -25,10 +29,11 @@ class EnsureOnNakedDomain
 
         if (! config('vapor.redirect_to_root') &&
             strpos($request->getHost(), 'www.') === false) {
-            return new RedirectResponse(
-                'www.'.$request->fullUrl(),
-                301
-            );
+            return new RedirectResponse(str_replace(
+                $request->getScheme().'://',
+                $request->getScheme().'://www.',
+                $request->fullUrl()
+            ), 301);
         }
 
         return $next($request);
