@@ -2,6 +2,8 @@
 
 namespace Laravel\Vapor\Queue;
 
+use AsyncAws\Illuminate\Queue\AsyncAwsSqsQueue;
+
 class VaporQueue extends AsyncAwsSqsQueue
 {
     /**

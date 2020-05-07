@@ -24,7 +24,7 @@ class VaporConnector implements ConnectorInterface
         }
 
         return new VaporQueue(
-            new SqsClient($clientConfig, null, HttpClient::create(['timeout'=>60])),
+            new SqsClient($clientConfig, null, HttpClient::create(['timeout'=>30])),
             $config['queue'],
             $config['prefix'] ?? ''
         );

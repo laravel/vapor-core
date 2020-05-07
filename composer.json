@@ -18,6 +18,7 @@
         "async-aws/lambda": "^0.4.1",
         "async-aws/s3": "^1.0",
         "async-aws/sqs": "^1.0",
+        "async-aws/illuminate-queue": "dev-master",
         "async-aws/ssm": "^0.1.1",
         "hollodotme/fast-cgi-client": "3.0.1",
         "illuminate/container": "^6.0|^7.0",

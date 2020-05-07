@@ -2,9 +2,9 @@
 
 namespace Laravel\Vapor\Queue;
 
-use Illuminate\Queue\Jobs\SqsJob;
+use AsyncAws\Illuminate\Queue\Job\AsyncAwsSqsJob;
 
-class VaporJob extends SqsJob
+class VaporJob extends AsyncAwsSqsJob
 {
     /**
      * Release the job back into the queue.
