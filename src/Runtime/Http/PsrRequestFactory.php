@@ -5,10 +5,10 @@ namespace Laravel\Vapor\Runtime\Http;
 use Illuminate\Support\Arr as SupportArr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Nyholm\Psr7\ServerRequest;
+use Nyholm\Psr7\Stream;
+use Nyholm\Psr7\UploadedFile;
 use Riverline\MultiPartParser\Part;
-use Zend\Diactoros\ServerRequest;
-use Zend\Diactoros\Stream;
-use Zend\Diactoros\UploadedFile;
 
 class PsrRequestFactory
 {
@@ -42,18 +42,21 @@ class PsrRequestFactory
 
         parse_str($queryString, $query);
 
-        return new ServerRequest(
-            $this->serverVariables($headers, $queryString),
-            $this->uploadedFiles($headers),
-            $this->uri(),
+        $serverRequest = new ServerRequest(
             $this->method(),
-            $this->bodyStream(),
+            $this->uri(),
             $headers,
-            $this->cookies($headers),
-            $query,
-            $this->parsedBody($headers),
-            $this->protocolVersion()
+            $this->bodyStream(),
+            $this->protocolVersion(),
+            $this->serverVariables($headers, $queryString)
         );
+
+        $serverRequest = $serverRequest->withQueryParams($query);
+        $serverRequest = $serverRequest->withCookieParams($this->cookies($headers));
+        $serverRequest = $serverRequest->withParsedBody($this->parsedBody($headers));
+        $serverRequest = $serverRequest->withUploadedFiles($this->uploadedFiles($headers));
+
+        return $serverRequest;
     }
 
     /**
@@ -167,17 +170,11 @@ class PsrRequestFactory
     /**
      * Get the HTTP request body stream.
      *
-     * @return \Zend\Diactoros\Stream
+     * @return \Psr\Http\Message\StreamInterface
      */
     protected function bodyStream()
     {
-        $stream = fopen('php://memory', 'r+');
-
-        fwrite($stream, $this->bodyString());
-
-        rewind($stream);
-
-        return new Stream($stream);
+        return Stream::create($this->bodyString());
     }
 
     /**
@@ -274,7 +271,7 @@ class PsrRequestFactory
      * Create a new file instance from the given HTTP request document part.
      *
      * @param  \Riverline\MultipartParser\Part  $part
-     * @return \Zend\Diactoros\UploadedFile
+     * @return \Psr\Http\Message\UploadedFileInterface
      */
     protected function createFile($part)
     {
@@ -284,8 +281,11 @@ class PsrRequestFactory
         );
 
         return new UploadedFile(
-            $path, filesize($path), UPLOAD_ERR_OK,
-            $part->getFileName(), $part->getMimeType()
+            $path,
+            filesize($path),
+            UPLOAD_ERR_OK,
+            $part->getFileName(),
+            $part->getMimeType()
         );
     }
 
