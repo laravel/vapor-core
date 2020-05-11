@@ -51,10 +51,10 @@ class PsrRequestFactory
             $this->serverVariables($headers, $queryString)
         );
 
+        $serverRequest = $serverRequest->withQueryParams($query);
+        $serverRequest = $serverRequest->withCookieParams($this->cookies($headers));
         $serverRequest = $serverRequest->withParsedBody($this->parsedBody($headers));
         $serverRequest = $serverRequest->withUploadedFiles($this->uploadedFiles($headers));
-        $serverRequest = $serverRequest->withCookieParams($this->cookies($headers));
-        $serverRequest = $serverRequest->withQueryParams($query);
 
         return $serverRequest;
     }

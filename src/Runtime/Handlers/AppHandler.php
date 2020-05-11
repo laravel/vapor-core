@@ -33,7 +33,8 @@ class AppHandler implements LambdaEventHandler
                 (new HttpFoundationFactory)->createRequest($this->marshalRequest($event))
             ));
 
-            $psr17Factory = new Psr17Factory();
+            $psr17Factory = new Psr17Factory;
+
             return $this->marshalResponse(
                 (new PsrHttpFactory(
                     $psr17Factory,
