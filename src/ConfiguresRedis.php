@@ -19,10 +19,10 @@ trait ConfiguresRedis
 
         Config::set('database.redis', [
             'client' => $_ENV['REDIS_CLIENT'] ?? 'phpredis',
-            'options' => [
+            'options' => array_merge([
                 'cluster' => $_ENV['REDIS_CLUSTER'] ?? 'redis',
-            ],
-            'clusters' => array_merge(Config::get('database.redis.clusters', []), [
+            ], Config::get('database.redis.options', [])),
+            'clusters' => array_merge([
                 'default' => [
                     [
                         'host' => $_ENV['REDIS_HOST'] ?? '127.0.0.1',
@@ -39,7 +39,7 @@ trait ConfiguresRedis
                         'database' => 0,
                     ],
                 ],
-            ]),
+            ], Config::get('database.redis.clusters', [])),
         ]);
     }
 }
