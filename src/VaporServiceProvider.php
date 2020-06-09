@@ -72,6 +72,7 @@ class VaporServiceProvider extends ServiceProvider
         $this->ensureQueueIsConfigured();
         $this->ensureSqsIsConfigured();
         $this->ensureMixIsConfigured();
+        $this->configureTrustedProxy();
 
         $this->registerCommands();
     }
@@ -112,6 +113,16 @@ class VaporServiceProvider extends ServiceProvider
         if (isset($_ENV['MIX_URL'])) {
             Config::set('app.mix_url', $_ENV['MIX_URL']);
         }
+    }
+
+    /**
+     * Configure trusted proxy.
+     *
+     * @return void
+     */
+    private function configureTrustedProxy()
+    {
+        Config::set('trustedproxy.proxies', '*');
     }
 
     /**
