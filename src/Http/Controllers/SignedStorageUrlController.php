@@ -128,6 +128,7 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
                 'secret' => $_ENV['AWS_SECRET_ACCESS_KEY'] ?? null,
                 'token' => $_ENV['AWS_SESSION_TOKEN'] ?? null,
                 'url' => $_ENV['AWS_URL'] ?? null,
+                'endpoint' => $_ENV['AWS_URL'] ?? null,
             ]);
         }
 
