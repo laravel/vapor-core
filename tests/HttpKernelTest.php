@@ -2,6 +2,7 @@
 
 namespace Laravel\Vapor\Tests;
 
+use Laravel\Vapor\Runtime\Http\Middleware\EnsureBinaryEncoding;
 use Mockery;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -45,5 +46,21 @@ class HttpKernelTest extends TestCase
 
         $this->assertFalse(HttpKernel::shouldSendMaintenanceModeResponse(Request::create('/', 'GET')));
         $this->assertFalse(HttpKernel::shouldSendMaintenanceModeResponse(Request::create('http://something.com', 'GET')));
+    }
+
+    public function test_should_send_isbase64encode_on_binary_response()
+    {
+        $response = new Response('ok', 200);
+        $this->assertFalse(EnsureBinaryEncoding::isBase64EncodingRequired($response));
+
+        $response = new Response("{}", 200, [
+            'Content-Type' => 'application/json',
+        ]);
+        $this->assertFalse(EnsureBinaryEncoding::isBase64EncodingRequired($response));
+
+        $response = new Response('*', 200, [
+            'Content-Type' => 'image/png',
+        ]);
+        $this->assertTrue(EnsureBinaryEncoding::isBase64EncodingRequired($response));
     }
 }
