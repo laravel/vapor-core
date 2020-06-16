@@ -30,9 +30,7 @@ class EnsureBinaryEncoding
     {
         $contentType = strtolower($response->headers->get('Content-Type', 'text/html'));
 
-        $textTypes = ['application/json', 'application/xml', 'application/xhtml+xml'];
-
-        if (!$contentType || in_array($contentType, $textTypes, true) || Str::startsWith($contentType, 'text/')) {
+        if (Str::startsWith($contentType, 'text/') || Str::contains($contentType, ['xml', 'json'])) {
             return false;
         }
 

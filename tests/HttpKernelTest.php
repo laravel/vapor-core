@@ -58,6 +58,16 @@ class HttpKernelTest extends TestCase
         ]);
         $this->assertFalse(EnsureBinaryEncoding::isBase64EncodingRequired($response));
 
+        $response = new Response("{}", 200, [
+            'Content-Type' => 'application/vnd.api+json; charset=UTF-8',
+        ]);
+        $this->assertFalse(EnsureBinaryEncoding::isBase64EncodingRequired($response));
+
+        $response = new Response("*", 200, [
+            'Content-Type' => 'application/octet-stream',
+        ]);
+        $this->assertTrue(EnsureBinaryEncoding::isBase64EncodingRequired($response));
+
         $response = new Response('*', 200, [
             'Content-Type' => 'image/png',
         ]);
