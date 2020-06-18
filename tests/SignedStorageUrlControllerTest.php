@@ -23,8 +23,7 @@ class SignedStorageUrlControllerTest extends TestCase
             return true;
         });
 
-        $response = $this->json('POST', '/vapor/signed-storage-url?content_type=text/plain');
-
+        $response = $this->withoutExceptionHandling()->json('POST', '/vapor/signed-storage-url?content_type=text/plain');
 
         $response->assertStatus(201);
         $this->assertTrue(is_string($response->original['uuid']));
