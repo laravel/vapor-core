@@ -122,7 +122,7 @@ class VaporServiceProvider extends ServiceProvider
      */
     private function configureTrustedProxy()
     {
-        Config::set('trustedproxy.proxies', '*');
+        Config::set('trustedproxy.proxies', ['0.0.0.0/0', '2000:0:0:0:0:0:0:0/3']);
     }
 
     /**
