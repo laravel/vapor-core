@@ -41,6 +41,18 @@ class SignedStorageUrlControllerTest extends TestCase
         // ]));
     }
 
+    public function test_aws_url_environmental_variable_is_used()
+    {
+        $_ENV['AWS_URL'] = 'http://custom-url';
+        Gate::define('uploadFiles', function ($user = null, $bucket) {
+            return true;
+        });
+
+        $response = $this->withoutExceptionHandling()->json('POST', '/vapor/signed-storage-url?content_type=text/plain');
+        $response->assertStatus(201);
+        $this->assertStringContainsString('laravel-s3-test-1.custom-url', $response->original['url']);
+    }
+
 
     public function test_cant_retrieve_signed_urls_without_proper_environment_variables()
     {
