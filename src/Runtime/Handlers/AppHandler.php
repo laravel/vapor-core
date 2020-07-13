@@ -29,7 +29,7 @@ class AppHandler implements LambdaEventHandler
         try {
             $app = require $_ENV['LAMBDA_TASK_ROOT'].'/bootstrap/app.php';
 
-            $response = (new HttpKernel($app))->handle(Request::createFromBase(
+            [$response] = (new HttpKernel($app))->handle(Request::createFromBase(
                 (new HttpFoundationFactory)->createRequest($this->marshalRequest($event))
             ));
 

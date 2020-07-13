@@ -43,15 +43,16 @@ class HttpKernel
     {
         $this->app->useStoragePath(StorageDirectories::PATH);
 
+        $kernel = $this->resolveKernel($request);
+
         if (static::shouldSendMaintenanceModeResponse($request)) {
             $response = new Response(
-                file_get_contents($_ENV['LAMBDA_TASK_ROOT'].'/503.html'), 503
+                file_get_contents($_ENV['LAMBDA_TASK_ROOT'].'/503.html'),
+                503
             );
 
-            $this->app->terminate();
+            $this->app->instance('middleware.disable', true);
         } else {
-            $kernel = $this->resolveKernel($request);
-
             $response = (new Pipeline)->send($request)
                 ->through([
                     new EnsureOnNakedDomain,
@@ -61,11 +62,9 @@ class HttpKernel
                 ])->then(function ($request) use ($kernel) {
                     return $kernel->handle($request);
                 });
-
-            $kernel->terminate($request, $response);
         }
 
-        return $response;
+        return [$response, $kernel];
     }
 
     /**
