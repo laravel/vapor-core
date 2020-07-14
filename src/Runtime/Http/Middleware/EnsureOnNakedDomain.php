@@ -28,7 +28,8 @@ class EnsureOnNakedDomain
         }
 
         if (! config('vapor.redirect_to_root') &&
-            strpos($request->getHost(), 'www.') === false) {
+            strpos($request->getHost(), 'www.') === false &&
+            $request->getHost() === parse_url($_ENV['APP_URL'], PHP_URL_HOST)) {
             return new RedirectResponse(str_replace(
                 $request->getScheme().'://',
                 $request->getScheme().'://www.',
