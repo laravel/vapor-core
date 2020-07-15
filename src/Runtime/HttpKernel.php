@@ -50,8 +50,6 @@ class HttpKernel
                 file_get_contents($_ENV['LAMBDA_TASK_ROOT'].'/503.html'),
                 503
             );
-
-            $this->app->instance('middleware.disable', true);
         } else {
             $response = (new Pipeline)->send($request)
                 ->through([
