@@ -20,14 +20,14 @@ class EnsureOnNakedDomain
             return $next($request);
         }
 
-        if (config('vapor.redirect_to_root') &&
+        if (config('vapor.redirect_to_root') === true &&
             strpos($request->getHost(), 'www.') === 0) {
             return new RedirectResponse(Str::replaceFirst(
                 'www.', '', $request->fullUrl()
             ), 301);
         }
 
-        if (! config('vapor.redirect_to_root') &&
+        if (config('vapor.redirect_to_root') === false &&
             strpos($request->getHost(), 'www.') === false) {
             return new RedirectResponse(str_replace(
                 $request->getScheme().'://',
