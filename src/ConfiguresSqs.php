@@ -26,5 +26,10 @@ trait ConfiguresSqs
             'queue' => $_ENV['SQS_QUEUE'] ?? 'default',
             'region' => $_ENV['AWS_DEFAULT_REGION'] ?? 'us-east-1',
         ], Config::get('queue.connections.sqs') ?? []));
+
+        // if the key are the same as $_ENV after merged, set session_token
+        if (Config::get('queue.connections.sqs.key') === ($_ENV['AWS_ACCESS_KEY_ID'] ?? null)) {
+            Config::set('queue.connections.sqs.token', $_ENV['AWS_SESSION_TOKEN'] ?? null);
+        }
     }
 }

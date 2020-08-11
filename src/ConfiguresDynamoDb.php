@@ -26,5 +26,10 @@ trait ConfiguresDynamoDb
             'table' => $_ENV['DYNAMODB_CACHE_TABLE'] ?? 'cache',
             'endpoint' => $_ENV['DYNAMODB_ENDPOINT'] ?? null,
         ], Config::get('cache.stores.dynamodb') ?? []));
+
+        // if the key are the same as $_ENV after merged, set session_token
+        if (Config::get('cache.stores.dynamodb.key') === ($_ENV['AWS_ACCESS_KEY_ID'] ?? null)) {
+            Config::set('cache.stores.dynamodb.token', $_ENV['AWS_SESSION_TOKEN'] ?? null);
+        }
     }
 }
