@@ -9,9 +9,9 @@ jobs:
       fail-fast: true
       matrix:
         php: [7.2, 7.3, 7.4]
-        stability: [prefer-stable]
+        laravel: [^6.0, ^7.0]
 
-    name: PHP ${{ matrix.php }} - ${{ matrix.stability }}
+    name: PHP ${{ matrix.php }} - L${{ matrix.laravel }}
 
     steps:
       - name: Checkout code
@@ -30,11 +30,15 @@ jobs:
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Install PHP 7 dependencies
-        run: composer update --${{ matrix.stability }} --no-interaction --no-progress
+        run: |
+           composer require "illuminate/contracts=${{ matrix.laravel }}" --no-update
+           composer update --prefer-dist --no-interaction --no-progress
         if: "matrix.php < 8"
 
       - name: Install PHP 8 dependencies
-        run: composer update --${{ matrix.stability }} --ignore-platform-req=php --no-interaction --no-progress
+        run: |
+           composer require "illuminate/contracts=${{ matrix.laravel }}" --no-update --ignore-platform-req=php
+           composer update --prefer-dist --no-interaction --no-progress --ignore-platform-req=php
         if: "matrix.php >= 8"
 
       - name: Execute unit tests
