@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use InvalidArgumentException;
 use Orchestra\Testbench\TestCase;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 
 class SignedStorageUrlControllerTest extends TestCase
 {
@@ -16,6 +17,13 @@ class SignedStorageUrlControllerTest extends TestCase
         $_ENV['AWS_BUCKET'] = 'laravel-s3-test-1';
     }
 
+    protected function getEnvironmentSetUp($app)
+    {
+        $app->useEnvironmentPath(__DIR__.'/..');
+        $app->bootstrapWith([LoadEnvironmentVariables::class]);
+
+        parent::getEnvironmentSetUp($app);
+    }
 
     public function test_controller_returns_signed_urls()
     {
