@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Vapor\Tests;
+namespace Laravel\Vapor\Tests\Unit;
 
 use Mockery;
 use Aws\Sqs\SqsClient;
@@ -14,16 +14,17 @@ class VaporQueueTest extends TestCase
         Mockery::close();
     }
 
-
     public function test_proper_payload_array_is_created()
     {
         $sqs = Mockery::mock(SqsClient::class);
 
         $job = new FakeJob;
 
-        $sqs->shouldReceive('sendMessage')->once()->with([
-            'QueueUrl' => '/test-vapor-queue-url',
-            'MessageBody' => json_encode([
+        $sqs->shouldReceive('sendMessage')->once()->with(Mockery::on(function($argument) use ($job) {
+            $messageBody = json_decode($argument['MessageBody'], true);
+
+            $this->assertEquals('/test-vapor-queue-url', $argument['QueueUrl']);
+            $this->assertArraySubset([
                 'displayName' => FakeJob::class,
                 'job' => 'Illuminate\Queue\CallQueuedHandler@call',
                 'maxTries' => null,
@@ -35,8 +36,10 @@ class VaporQueueTest extends TestCase
                     'command' => serialize($job),
                 ],
                 'attempts' => 0,
-            ]),
-        ])->andReturnSelf();
+            ], $messageBody);
+
+            return true;
+        }))->andReturnSelf(); 
 
         $sqs->shouldReceive('get')->andReturn('attribute-value');
 

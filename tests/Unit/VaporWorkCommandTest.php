@@ -1,10 +1,11 @@
 <?php
 
-namespace Laravel\Vapor\Tests;
+namespace Laravel\Vapor\Tests\Unit;
 
 use Mockery;
+use Orchestra\Testbench\TestCase;
 
-class VaporWorkCommandTest extends \Orchestra\Testbench\TestCase
+class VaporWorkCommandTest extends TestCase
 {
     public function tearDown() : void
     {

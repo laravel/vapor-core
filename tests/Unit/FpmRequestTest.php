@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Vapor\Tests;
+namespace Laravel\Vapor\Tests\Unit;
 
 use Mockery;
 use PHPUnit\Framework\TestCase;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Vapor\Tests;
+namespace Laravel\Vapor\Tests\Unit;
 
 use Laravel\Vapor\Runtime\Http\Middleware\EnsureBinaryEncoding;
 use Mockery;
@@ -15,7 +15,6 @@ class HttpKernelTest extends TestCase
     {
         Mockery::close();
     }
-
 
     public function test_request_can_be_handled()
     {
