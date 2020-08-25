@@ -29,5 +29,6 @@
     </logging>
     <php>
         <env name="APP_VANITY_URL" value="foo.vapor.build"/>
+        <env name="APP_KEY" value="AckfSECXIvnK5r28GVIWUAxmbBSjTsmF"/>
     </php>
 </phpunit>

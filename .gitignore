@@ -1,3 +1,4 @@
+.env
 .phpunit.result.cache
 phpunit.xml
 build
