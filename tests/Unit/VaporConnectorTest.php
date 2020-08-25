@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Vapor\Tests;
+namespace Laravel\Vapor\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Laravel\Vapor\Queue\VaporQueue;

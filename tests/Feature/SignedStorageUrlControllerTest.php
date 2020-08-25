@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Vapor\Tests;
+namespace Laravel\Vapor\Tests\Feature;
 
 use GuzzleHttp\Client;
 use InvalidArgumentException;
@@ -19,7 +19,7 @@ class SignedStorageUrlControllerTest extends TestCase
 
     protected function getEnvironmentSetUp($app)
     {
-        $app->useEnvironmentPath(__DIR__.'/..');
+        $app->useEnvironmentPath(__DIR__.'/../..');
         $app->bootstrapWith([LoadEnvironmentVariables::class]);
 
         parent::getEnvironmentSetUp($app);
