@@ -2,20 +2,19 @@
 
 namespace Laravel\Vapor\Tests\Unit;
 
-use Mockery;
 use Aws\Sqs\SqsClient;
-use PHPUnit\Framework\TestCase;
-use Laravel\Vapor\Queue\VaporJob;
 use Illuminate\Container\Container;
 use Laravel\Vapor\Queue\VaporConnector;
+use Laravel\Vapor\Queue\VaporJob;
+use Mockery;
+use PHPUnit\Framework\TestCase;
 
 class VaporJobTest extends TestCase
 {
-    public function tearDown() : void
+    protected function tearDown(): void
     {
         Mockery::close();
     }
-
 
     /**
      * @doesNotPerformAssertions
@@ -43,7 +42,6 @@ class VaporJobTest extends TestCase
         $job->release();
     }
 
-
     public function test_can_determine_job_attempts()
     {
         $client = (new VaporConnector)->connect([
@@ -59,6 +57,6 @@ class VaporJobTest extends TestCase
             'Body' => json_encode(['attempts' => 1]),
         ], 'sqs', 'test-vapor-queue-url');
 
-        $this->assertEquals(2, $job->attempts());
+        $this->assertSame(2, $job->attempts());
     }
 }

@@ -2,17 +2,16 @@
 
 namespace Laravel\Vapor\Tests\Unit;
 
+use Laravel\Vapor\Runtime\Fpm\FpmRequest;
 use Mockery;
 use PHPUnit\Framework\TestCase;
-use Laravel\Vapor\Runtime\Fpm\FpmRequest;
 
 class FpmRequestTest extends TestCase
 {
-    public function tearDown() : void
+    protected function tearDown(): void
     {
         Mockery::close();
     }
-
 
     public function test_query_string_is_decoded_for_elb_requests()
     {
@@ -26,7 +25,7 @@ class FpmRequestTest extends TestCase
             ],
         ], 'index.php');
 
-        $this->assertEquals(http_build_query(['Host' => urldecode($host)]), $request->serverVariables['QUERY_STRING']);
+        $this->assertSame(http_build_query(['Host' => urldecode($host)]), $request->serverVariables['QUERY_STRING']);
     }
 
     public function test_api_gateway_headers_are_handled()
@@ -42,7 +41,7 @@ class FpmRequestTest extends TestCase
                 'X-Amzn-Trace-Id' => $trace,
                 'X-Forwarded-For' => $for,
                 'X-Forwarded-Port' => $port,
-                'X-Forwarded-Proto' => $port
+                'X-Forwarded-Proto' => $port,
             ],
             'multiValueHeaders' => [
                 'X-Amzn-Trace-Id' => [
@@ -62,10 +61,10 @@ class FpmRequestTest extends TestCase
             'multiValueQueryStringParameters' => null,
         ], 'index.php');
 
-        $this->assertEquals($trace, $request->serverVariables['HTTP_X_AMZN_TRACE_ID']);
-        $this->assertEquals($for, $request->serverVariables['HTTP_X_FORWARDED_FOR']);
-        $this->assertEquals($port, $request->serverVariables['HTTP_X_FORWARDED_PORT']);
-        $this->assertEquals($proto, $request->serverVariables['HTTP_X_FORWARDED_PROTO']);
+        $this->assertSame($trace, $request->serverVariables['HTTP_X_AMZN_TRACE_ID']);
+        $this->assertSame($for, $request->serverVariables['HTTP_X_FORWARDED_FOR']);
+        $this->assertSame($port, $request->serverVariables['HTTP_X_FORWARDED_PORT']);
+        $this->assertSame($proto, $request->serverVariables['HTTP_X_FORWARDED_PROTO']);
     }
 
     public function test_load_balancer_headers_are_over_spoofed_headers()
@@ -98,9 +97,9 @@ class FpmRequestTest extends TestCase
             ],
         ], 'index.php');
 
-        $this->assertEquals($trace, $request->serverVariables['HTTP_X_AMZN_TRACE_ID']);
-        $this->assertEquals($for, $request->serverVariables['HTTP_X_FORWARDED_FOR']);
-        $this->assertEquals($port, $request->serverVariables['HTTP_X_FORWARDED_PORT']);
-        $this->assertEquals($proto, $request->serverVariables['HTTP_X_FORWARDED_PROTO']);
+        $this->assertSame($trace, $request->serverVariables['HTTP_X_AMZN_TRACE_ID']);
+        $this->assertSame($for, $request->serverVariables['HTTP_X_FORWARDED_FOR']);
+        $this->assertSame($port, $request->serverVariables['HTTP_X_FORWARDED_PORT']);
+        $this->assertSame($proto, $request->serverVariables['HTTP_X_FORWARDED_PROTO']);
     }
 }

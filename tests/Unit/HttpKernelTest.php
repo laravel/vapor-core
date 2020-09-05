@@ -2,16 +2,16 @@
 
 namespace Laravel\Vapor\Tests\Unit;
 
-use Laravel\Vapor\Runtime\Http\Middleware\EnsureBinaryEncoding;
-use Mockery;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use PHPUnit\Framework\TestCase;
+use Laravel\Vapor\Runtime\Http\Middleware\EnsureBinaryEncoding;
 use Laravel\Vapor\Runtime\HttpKernel;
+use Mockery;
+use PHPUnit\Framework\TestCase;
 
 class HttpKernelTest extends TestCase
 {
-    public function tearDown() : void
+    protected function tearDown(): void
     {
         Mockery::close();
     }
@@ -30,7 +30,6 @@ class HttpKernelTest extends TestCase
 
         // $this->assertEquals($mockResponse, $response);
     }
-
 
     public function test_should_send_maintenance_mode_response_when_enabled_and_on_non_vanity_domain()
     {
@@ -52,17 +51,17 @@ class HttpKernelTest extends TestCase
         $response = new Response('ok', 200);
         $this->assertFalse(EnsureBinaryEncoding::isBase64EncodingRequired($response));
 
-        $response = new Response("{}", 200, [
+        $response = new Response('{}', 200, [
             'Content-Type' => 'application/json',
         ]);
         $this->assertFalse(EnsureBinaryEncoding::isBase64EncodingRequired($response));
 
-        $response = new Response("{}", 200, [
+        $response = new Response('{}', 200, [
             'Content-Type' => 'application/vnd.api+json; charset=UTF-8',
         ]);
         $this->assertFalse(EnsureBinaryEncoding::isBase64EncodingRequired($response));
 
-        $response = new Response("*", 200, [
+        $response = new Response('*', 200, [
             'Content-Type' => 'application/octet-stream',
         ]);
         $this->assertTrue(EnsureBinaryEncoding::isBase64EncodingRequired($response));

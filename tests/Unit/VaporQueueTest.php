@@ -2,14 +2,14 @@
 
 namespace Laravel\Vapor\Tests\Unit;
 
-use Mockery;
 use Aws\Sqs\SqsClient;
-use PHPUnit\Framework\TestCase;
 use Laravel\Vapor\Queue\VaporQueue;
+use Mockery;
+use PHPUnit\Framework\TestCase;
 
 class VaporQueueTest extends TestCase
 {
-    public function tearDown() : void
+    protected function tearDown(): void
     {
         Mockery::close();
     }
@@ -20,10 +20,10 @@ class VaporQueueTest extends TestCase
 
         $job = new FakeJob;
 
-        $sqs->shouldReceive('sendMessage')->once()->with(Mockery::on(function($argument) use ($job) {
+        $sqs->shouldReceive('sendMessage')->once()->with(Mockery::on(function ($argument) use ($job) {
             $messageBody = json_decode($argument['MessageBody'], true);
 
-            $this->assertEquals('/test-vapor-queue-url', $argument['QueueUrl']);
+            $this->assertSame('/test-vapor-queue-url', $argument['QueueUrl']);
             $this->assertArraySubset([
                 'displayName' => FakeJob::class,
                 'job' => 'Illuminate\Queue\CallQueuedHandler@call',
@@ -37,12 +37,12 @@ class VaporQueueTest extends TestCase
             ], $messageBody);
 
             return true;
-        }))->andReturnSelf(); 
+        }))->andReturnSelf();
 
         $sqs->shouldReceive('get')->andReturn('attribute-value');
 
         $queue = new VaporQueue($sqs, 'test-vapor-queue-url');
 
-        $this->assertEquals('attribute-value', $queue->push($job));
+        $this->assertSame('attribute-value', $queue->push($job));
     }
 }
