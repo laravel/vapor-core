@@ -136,7 +136,7 @@ class VaporWorkCommand extends Command
     {
         return tap(json_decode(base64_decode($this->argument('message')), true), function ($message) {
             if ($message === false) {
-                throw new InvalidArgumentException("Unable to unserialize message.");
+                throw new InvalidArgumentException('Unable to unserialize message.');
             }
         });
     }

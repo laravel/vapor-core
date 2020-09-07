@@ -9,7 +9,7 @@ class JsonFormatter extends BaseJsonFormatter
     /**
      * {@inheritdoc}
      */
-    public function format(array $record) : string
+    public function format(array $record): string
     {
         $record['context'] = array_merge(
             $record['context'] ?? [], ['aws_request_id' => ($_ENV['AWS_REQUEST_ID'] ?? null)]

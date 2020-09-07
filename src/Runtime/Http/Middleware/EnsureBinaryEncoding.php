@@ -31,7 +31,7 @@ class EnsureBinaryEncoding
      * @param  \Illuminate\Http\Response  $response
      * @return bool
      */
-    public static function isBase64EncodingRequired(Response $response) : bool
+    public static function isBase64EncodingRequired(Response $response): bool
     {
         $contentType = strtolower($response->headers->get('Content-Type', 'text/html'));
 

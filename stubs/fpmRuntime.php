@@ -81,7 +81,7 @@ $invocations = 0;
 $lambdaRuntime = LambdaRuntime::fromEnvironmentVariable();
 
 while (true) {
-    $lambdaRuntime->nextInvocation(function ($invocationId, $event) use ($fpm, $invocations) {
+    $lambdaRuntime->nextInvocation(function ($invocationId, $event) {
         return HttpHandlerFactory::make($event)
                     ->handle($event)
                     ->toApiGatewayFormat();

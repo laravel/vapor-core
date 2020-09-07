@@ -121,7 +121,7 @@ class Fpm
             '--nodaemonize',
             '--force-stderr',
             '--fpm-config',
-            self::CONFIG
+            self::CONFIG,
         ]);
 
         fwrite(STDERR, 'Starting FPM Process...');
@@ -181,7 +181,7 @@ class Fpm
             $elapsed += 5000;
 
             if ($elapsed > ($fiveSeconds = 5000000)) {
-                throw new Exception('Timed out waiting for FPM to start: ' . self::SOCKET);
+                throw new Exception('Timed out waiting for FPM to start: '.self::SOCKET);
             }
 
             if (! $this->fpm->isRunning()) {
@@ -291,7 +291,7 @@ class Fpm
             $elapsed += 5000;
 
             if ($elapsed > 1000000) {
-                throw new Exception("Process did not stop within the given threshold.");
+                throw new Exception('Process did not stop within the given threshold.');
             }
         }
     }
