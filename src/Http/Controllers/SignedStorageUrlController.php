@@ -24,7 +24,7 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
 
         Gate::authorize('uploadFiles', [
             $request->user(),
-            $bucket = $request->input('bucket') ?: $_ENV['AWS_BUCKET']
+            $bucket = $request->input('bucket') ?: $_ENV['AWS_BUCKET'],
         ]);
 
         $client = $this->storageClient();
@@ -80,7 +80,7 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
         return array_merge(
             $signedRequest->getHeaders(),
             [
-                'Content-Type' => $request->input('content_type') ?: 'application/octet-stream'
+                'Content-Type' => $request->input('content_type') ?: 'application/octet-stream',
             ]
         );
     }
@@ -97,7 +97,7 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
             $request->input('bucket') ? null : 'AWS_BUCKET',
             'AWS_DEFAULT_REGION',
             'AWS_ACCESS_KEY_ID',
-            'AWS_SECRET_ACCESS_KEY'
+            'AWS_SECRET_ACCESS_KEY',
         ])), $_ENV);
 
         if (empty($missing)) {
@@ -105,7 +105,7 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
         }
 
         throw new InvalidArgumentException(
-            "Unable to issue signed URL. Missing environment variables: ".implode(', ', array_keys($missing))
+            'Unable to issue signed URL. Missing environment variables: '.implode(', ', array_keys($missing))
         );
     }
 

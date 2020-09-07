@@ -61,7 +61,7 @@ $invocations = 0;
 $lambdaRuntime = LambdaRuntime::fromEnvironmentVariable();
 
 while (true) {
-    $lambdaRuntime->nextInvocation(function ($invocationId, $event) use ($invocations) {
+    $lambdaRuntime->nextInvocation(function ($invocationId, $event) {
         return CliHandlerFactory::make($event)
                         ->handle($event)
                         ->toApiGatewayFormat();

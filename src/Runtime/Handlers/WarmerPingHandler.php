@@ -18,7 +18,7 @@ class WarmerPingHandler implements LambdaEventHandler
         usleep(50 * 1000);
 
         return new ArrayLambdaResponse([
-            'output' => 'Warmer ping handled.'
+            'output' => 'Warmer ping handled.',
         ]);
     }
 }

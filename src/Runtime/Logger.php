@@ -55,7 +55,7 @@ class Logger
         }
 
         static::$logger = new MonologLogger('vapor', [
-            (new StreamHandler('php://stderr'))->setFormatter(new JsonFormatter)
+            (new StreamHandler('php://stderr'))->setFormatter(new JsonFormatter),
         ]);
     }
 }

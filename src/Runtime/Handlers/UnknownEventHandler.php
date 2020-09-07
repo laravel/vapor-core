@@ -17,11 +17,11 @@ class UnknownEventHandler implements LambdaEventHandler
     public function handle(array $event)
     {
         Logger::info('Unknown event type received by application.', [
-            'event' => $event
+            'event' => $event,
         ]);
 
         return new ArrayLambdaResponse([
-            'output' => 'Unknown event type.'
+            'output' => 'Unknown event type.',
         ]);
     }
 }

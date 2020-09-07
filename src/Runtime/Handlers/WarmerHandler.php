@@ -30,7 +30,7 @@ class WarmerHandler implements LambdaEventHandler
         }
 
         return new ArrayLambdaResponse([
-            'output' => 'Warmer event handled.'
+            'output' => 'Warmer event handled.',
         ]);
     }
 
