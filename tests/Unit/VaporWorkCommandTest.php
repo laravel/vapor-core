@@ -7,11 +7,10 @@ use Orchestra\Testbench\TestCase;
 
 class VaporWorkCommandTest extends TestCase
 {
-    public function tearDown() : void
+    protected function tearDown(): void
     {
         Mockery::close();
     }
-
 
     public function test_command_can_be_called()
     {
