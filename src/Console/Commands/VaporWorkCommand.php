@@ -167,9 +167,12 @@ class VaporWorkCommand extends Command
     protected function gatherWorkerOptions()
     {
         $options = [
-            $this->option('delay'), $memory = 512,
-            $this->option('timeout'), $sleep = 0,
-            $this->option('tries'), $this->option('force'),
+            $this->option('delay'),
+            $memory = 512,
+            $this->option('timeout'),
+            $sleep = 0,
+            $this->option('tries'),
+            $this->option('force'),
             $stopWhenEmpty = false,
         ];
 
