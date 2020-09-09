@@ -166,12 +166,18 @@ class VaporWorkCommand extends Command
      */
     protected function gatherWorkerOptions()
     {
-        return new WorkerOptions(
+        $options = [
             $this->option('delay'), $memory = 512,
             $this->option('timeout'), $sleep = 0,
             $this->option('tries'), $this->option('force'),
-            $stopWhenEmpty = false
-        );
+            $stopWhenEmpty = false,
+        ];
+
+        if (property_exists(WorkerOptions::class, 'name')) {
+            $options = array_merge(['default'], $options);
+        }
+
+        return new WorkerOptions(...$options);
     }
 
     /**
