@@ -3,6 +3,7 @@
 namespace Laravel\Vapor;
 
 use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
+use Illuminate\Contracts\Http\Kernel as HttpKernel;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Schema;
@@ -10,6 +11,7 @@ use Illuminate\Support\ServiceProvider;
 use InvalidArgumentException;
 use Laravel\Vapor\Console\Commands\VaporWorkCommand;
 use Laravel\Vapor\Http\Controllers\SignedStorageUrlController;
+use Laravel\Vapor\Http\Middleware\ServeStaticAssets;
 use Laravel\Vapor\Queue\VaporConnector;
 
 class VaporServiceProvider extends ServiceProvider
@@ -75,6 +77,7 @@ class VaporServiceProvider extends ServiceProvider
         $this->configureTrustedProxy();
 
         $this->registerCommands();
+        $this->registerMiddleware();
     }
 
     /**
@@ -149,5 +152,16 @@ class VaporServiceProvider extends ServiceProvider
         });
 
         $this->commands(['command.vapor.work']);
+    }
+
+    /**
+     * Register the Vapor Http middleware.
+     *
+     * @return void
+     */
+    protected function registerMiddleware()
+    {
+        $this->app[HttpKernel::class]
+             ->pushMiddleware(ServeStaticAssets::class);
     }
 }

@@ -28,4 +28,18 @@ return [
 
     'redirect_robots_txt' => true,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Serve Assets
+    |--------------------------------------------------------------------------
+    |
+    | Here you can configure list of public assets that should be
+    | served directly from your application's "domain" instead
+    | of the S3 asset bucket or the CloudFront's asset URL.
+    |
+    */
+    'serve_assets' => [
+        //
+    ],
+
 ];
