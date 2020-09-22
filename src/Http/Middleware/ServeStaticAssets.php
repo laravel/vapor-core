@@ -4,6 +4,7 @@ namespace Laravel\Vapor\Http\Middleware;
 
 use Closure;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 
 class ServeStaticAssets
 {
@@ -23,13 +24,19 @@ class ServeStaticAssets
             $requestUri = $request->getRequestUri();
 
             if (in_array(ltrim($requestUri, '/'), config('vapor.serve_assets', [])) !== false) {
-                $asset = (new Client)->get(asset($requestUri));
+                $asset = null;
 
-                $headers = collect($asset->getHeaders())
-                    ->only(['Content-Length', 'Content-Type'])
-                    ->all();
+                try {
+                    $asset = (new Client)->get(asset($requestUri));
+                } catch (ClientException $e) {
+                    report($e);
+                }
 
-                if ($asset->getStatusCode() === 200) {
+                if ($asset && $asset->getStatusCode() === 200) {
+                    $headers = collect($asset->getHeaders())
+                        ->only(['Content-Length', 'Content-Type'])
+                        ->all();
+
                     return response($asset->getBody())->withHeaders($headers);
                 }
             }
