@@ -23,22 +23,24 @@ class ServeStaticAssets
         if (isset($_ENV['VAPOR_SSM_PATH']) && $response->getStatusCode() === 404) {
             $requestUri = $request->getRequestUri();
 
-            if (in_array(ltrim($requestUri, '/'), config('vapor.serve_assets', [])) !== false) {
-                $asset = null;
+            if (! in_array(ltrim($requestUri, '/'), config('vapor.serve_assets', []))) {
+                return $response;
+            }
 
-                try {
-                    $asset = (new Client)->get(asset($requestUri));
-                } catch (ClientException $e) {
-                    report($e);
-                }
+            $asset = null;
 
-                if ($asset && $asset->getStatusCode() === 200) {
-                    $headers = collect($asset->getHeaders())
-                        ->only(['Content-Length', 'Content-Type'])
-                        ->all();
+            try {
+                $asset = (new Client)->get(asset($requestUri));
+            } catch (ClientException $e) {
+                report($e);
+            }
 
-                    return response($asset->getBody())->withHeaders($headers);
-                }
+            if ($asset && $asset->getStatusCode() === 200) {
+                $headers = collect($asset->getHeaders())
+                    ->only(['Content-Length', 'Content-Type'])
+                    ->all();
+
+                return response($asset->getBody())->withHeaders($headers);
             }
         }
 

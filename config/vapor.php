@@ -30,14 +30,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Serve Assets
+    | Servable Assets
     |--------------------------------------------------------------------------
     |
-    | Here you can configure list of public assets that should be
-    | served directly from your application's "domain" instead
-    | of the S3 asset bucket or the CloudFront's asset URL.
+    | Here you can configure list of public assets that should be servable
+    | from your application's domain instead of only being servable via
+    | the public S3 "asset" bucket or the AWS CloudFront CDN network.
     |
     */
+
     'serve_assets' => [
         //
     ],

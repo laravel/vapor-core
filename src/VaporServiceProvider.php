@@ -76,8 +76,8 @@ class VaporServiceProvider extends ServiceProvider
         $this->ensureMixIsConfigured();
         $this->configureTrustedProxy();
 
-        $this->registerCommands();
         $this->registerMiddleware();
+        $this->registerCommands();
     }
 
     /**
@@ -129,6 +129,16 @@ class VaporServiceProvider extends ServiceProvider
     }
 
     /**
+     * Register the Vapor HTTP middleware.
+     *
+     * @return void
+     */
+    protected function registerMiddleware()
+    {
+        $this->app[HttpKernel::class]->pushMiddleware(ServeStaticAssets::class);
+    }
+
+    /**
      * Register the Vapor console commands.
      *
      * @return void
@@ -152,16 +162,5 @@ class VaporServiceProvider extends ServiceProvider
         });
 
         $this->commands(['command.vapor.work']);
-    }
-
-    /**
-     * Register the Vapor Http middleware.
-     *
-     * @return void
-     */
-    protected function registerMiddleware()
-    {
-        $this->app[HttpKernel::class]
-             ->pushMiddleware(ServeStaticAssets::class);
     }
 }
