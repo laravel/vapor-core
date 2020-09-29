@@ -6,11 +6,10 @@ use Mockery;
 
 class VaporWorkCommandTest extends \Orchestra\Testbench\TestCase
 {
-    public function tearDown() : void
+    public function tearDown(): void
     {
         Mockery::close();
     }
-
 
     public function test_command_can_be_called()
     {

@@ -2,8 +2,8 @@
 
 namespace Laravel\Vapor\Runtime\Http\Middleware;
 
-use Illuminate\Support\Str;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str;
 
 class EnsureOnNakedDomain
 {

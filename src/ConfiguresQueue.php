@@ -2,8 +2,8 @@
 
 namespace Laravel\Vapor;
 
-use Laravel\Vapor\Queue\VaporWorker;
 use Illuminate\Contracts\Debug\ExceptionHandler;
+use Laravel\Vapor\Queue\VaporWorker;
 
 trait ConfiguresQueue
 {

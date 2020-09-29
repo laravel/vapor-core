@@ -2,13 +2,13 @@
 
 namespace Laravel\Vapor;
 
-use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Vapor\Queue\VaporConnector;
 use Laravel\Vapor\Console\Commands\VaporWorkCommand;
 use Laravel\Vapor\Http\Controllers\SignedStorageUrlController;
+use Laravel\Vapor\Queue\VaporConnector;
 
 class VaporServiceProvider extends ServiceProvider
 {

@@ -7,7 +7,7 @@ trait ActsAsFastCgiDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getGatewayInterface() : string
+    public function getGatewayInterface(): string
     {
         return 'FastCGI/1.0';
     }
@@ -15,7 +15,7 @@ trait ActsAsFastCgiDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getRequestMethod() : string
+    public function getRequestMethod(): string
     {
         return $this->serverVariables['REQUEST_METHOD'];
     }
@@ -23,7 +23,7 @@ trait ActsAsFastCgiDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getScriptFilename() : string
+    public function getScriptFilename(): string
     {
         return $this->serverVariables['SCRIPT_FILENAME'];
     }
@@ -31,7 +31,7 @@ trait ActsAsFastCgiDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getServerSoftware() : string
+    public function getServerSoftware(): string
     {
         return 'vapor';
     }
@@ -39,7 +39,7 @@ trait ActsAsFastCgiDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getRemoteAddress() : string
+    public function getRemoteAddress(): string
     {
         return $this->serverVariables['REMOTE_ADDR'];
     }
@@ -47,7 +47,7 @@ trait ActsAsFastCgiDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getRemotePort() : int
+    public function getRemotePort(): int
     {
         return $this->serverVariables['SERVER_PORT'];
     }
@@ -55,7 +55,7 @@ trait ActsAsFastCgiDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getServerAddress() : string
+    public function getServerAddress(): string
     {
         return $this->serverVariables['SERVER_ADDR'];
     }
@@ -63,7 +63,7 @@ trait ActsAsFastCgiDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getServerPort() : int
+    public function getServerPort(): int
     {
         return $this->serverVariables['SERVER_PORT'];
     }
@@ -71,7 +71,7 @@ trait ActsAsFastCgiDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getServerName() : string
+    public function getServerName(): string
     {
         return $this->serverVariables['SERVER_NAME'];
     }
@@ -79,7 +79,7 @@ trait ActsAsFastCgiDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getServerProtocol() : string
+    public function getServerProtocol(): string
     {
         return $this->serverVariables['SERVER_PROTOCOL'];
     }
@@ -87,7 +87,7 @@ trait ActsAsFastCgiDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getContentType() : string
+    public function getContentType(): string
     {
         return $this->serverVariables['CONTENT_TYPE'];
     }
@@ -95,7 +95,7 @@ trait ActsAsFastCgiDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getContentLength() : int
+    public function getContentLength(): int
     {
         return $this->serverVariables['CONTENT_LENGTH'] ?: 0;
     }
@@ -103,7 +103,7 @@ trait ActsAsFastCgiDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getContent() : string
+    public function getContent(): string
     {
         return $this->body;
     }
@@ -111,7 +111,7 @@ trait ActsAsFastCgiDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getCustomVars() : array
+    public function getCustomVars(): array
     {
         return $this->serverVariables;
     }
@@ -119,7 +119,7 @@ trait ActsAsFastCgiDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getParams() : array
+    public function getParams(): array
     {
         return $this->serverVariables;
     }
@@ -127,7 +127,7 @@ trait ActsAsFastCgiDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getRequestUri() : string
+    public function getRequestUri(): string
     {
         return $this->serverVariables['PATH_INFO'];
     }
@@ -135,7 +135,7 @@ trait ActsAsFastCgiDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getResponseCallbacks() : array
+    public function getResponseCallbacks(): array
     {
         return [];
     }
@@ -143,7 +143,7 @@ trait ActsAsFastCgiDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getFailureCallbacks() : array
+    public function getFailureCallbacks(): array
     {
         return [];
     }
@@ -151,7 +151,7 @@ trait ActsAsFastCgiDataProvider
     /**
      * {@inheritdoc}
      */
-    public function getPassThroughCallbacks() : array
+    public function getPassThroughCallbacks(): array
     {
         return [];
     }

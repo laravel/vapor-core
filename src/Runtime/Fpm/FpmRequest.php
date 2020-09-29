@@ -97,8 +97,8 @@ class FpmRequest implements ProvidesRequestData
         parse_str($queryString, $queryParameters);
 
         return [
-            empty($queryString) ? $uri :  $uri.'?'.$queryString,
-            http_build_query($queryParameters)
+            empty($queryString) ? $uri : $uri.'?'.$queryString,
+            http_build_query($queryParameters),
         ];
     }
 

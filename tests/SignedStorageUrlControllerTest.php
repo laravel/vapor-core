@@ -3,19 +3,18 @@
 namespace Laravel\Vapor\Tests;
 
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Gate;
 use InvalidArgumentException;
 use Orchestra\Testbench\TestCase;
-use Illuminate\Support\Facades\Gate;
 
 class SignedStorageUrlControllerTest extends TestCase
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
         $_ENV['AWS_BUCKET'] = 'laravel-s3-test-1';
     }
-
 
     public function test_controller_returns_signed_urls()
     {
@@ -24,7 +23,6 @@ class SignedStorageUrlControllerTest extends TestCase
         });
 
         $response = $this->json('POST', '/vapor/signed-storage-url?content_type=text/plain');
-
 
         $response->assertStatus(201);
         $this->assertTrue(is_string($response->original['uuid']));
@@ -42,7 +40,6 @@ class SignedStorageUrlControllerTest extends TestCase
         // ]));
     }
 
-
     public function test_cant_retrieve_signed_urls_without_proper_environment_variables()
     {
         Gate::define('uploadFiles', function ($user = null, $bucket) {
@@ -57,7 +54,6 @@ class SignedStorageUrlControllerTest extends TestCase
         $response = $this->withoutExceptionHandling()->json('POST', '/vapor/signed-storage-url');
     }
 
-
     public function test_cant_retrieve_signed_urls_if_not_authenticated()
     {
         Gate::define('uploadFiles', function ($user, $bucket) {
@@ -69,7 +65,6 @@ class SignedStorageUrlControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
-
     public function test_cant_retrieve_signed_urls_if_not_authorized()
     {
         Gate::define('uploadFiles', function ($user = null, $bucket) {
@@ -80,7 +75,6 @@ class SignedStorageUrlControllerTest extends TestCase
 
         $response->assertStatus(403);
     }
-
 
     /**
      * Get the package providers.

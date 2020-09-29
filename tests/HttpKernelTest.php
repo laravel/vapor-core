@@ -2,19 +2,18 @@
 
 namespace Laravel\Vapor\Tests;
 
-use Mockery;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use PHPUnit\Framework\TestCase;
 use Laravel\Vapor\Runtime\HttpKernel;
+use Mockery;
+use PHPUnit\Framework\TestCase;
 
 class HttpKernelTest extends TestCase
 {
-    public function tearDown() : void
+    public function tearDown(): void
     {
         Mockery::close();
     }
-
 
     public function test_request_can_be_handled()
     {
@@ -30,7 +29,6 @@ class HttpKernelTest extends TestCase
 
         // $this->assertEquals($mockResponse, $response);
     }
-
 
     public function test_should_send_maintenance_mode_response_when_enabled_and_on_non_vanity_domain()
     {

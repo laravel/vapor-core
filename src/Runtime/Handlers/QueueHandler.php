@@ -3,9 +3,9 @@
 namespace Laravel\Vapor\Runtime\Handlers;
 
 use Illuminate\Contracts\Console\Kernel;
-use Laravel\Vapor\Runtime\StorageDirectories;
-use Laravel\Vapor\Runtime\ArrayLambdaResponse;
 use Laravel\Vapor\Contracts\LambdaEventHandler;
+use Laravel\Vapor\Runtime\ArrayLambdaResponse;
+use Laravel\Vapor\Runtime\StorageDirectories;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 

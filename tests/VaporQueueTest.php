@@ -2,18 +2,17 @@
 
 namespace Laravel\Vapor\Tests;
 
-use Mockery;
 use Aws\Sqs\SqsClient;
-use PHPUnit\Framework\TestCase;
 use Laravel\Vapor\Queue\VaporQueue;
+use Mockery;
+use PHPUnit\Framework\TestCase;
 
 class VaporQueueTest extends TestCase
 {
-    public function tearDown() : void
+    public function tearDown(): void
     {
         Mockery::close();
     }
-
 
     public function test_proper_payload_array_is_created()
     {

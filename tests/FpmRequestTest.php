@@ -2,17 +2,16 @@
 
 namespace Laravel\Vapor\Tests;
 
+use Laravel\Vapor\Runtime\Fpm\FpmRequest;
 use Mockery;
 use PHPUnit\Framework\TestCase;
-use Laravel\Vapor\Runtime\Fpm\FpmRequest;
 
 class FpmRequestTest extends TestCase
 {
-    public function tearDown() : void
+    public function tearDown(): void
     {
         Mockery::close();
     }
-
 
     public function test_query_string_is_decoded_for_elb_requests()
     {
