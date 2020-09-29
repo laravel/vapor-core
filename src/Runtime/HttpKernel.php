@@ -48,13 +48,11 @@ class HttpKernel
         if (static::shouldSendMaintenanceModeResponse($request)) {
             if (isset($_ENV['VAPOR_MAINTENANCE_MODE_SECRET']) &&
                 $_ENV['VAPOR_MAINTENANCE_MODE_SECRET'] == $request->path()) {
-
                 $response = $this->bypassResponse($_ENV['VAPOR_MAINTENANCE_MODE_SECRET']);
 
                 $this->app->terminate();
             } elseif (isset($_ENV['VAPOR_MAINTENANCE_MODE_SECRET']) &&
                 $this->hasValidBypassCookie($request, $_ENV['VAPOR_MAINTENANCE_MODE_SECRET'])) {
-
                 $response = $this->sendRequest($request);
             } else {
                 $response = new Response(
