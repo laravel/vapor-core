@@ -65,7 +65,7 @@ trait NotifiesLambda
         if (curl_error($handler)) {
             $errorMessage = curl_error($handler);
 
-            throw new Exception('Error calling the runtime API: ' . $errorMessage);
+            throw new Exception('Error calling the runtime API: '.$errorMessage);
         }
 
         curl_setopt($handler, CURLOPT_HEADERFUNCTION, null);

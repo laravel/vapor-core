@@ -2,9 +2,9 @@
 
 namespace Laravel\Vapor\Tests;
 
-use PHPUnit\Framework\TestCase;
-use Laravel\Vapor\Queue\VaporQueue;
 use Laravel\Vapor\Queue\VaporConnector;
+use Laravel\Vapor\Queue\VaporQueue;
+use PHPUnit\Framework\TestCase;
 
 class VaporConnectorTest extends TestCase
 {

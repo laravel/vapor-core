@@ -4,11 +4,11 @@ namespace Laravel\Vapor\Runtime;
 
 use Laravel\Vapor\Runtime\Handlers\AppHandler;
 use Laravel\Vapor\Runtime\Handlers\FpmHandler;
+use Laravel\Vapor\Runtime\Handlers\LoadBalancedAppHandler;
+use Laravel\Vapor\Runtime\Handlers\LoadBalancedFpmHandler;
+use Laravel\Vapor\Runtime\Handlers\UnknownEventHandler;
 use Laravel\Vapor\Runtime\Handlers\WarmerHandler;
 use Laravel\Vapor\Runtime\Handlers\WarmerPingHandler;
-use Laravel\Vapor\Runtime\Handlers\UnknownEventHandler;
-use Laravel\Vapor\Runtime\Handlers\LoadBalancedFpmHandler;
-use Laravel\Vapor\Runtime\Handlers\LoadBalancedAppHandler;
 
 class HttpHandlerFactory
 {

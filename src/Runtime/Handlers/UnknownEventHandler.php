@@ -2,9 +2,9 @@
 
 namespace Laravel\Vapor\Runtime\Handlers;
 
-use Laravel\Vapor\Runtime\Logger;
-use Laravel\Vapor\Runtime\ArrayLambdaResponse;
 use Laravel\Vapor\Contracts\LambdaEventHandler;
+use Laravel\Vapor\Runtime\ArrayLambdaResponse;
+use Laravel\Vapor\Runtime\Logger;
 
 class UnknownEventHandler implements LambdaEventHandler
 {
@@ -17,11 +17,11 @@ class UnknownEventHandler implements LambdaEventHandler
     public function handle(array $event)
     {
         Logger::info('Unknown event type received by application.', [
-            'event' => $event
+            'event' => $event,
         ]);
 
         return new ArrayLambdaResponse([
-            'output' => 'Unknown event type.'
+            'output' => 'Unknown event type.',
         ]);
     }
 }

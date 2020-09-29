@@ -2,8 +2,8 @@
 
 namespace Laravel\Vapor\Runtime\Handlers;
 
-use Laravel\Vapor\Runtime\ArrayLambdaResponse;
 use Laravel\Vapor\Contracts\LambdaEventHandler;
+use Laravel\Vapor\Runtime\ArrayLambdaResponse;
 
 class WarmerPingHandler implements LambdaEventHandler
 {
@@ -18,7 +18,7 @@ class WarmerPingHandler implements LambdaEventHandler
         usleep(50 * 1000);
 
         return new ArrayLambdaResponse([
-            'output' => 'Warmer ping handled.'
+            'output' => 'Warmer ping handled.',
         ]);
     }
 }

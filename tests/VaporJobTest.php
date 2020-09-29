@@ -2,20 +2,19 @@
 
 namespace Laravel\Vapor\Tests;
 
-use Mockery;
 use Aws\Sqs\SqsClient;
-use PHPUnit\Framework\TestCase;
-use Laravel\Vapor\Queue\VaporJob;
 use Illuminate\Container\Container;
 use Laravel\Vapor\Queue\VaporConnector;
+use Laravel\Vapor\Queue\VaporJob;
+use Mockery;
+use PHPUnit\Framework\TestCase;
 
 class VaporJobTest extends TestCase
 {
-    public function tearDown() : void
+    public function tearDown(): void
     {
         Mockery::close();
     }
-
 
     /**
      * @doesNotPerformAssertions
@@ -42,7 +41,6 @@ class VaporJobTest extends TestCase
 
         $job->release();
     }
-
 
     public function test_can_determine_job_attempts()
     {

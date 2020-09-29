@@ -2,16 +2,16 @@
 
 namespace Laravel\Vapor\Runtime\Handlers;
 
-use Illuminate\Http\Request;
+use Illuminate\Console\Application as ConsoleApplication;
 use Illuminate\Container\Container;
-use Laravel\Vapor\Runtime\HttpKernel;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Facade;
-use Psr\Http\Message\ResponseInterface;
 use Laravel\Vapor\Contracts\LambdaEventHandler;
 use Laravel\Vapor\Runtime\Http\PsrRequestFactory;
+use Laravel\Vapor\Runtime\HttpKernel;
 use Laravel\Vapor\Runtime\PsrLambdaResponseFactory;
-use Illuminate\Console\Application as ConsoleApplication;
+use Psr\Http\Message\ResponseInterface;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
 

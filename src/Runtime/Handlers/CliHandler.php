@@ -2,12 +2,12 @@
 
 namespace Laravel\Vapor\Runtime\Handlers;
 
-use Throwable;
 use GuzzleHttp\Client;
 use Illuminate\Support\Str;
-use Symfony\Component\Process\Process;
-use Laravel\Vapor\Runtime\ArrayLambdaResponse;
 use Laravel\Vapor\Contracts\LambdaEventHandler;
+use Laravel\Vapor\Runtime\ArrayLambdaResponse;
+use Symfony\Component\Process\Process;
+use Throwable;
 
 class CliHandler implements LambdaEventHandler
 {
@@ -23,7 +23,7 @@ class CliHandler implements LambdaEventHandler
         $output = [];
 
         $process = Process::fromShellCommandline(
-            sprintf("/opt/bin/php %s/artisan %s --no-interaction 2>&1",
+            sprintf('/opt/bin/php %s/artisan %s --no-interaction 2>&1',
                 $_ENV['LAMBDA_TASK_ROOT'], trim($event['cli'])
             )
         )->setTimeout(null);
