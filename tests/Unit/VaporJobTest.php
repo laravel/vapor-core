@@ -59,4 +59,22 @@ class VaporJobTest extends TestCase
 
         $this->assertSame(2, $job->attempts());
     }
+
+    public function test_handles_job_missing_attempts()
+    {
+        $client = (new VaporConnector)->connect([
+            'driver' => 'sqs',
+            'key' => 'test-key',
+            'secret' => 'test-secret',
+            'prefix' => 'https://sqs.us-east-1.amazonaws.com/111111111',
+            'queue' => 'test-queue',
+            'region' => 'us-east-1',
+        ]);
+
+        $job = new VaporJob(new Container, $client->getSqs(), [
+            'Body' => json_encode([]),
+        ], 'sqs', 'test-vapor-queue-url');
+
+        $this->assertSame(1, $job->attempts());
+    }
 }

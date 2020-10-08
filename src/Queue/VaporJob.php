@@ -18,7 +18,7 @@ class VaporJob extends SqsJob
 
         $payload = $this->payload();
 
-        $payload['attempts']++;
+        $payload['attempts'] = ($payload['attempts'] ?? 0) + 1;
 
         $this->sqs->deleteMessage([
             'QueueUrl' => $this->queue,
@@ -39,6 +39,6 @@ class VaporJob extends SqsJob
      */
     public function attempts()
     {
-        return ($this->payload()['attempts'] ?? null) + 1;
+        return ($this->payload()['attempts'] ?? 0) + 1;
     }
 }
