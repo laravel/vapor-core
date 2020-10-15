@@ -24,7 +24,8 @@ class VaporQueueTest extends TestCase
             $messageBody = json_decode($argument['MessageBody'], true);
 
             $this->assertSame('/test-vapor-queue-url', $argument['QueueUrl']);
-            $this->assertArraySubset([
+
+            $subset = [
                 'displayName' => FakeJob::class,
                 'job' => 'Illuminate\Queue\CallQueuedHandler@call',
                 'maxTries' => null,
@@ -34,7 +35,12 @@ class VaporQueueTest extends TestCase
                     'command' => serialize($job),
                 ],
                 'attempts' => 0,
-            ], $messageBody);
+            ];
+
+            foreach ($subset as $key => $value) {
+                $this->assertArrayHasKey($key, $messageBody);
+                $this->assertSame($value, $messageBody[$key]);
+            }
 
             return true;
         }))->andReturnSelf();
