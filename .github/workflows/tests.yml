@@ -45,8 +45,8 @@ jobs:
 
       - name: Install PHP 8 dependencies
         run: |
-           composer require "illuminate/contracts=${{ matrix.laravel }}" --no-update --ignore-platform-req=php
-           composer update --prefer-dist --no-interaction --no-progress --ignore-platform-req=php
+           composer require "illuminate/contracts=${{ matrix.laravel }}" --no-update
+           composer update --prefer-dist --no-interaction --no-progress
         if: "matrix.php >= 8"
 
       - name: Execute unit tests
