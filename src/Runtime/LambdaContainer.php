@@ -18,7 +18,7 @@ class LambdaContainer
         }
 
         if ($invocations >= $invocationLimit) {
-            echo 'Killing container. Container has processed '.$invocationLimit.' invocations. ('.$_ENV['AWS_REQUEST_ID'].')';
+            echo 'Killing container. Container has processed '.$invocationLimit.' invocations. ('.$_ENV['AWS_REQUEST_ID'].')'.PHP_EOL;
 
             exit(0);
         }

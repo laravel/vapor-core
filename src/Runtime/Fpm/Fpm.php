@@ -216,7 +216,7 @@ class Fpm
                 throw new Exception('PHP-FPM has stopped unexpectedly.');
             }
         } catch (Throwable $e) {
-            echo $e->getMessage();
+            echo $e->getMessage().PHP_EOL;
 
             exit(1);
         }

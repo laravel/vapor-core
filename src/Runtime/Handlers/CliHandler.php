@@ -34,7 +34,7 @@ class CliHandler implements LambdaEventHandler
                 $output[] = $line;
             }
 
-            echo $line;
+            echo $line.PHP_EOL;
         });
 
         return new ArrayLambdaResponse(tap([
