@@ -40,9 +40,13 @@ with(require __DIR__.'/bootstrap/app.php', function ($app) {
 
     $app->useStoragePath(StorageDirectories::PATH);
 
-    echo "Caching Laravel configuration.\r";
+    echo 'Caching Laravel configuration'.PHP_EOL;
 
-    $app->make(ConsoleKernelContract::class)->call('config:cache');
+    try {
+        $app->make(ConsoleKernelContract::class)->call('config:cache');
+    } catch (Throwable $e) {
+        echo 'Failing caching Laravel configuration: '.$e->getMessage().PHP_EOL;
+    }
 });
 
 /*
