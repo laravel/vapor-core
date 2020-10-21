@@ -33,7 +33,7 @@ class CliHandler implements LambdaEventHandler
             if (! Str::containsAll($line, ['{"message":', '"level":'])) {
                 $output .= $line;
             } else {
-                echo $line . PHP_EOL;
+                echo $line.PHP_EOL;
             }
         });
 
