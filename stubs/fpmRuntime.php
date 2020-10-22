@@ -19,7 +19,7 @@ use Laravel\Vapor\Runtime\StorageDirectories;
 |
 */
 
-fwrite(STDERR, 'Preparing to add secrets to runtime');
+fwrite(STDERR, 'Preparing to add secrets to runtime'.PHP_EOL);
 
 $secrets = Secrets::addToEnvironment(
     $_ENV['VAPOR_SSM_PATH'],
@@ -38,7 +38,7 @@ $secrets = Secrets::addToEnvironment(
 |
 */
 
-fwrite(STDERR, 'Preparing to boot FPM');
+fwrite(STDERR, 'Preparing to boot FPM'.PHP_EOL);
 
 $fpm = Fpm::boot(
     __DIR__.'/httpHandler.php', $secrets
@@ -60,7 +60,7 @@ with(require __DIR__.'/bootstrap/app.php', function ($app) {
 
     $app->useStoragePath(StorageDirectories::PATH);
 
-    fwrite(STDERR, 'Caching Laravel configuration');
+    fwrite(STDERR, 'Caching Laravel configuration'.PHP_EOL);
 
     $app->make(ConsoleKernelContract::class)->call('config:cache');
 });
