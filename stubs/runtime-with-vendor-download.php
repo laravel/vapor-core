@@ -22,7 +22,7 @@ $appRoot = $_ENV['LAMBDA_TASK_ROOT'];
 */
 
 if (! file_exists('/tmp/vendor')) {
-    fwrite(STDERR, 'Downloading the application vendor archive...');
+    fwrite(STDERR, 'Downloading the application vendor archive...'.PHP_EOL);
 
     exec(sprintf('/opt/awscli/aws s3 cp s3://%s/%s-vendor.zip /tmp/vendor.zip',
         $_ENV['VAPOR_ARTIFACT_BUCKET_NAME'],

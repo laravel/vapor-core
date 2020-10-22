@@ -112,7 +112,7 @@ class Fpm
             $this->killExistingFpm();
         }
 
-        fwrite(STDERR, 'Ensuring ready to start FPM');
+        fwrite(STDERR, 'Ensuring ready to start FPM'.PHP_EOL);
 
         $this->ensureReadyToStart();
 
@@ -124,12 +124,12 @@ class Fpm
             self::CONFIG,
         ]);
 
-        fwrite(STDERR, 'Starting FPM Process...');
+        fwrite(STDERR, 'Starting FPM Process...'.PHP_EOL);
 
         $this->fpm->disableOutput()
             ->setTimeout(null)
             ->start(function ($type, $output) {
-                fwrite(STDERR, $output);
+                fwrite(STDERR, $output.PHP_EOL);
             });
 
         $this->ensureFpmHasStarted();
@@ -216,7 +216,7 @@ class Fpm
                 throw new Exception('PHP-FPM has stopped unexpectedly.');
             }
         } catch (Throwable $e) {
-            echo $e->getMessage();
+            echo $e->getMessage().PHP_EOL;
 
             exit(1);
         }
@@ -241,7 +241,7 @@ class Fpm
      */
     protected function killExistingFpm()
     {
-        fwrite(STDERR, 'Killing existing FPM');
+        fwrite(STDERR, 'Killing existing FPM'.PHP_EOL);
 
         if (! file_exists(static::PID_FILE)) {
             return unlink(static::SOCKET);

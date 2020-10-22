@@ -27,7 +27,7 @@ class StorageDirectories
 
         foreach ($directories as $directory) {
             if (! is_dir($directory)) {
-                echo "Creating storage directory: $directory.\r";
+                echo "Creating storage directory: $directory".PHP_EOL;
 
                 mkdir($directory, 0755, true);
             }

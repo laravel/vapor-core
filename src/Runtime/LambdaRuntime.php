@@ -72,7 +72,7 @@ class LambdaRuntime
                     : $error->getMessage();
 
         fwrite(STDERR, sprintf(
-            "Fatal error: %s in %s:%d\nStack trace:\n%s",
+            "Fatal error: %s in %s:%d\nStack trace:\n%s".PHP_EOL,
             $errorMessage,
             $error->getFile(),
             $error->getLine(),
