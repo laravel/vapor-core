@@ -40,6 +40,11 @@ with(require __DIR__.'/bootstrap/app.php', function ($app) {
 
     $app->useStoragePath(StorageDirectories::PATH);
 
+    if (isset($_ENV['VAPOR_MAINTENANCE_MODE']) &&
+        $_ENV['VAPOR_MAINTENANCE_MODE'] === 'true') {
+        file_put_contents($app->storagePath().'/framework/down', '[]');
+    }
+
     echo 'Caching Laravel configuration'.PHP_EOL;
 
     try {
