@@ -18,6 +18,11 @@ class Response
 
         $statusTexts[419] = 'Authentication Timeout';
 
+        // Allow for custom status codes...
+        if (! array_key_exists($status, $statusTexts)) {
+            return "Custom Response";
+        }
+
         return $statusTexts[$status];
     }
 }
