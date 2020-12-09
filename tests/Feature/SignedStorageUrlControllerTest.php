@@ -27,7 +27,7 @@ class SignedStorageUrlControllerTest extends TestCase
 
     public function test_controller_returns_signed_urls()
     {
-        Gate::define('uploadFiles', function ($user = null, $bucket) {
+        Gate::define('uploadFiles', function ($user = null, $bucket = null) {
             return true;
         });
 
@@ -52,7 +52,7 @@ class SignedStorageUrlControllerTest extends TestCase
     public function test_aws_url_environmental_variable_is_used()
     {
         $_ENV['AWS_URL'] = 'http://custom-url';
-        Gate::define('uploadFiles', function ($user = null, $bucket) {
+        Gate::define('uploadFiles', function ($user = null, $bucket = null) {
             return true;
         });
 
@@ -63,7 +63,7 @@ class SignedStorageUrlControllerTest extends TestCase
 
     public function test_cant_retrieve_signed_urls_without_proper_environment_variables()
     {
-        Gate::define('uploadFiles', function ($user = null, $bucket) {
+        Gate::define('uploadFiles', function ($user = null, $bucket = null) {
             return true;
         });
 
@@ -88,7 +88,7 @@ class SignedStorageUrlControllerTest extends TestCase
 
     public function test_cant_retrieve_signed_urls_if_not_authorized()
     {
-        Gate::define('uploadFiles', function ($user = null, $bucket) {
+        Gate::define('uploadFiles', function ($user = null, $bucket = null) {
             return false;
         });
 
