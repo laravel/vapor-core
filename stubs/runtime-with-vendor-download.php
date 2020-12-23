@@ -24,7 +24,18 @@ $appRoot = $_ENV['LAMBDA_TASK_ROOT'];
 if (! file_exists('/tmp/vendor')) {
     fwrite(STDERR, 'Downloading the application vendor archive...'.PHP_EOL);
 
-    exec(sprintf('/opt/awscli/aws s3 cp s3://%s/%s-vendor.zip /tmp/vendor.zip',
+    $envs = '';
+
+    if (is_dir('/opt/awscli/lib/python2.7')) {
+        $envs = sprintf('LD_LIBRARY_PATH="%s" PYTHONHOME="%s" PYTHONPATH="%s"',
+            '/opt/awscli/lib',
+            '/opt/awscli/lib/python2.7',
+            '/opt/awscli/lib/python2.7:/opt/awscli/lib/python2.7/lib-dynload'
+        );
+    }
+
+    exec(sprintf('%s /opt/awscli/aws s3 cp s3://%s/%s-vendor.zip /tmp/vendor.zip',
+        $envs,
         $_ENV['VAPOR_ARTIFACT_BUCKET_NAME'],
         $_ENV['VAPOR_ARTIFACT_NAME']
     ));
