@@ -20,6 +20,6 @@ trait DefinesRoutes
         Route::post(
             '/vapor/signed-storage-url',
             Contracts\SignedStorageUrlController::class.'@store'
-        )->middleware('web');
+        )->middleware(config('vapor.middleware', 'web'));
     }
 }
