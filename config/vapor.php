@@ -43,18 +43,4 @@ return [
         //
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Vapor Route Middleware
-    |--------------------------------------------------------------------------
-    |
-    | These middleware will be assigned to the route used to
-    | create signed S3 storage urls.
-    |
-    */
-
-    'middleware' => [
-        'web',
-    ],
-
 ];
