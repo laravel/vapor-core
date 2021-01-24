@@ -42,7 +42,7 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
             'uuid' => $uuid,
             'bucket' => $bucket,
             'key' => $key,
-            'url' => $uri,
+            'url' => $uri->__toString(),
             'headers' => $this->headers($request, $signedRequest),
         ], 201);
     }
