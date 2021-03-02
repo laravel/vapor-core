@@ -10,6 +10,7 @@ return [
     | When this option is enabled, Vapor will redirect requests to the "www"
     | subdomain to the application's root domain. When this option is not
     | enabled, Vapor redirects your root domain to the "www" subdomain.
+    | Setting this option to null will disable the redirect completely.
     |
     */
 
