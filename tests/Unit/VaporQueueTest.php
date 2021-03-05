@@ -3,6 +3,7 @@
 namespace Laravel\Vapor\Tests\Unit;
 
 use Aws\Sqs\SqsClient;
+use Illuminate\Container\Container;
 use Laravel\Vapor\Queue\VaporQueue;
 use Mockery;
 use PHPUnit\Framework\TestCase;
@@ -48,7 +49,7 @@ class VaporQueueTest extends TestCase
         $sqs->shouldReceive('get')->andReturn('attribute-value');
 
         $queue = new VaporQueue($sqs, 'test-vapor-queue-url');
-
+        $queue->setContainer(new Container());
         $this->assertSame('attribute-value', $queue->push($job));
     }
 }
