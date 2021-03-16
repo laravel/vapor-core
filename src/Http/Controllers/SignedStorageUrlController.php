@@ -117,7 +117,7 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
     protected function storageClient()
     {
         $config = [
-            'region' => $_ENV['AWS_DEFAULT_REGION'],
+            'region' => config('filesystems.disks.s3.region', $_ENV['AWS_DEFAULT_REGION']),
             'version' => 'latest',
             'signature_version' => 'v4',
         ];
