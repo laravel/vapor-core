@@ -43,4 +43,17 @@ return [
         //
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Signed-Storage Route Middleware
+    |--------------------------------------------------------------------------
+    |
+    | This middleware will be assigned to the signed-storage route, giving you the
+    | chance to add your own middleware or replace the default. You can use a single
+    | middleware as a string or an array with your stack of middlewares.
+    |
+    */
+
+    'middleware' => 'web',
+
 ];
