@@ -77,7 +77,7 @@ class PsrRequestFactory
             'QUERY_STRING' => $queryString,
             'DOCUMENT_ROOT' => getcwd(),
             'REQUEST_URI' => $this->uri(),
-            'LAMBDA_REQUEST_CONTEXT' => $this->requestContext()
+            'LAMBDA_REQUEST_CONTEXT' => $this->requestContext(),
         ];
 
         if (isset($headers['Host'])) {
@@ -86,6 +86,7 @@ class PsrRequestFactory
 
         return $variables;
     }
+    
     /**
      * Get the request context for the event.
      *

@@ -66,7 +66,7 @@ class FpmRequest implements ProvidesRequestData
             'SERVER_PORT' => $headers['x-forwarded-port'] ?? 80,
             'SERVER_PROTOCOL' => $event['requestContext']['protocol'] ?? 'HTTP/1.1',
             'SERVER_SOFTWARE' => 'vapor',
-            'LAMBDA_REQUEST_CONTEXT' => $event['requestContext'] ?? []
+            'LAMBDA_REQUEST_CONTEXT' => $event['requestContext'] ?? [],
         ]);
 
         [$headers, $serverVariables] = static::ensureContentTypeIsSet(
