@@ -27,7 +27,20 @@ class FpmRequestTest extends TestCase
 
         $this->assertSame(http_build_query(['Host' => urldecode($host)]), $request->serverVariables['QUERY_STRING']);
     }
-
+    
+    public function test_api_gateway_request_context_is_handled()
+    {
+        $request = FpmRequest::fromLambdaEvent([
+            'requestContext' => [
+                'accountId' =>  $accountId = '123'
+            ],
+            'httpMethod' => 'GET',
+            'multiValueQueryStringParameters' => [],
+            'multiValueHeaders' => []
+        ], 'index.php');
+        
+        $this->assertSame($accountId, $request->serverVariables['LAMBDA_REQUEST_CONTEXT']['accountId']);
+    }
     public function test_api_gateway_headers_are_handled()
     {
         $trace = 'Root=1-7696740c-c075312a25f21abe1ca19805;foobar';
