@@ -86,7 +86,7 @@ class PsrRequestFactory
 
         return $variables;
     }
-    
+
     /**
      * Get the request context for the event.
      *
