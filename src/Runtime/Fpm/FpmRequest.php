@@ -54,6 +54,7 @@ class FpmRequest implements ProvidesRequestData
 
         $serverVariables = array_merge($serverVariables, [
             'GATEWAY_INTERFACE' => 'FastCGI/1.0',
+            'LAMBDA_REQUEST_CONTEXT' => $event['requestContext'] ?? [],
             'PATH_INFO' => $event['path'] ?? '/',
             'QUERY_STRING' => $queryString,
             'REMOTE_ADDR' => '127.0.0.1',
@@ -66,7 +67,6 @@ class FpmRequest implements ProvidesRequestData
             'SERVER_PORT' => $headers['x-forwarded-port'] ?? 80,
             'SERVER_PROTOCOL' => $event['requestContext']['protocol'] ?? 'HTTP/1.1',
             'SERVER_SOFTWARE' => 'vapor',
-            'LAMBDA_REQUEST_CONTEXT' => $event['requestContext'] ?? [],
         ]);
 
         [$headers, $serverVariables] = static::ensureContentTypeIsSet(
