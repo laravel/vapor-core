@@ -88,16 +88,6 @@ class PsrRequestFactory
     }
 
     /**
-     * Get the request context for the event.
-     *
-     * @return array
-     */
-    public function requestContext(): array
-    {
-        return $this->event['requestContext'] ?? [];
-    }
-
-    /**
      * Get the HTTP protocol version for the event.
      *
      * @return string
@@ -135,6 +125,16 @@ class PsrRequestFactory
     protected function queryString()
     {
         return http_build_query($this->event['queryStringParameters'] ?? []);
+    }
+
+    /**
+     * Get the request context for the event.
+     *
+     * @return array
+     */
+    public function requestContext(): array
+    {
+        return $this->event['requestContext'] ?? [];
     }
 
     /**
