@@ -39,7 +39,7 @@ class FpmRequestTest extends TestCase
             'multiValueHeaders' => [],
         ], 'index.php');
 
-        $this->assertSame($accountId, $request->serverVariables['LAMBDA_REQUEST_CONTEXT']['accountId']);
+        $this->assertSame($accountId, $request->serverVariables['REQUEST_CONTEXT.ACCOUNTID']);
     }
 
     public function test_api_gateway_headers_are_handled()

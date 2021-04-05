@@ -84,6 +84,8 @@ class PsrRequestFactory
             $variables['HTTP_HOST'] = $headers['Host'];
         }
 
+        $variables = array_merge($variables, $this->requestContext());
+
         return $variables;
     }
 
@@ -134,7 +136,13 @@ class PsrRequestFactory
      */
     public function requestContext(): array
     {
-        return $this->event['requestContext'] ?? [];
+        $requestContext = $this->event['requestContext'] ?? [];
+        $requestContext = Arr::dot($requestContext);
+
+        return array_combine(
+            array_map(function($k){ return 'REQUEST_CONTEXT.'.strtoupper($k); }, array_keys($requestContext)),
+            $requestContext
+        );
     }
 
     /**

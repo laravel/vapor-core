@@ -52,7 +52,10 @@ class FpmRequest implements ProvidesRequestData
 
         $requestBody = static::getRequestBody($event);
 
-        $serverVariables = array_merge($serverVariables, [
+        $requestContext = static::getRequestContext($event);
+
+        $serverVariables = array_merge($serverVariables,
+            $requestContext, [
             'GATEWAY_INTERFACE' => 'FastCGI/1.0',
             'LAMBDA_REQUEST_CONTEXT' => $event['requestContext'] ?? [],
             'PATH_INFO' => $event['path'] ?? '/',
@@ -86,6 +89,22 @@ class FpmRequest implements ProvidesRequestData
         }
 
         return new static($serverVariables, $requestBody);
+    }
+    /**
+     * Get the Request Context from the given event
+     *
+     * @param  array  $event
+     * @return array
+     */
+    protected static function getRequestContext($event)
+    {
+        $requestContext = $event['requestContext'] ?? [];
+        $requestContext = Arr::dot($requestContext);
+
+        return array_combine(
+            array_map(function($k){ return 'REQUEST_CONTEXT.'.strtoupper($k); }, array_keys($requestContext)),
+            $requestContext
+        );
     }
 
     /**
