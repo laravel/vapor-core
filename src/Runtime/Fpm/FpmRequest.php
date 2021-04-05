@@ -54,7 +54,6 @@ class FpmRequest implements ProvidesRequestData
 
         $serverVariables = array_merge($serverVariables, [
             'GATEWAY_INTERFACE' => 'FastCGI/1.0',
-            'LAMBDA_REQUEST_CONTEXT' => $event['requestContext'] ?? [],
             'PATH_INFO' => $event['path'] ?? '/',
             'QUERY_STRING' => $queryString,
             'REMOTE_ADDR' => '127.0.0.1',
