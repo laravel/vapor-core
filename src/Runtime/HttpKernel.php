@@ -11,6 +11,7 @@ use Illuminate\Http\Response;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\Facade;
 use Laravel\Vapor\Runtime\Http\Middleware\EnsureBinaryEncoding;
+use Laravel\Vapor\Runtime\Http\Middleware\EnsureEvent;
 use Laravel\Vapor\Runtime\Http\Middleware\EnsureOnNakedDomain;
 use Laravel\Vapor\Runtime\Http\Middleware\EnsureVanityUrlIsNotIndexed;
 use Laravel\Vapor\Runtime\Http\Middleware\RedirectStaticAssets;
@@ -147,6 +148,7 @@ class HttpKernel
                 new RedirectStaticAssets,
                 new EnsureVanityUrlIsNotIndexed,
                 new EnsureBinaryEncoding(),
+                new EnsureEvent(),
             ])->then(function ($request) use ($kernel) {
                 return $kernel->handle($request);
             });

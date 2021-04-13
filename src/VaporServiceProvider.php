@@ -13,6 +13,7 @@ use Laravel\Vapor\Console\Commands\VaporWorkCommand;
 use Laravel\Vapor\Http\Controllers\SignedStorageUrlController;
 use Laravel\Vapor\Http\Middleware\ServeStaticAssets;
 use Laravel\Vapor\Queue\VaporConnector;
+use Laravel\Vapor\Runtime\Event;
 
 class VaporServiceProvider extends ServiceProvider
 {
@@ -73,6 +74,7 @@ class VaporServiceProvider extends ServiceProvider
         $this->ensureDynamoDbIsConfigured();
         $this->ensureQueueIsConfigured();
         $this->ensureSqsIsConfigured();
+        $this->ensureConsoleEvent();
         $this->ensureMixIsConfigured();
         $this->configureTrustedProxy();
 
@@ -103,6 +105,22 @@ class VaporServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../config/vapor.php' => config_path('vapor.php'),
             ], 'vapor-config');
+        }
+    }
+
+    /**
+     * Ensure Vapor event is configured for the console.
+     *
+     * @return void
+     */
+    protected function ensureConsoleEvent()
+    {
+        if ($this->app->runningInConsole() && isset($_ENV['VAPOR_EVENT'])) {
+            $this->app->bind(Event::class, function () {
+                return new Event(
+                    json_decode(base64_decode($_ENV['VAPOR_EVENT']), true)
+                );
+            });
         }
     }
 
