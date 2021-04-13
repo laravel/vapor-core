@@ -126,7 +126,7 @@ class VaporServiceProvider extends ServiceProvider
     }
 
     /**
-     * Ensure Vapor event is configured for local development
+     * Ensure Vapor event is configured for local development.
      *
      * @return void
      */
