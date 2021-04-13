@@ -75,6 +75,7 @@ class VaporServiceProvider extends ServiceProvider
         $this->ensureQueueIsConfigured();
         $this->ensureSqsIsConfigured();
         $this->ensureConsoleEvent();
+        $this->ensureLocalEvent();
         $this->ensureMixIsConfigured();
         $this->configureTrustedProxy();
 
@@ -120,6 +121,20 @@ class VaporServiceProvider extends ServiceProvider
                 return new Event(
                     json_decode(base64_decode($_ENV['VAPOR_EVENT']), true)
                 );
+            });
+        }
+    }
+
+    /**
+     * Ensure Vapor event is configured for local development
+     *
+     * @return void
+     */
+    protected function ensureLocalEvent()
+    {
+        if (! isset($_ENV['VAPOR_SSM_PATH'])) {
+            $this->app->bind(Event::class, function () {
+                return new Event([]);
             });
         }
     }
