@@ -2,9 +2,9 @@
 
 namespace Laravel\Vapor\Runtime\Http\Middleware;
 
-use Laravel\Vapor\Runtime\Event;
+use Laravel\Vapor\Runtime\LambdaEvent;
 
-class EnsureEvent
+class EnsureLambdaEventIsBound
 {
     /**
      * Handle the incoming request.
@@ -15,10 +15,10 @@ class EnsureEvent
      */
     public function handle($request, $next)
     {
-        if (isset($_ENV['VAPOR_EVENT'])) {
-            app()->bind(Event::class, function () {
-                return new Event(
-                    json_decode(base64_decode($_ENV['VAPOR_EVENT']), true)
+        if (isset($_ENV['LAMBDA_EVENT'])) {
+            app()->bind(LambdaEvent::class, function () {
+                return new LambdaEvent(
+                    json_decode(base64_decode($_ENV['LAMBDA_EVENT']), true)
                 );
             });
         }

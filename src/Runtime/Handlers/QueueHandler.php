@@ -5,7 +5,7 @@ namespace Laravel\Vapor\Runtime\Handlers;
 use Illuminate\Contracts\Console\Kernel;
 use Laravel\Vapor\Contracts\LambdaEventHandler;
 use Laravel\Vapor\Runtime\ArrayLambdaResponse;
-use Laravel\Vapor\Runtime\Event;
+use Laravel\Vapor\Runtime\LambdaEvent;
 use Laravel\Vapor\Runtime\StorageDirectories;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -57,8 +57,8 @@ class QueueHandler implements LambdaEventHandler
                 'vapor:work '.rtrim(base64_encode(json_encode($event['Records'][0])), '=').' '.$commandOptions.' --no-interaction'
             );
 
-            static::$app->bind(Event::class, function () use ($event) {
-                return new Event($event);
+            static::$app->bind(LambdaEvent::class, function () use ($event) {
+                return new LambdaEvent($event);
             });
 
             $consoleKernel->terminate($consoleInput, $status = $consoleKernel->handle(

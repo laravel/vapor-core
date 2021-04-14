@@ -13,7 +13,7 @@ use Laravel\Vapor\Console\Commands\VaporWorkCommand;
 use Laravel\Vapor\Http\Controllers\SignedStorageUrlController;
 use Laravel\Vapor\Http\Middleware\ServeStaticAssets;
 use Laravel\Vapor\Queue\VaporConnector;
-use Laravel\Vapor\Runtime\Event;
+use Laravel\Vapor\Runtime\LambdaEvent;
 
 class VaporServiceProvider extends ServiceProvider
 {
@@ -74,8 +74,8 @@ class VaporServiceProvider extends ServiceProvider
         $this->ensureDynamoDbIsConfigured();
         $this->ensureQueueIsConfigured();
         $this->ensureSqsIsConfigured();
-        $this->ensureConsoleEvent();
-        $this->ensureLocalEvent();
+        $this->ensureLambdaEventForConsole();
+        $this->ensureLambdaEventForLocalDevelopment();
         $this->ensureMixIsConfigured();
         $this->configureTrustedProxy();
 
@@ -110,31 +110,31 @@ class VaporServiceProvider extends ServiceProvider
     }
 
     /**
-     * Ensure Vapor event is configured for the console.
+     * Ensure the lambda event is configured for the console.
      *
      * @return void
      */
-    protected function ensureConsoleEvent()
+    protected function ensureLambdaEventForConsole()
     {
-        if ($this->app->runningInConsole() && isset($_ENV['VAPOR_EVENT'])) {
-            $this->app->bind(Event::class, function () {
-                return new Event(
-                    json_decode(base64_decode($_ENV['VAPOR_EVENT']), true)
+        if ($this->app->runningInConsole() && isset($_ENV['LAMBDA_EVENT'])) {
+            $this->app->bind(LambdaEvent::class, function () {
+                return new LambdaEvent(
+                    json_decode(base64_decode($_ENV['LAMBDA_EVENT']), true)
                 );
             });
         }
     }
 
     /**
-     * Ensure Vapor event is configured for local development.
+     * Ensure the lambda event is configured for local development.
      *
      * @return void
      */
-    protected function ensureLocalEvent()
+    protected function ensureLambdaEventForLocalDevelopment()
     {
         if (! isset($_ENV['VAPOR_SSM_PATH'])) {
-            $this->app->bind(Event::class, function () {
-                return new Event([]);
+            $this->app->bind(LambdaEvent::class, function () {
+                return new LambdaEvent([]);
             });
         }
     }

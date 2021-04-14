@@ -2,7 +2,7 @@
 
 namespace Laravel\Vapor\Tests\Unit;
 
-use Laravel\Vapor\Runtime\Event;
+use Laravel\Vapor\Runtime\LambdaEvent;
 use PHPUnit\Framework\TestCase;
 
 class EventTest extends TestCase
@@ -44,6 +44,6 @@ class EventTest extends TestCase
 
         $event = base64_encode(json_encode(json_decode($event, true)));
 
-        return new Event(json_decode(base64_decode($event), true));
+        return new LambdaEvent(json_decode(base64_decode($event), true));
     }
 }

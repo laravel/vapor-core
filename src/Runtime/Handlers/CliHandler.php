@@ -29,7 +29,7 @@ class CliHandler implements LambdaEventHandler
             ),
             null,
             [
-                'VAPOR_EVENT' => base64_encode(json_encode($event)),
+                'LAMBDA_EVENT' => base64_encode(json_encode($event)),
             ]
         )->setTimeout(null);
 

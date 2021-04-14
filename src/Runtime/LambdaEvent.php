@@ -6,7 +6,7 @@ use ArrayAccess;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
 
-class Event implements ArrayAccess, Arrayable
+class LambdaEvent implements ArrayAccess, Arrayable
 {
     /**
      * The underlying event.
