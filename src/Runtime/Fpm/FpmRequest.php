@@ -53,6 +53,7 @@ class FpmRequest implements ProvidesRequestData
         $requestBody = static::getRequestBody($event);
 
         $serverVariables = array_merge($serverVariables, [
+            'LAMBDA_EVENT' => base64_encode(json_encode($event)),
             'GATEWAY_INTERFACE' => 'FastCGI/1.0',
             'PATH_INFO' => $event['path'] ?? '/',
             'QUERY_STRING' => $queryString,
