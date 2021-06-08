@@ -26,7 +26,8 @@ class VaporConnector implements ConnectorInterface
             new SqsClient($config),
             $config['queue'],
             $config['prefix'] ?? '',
-            $config['suffix'] ?? ''
+            $config['suffix'] ?? '',
+            $config['after_commit'] ?? null
         );
     }
 
