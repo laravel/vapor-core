@@ -25,6 +25,7 @@ class Secrets
                 echo "Injecting secret [{$key}] into runtime.".PHP_EOL;
 
                 $_ENV[$key] = $value;
+                $_SERVER[$key] = $value;
             }
         });
     }
