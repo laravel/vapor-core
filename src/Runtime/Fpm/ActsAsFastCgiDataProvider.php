@@ -97,7 +97,9 @@ trait ActsAsFastCgiDataProvider
      */
     public function getContentLength(): int
     {
-        return $this->serverVariables['CONTENT_LENGTH'] ?: 0;
+        $contentLength = $this->serverVariables['CONTENT_LENGTH'] ?: 0;
+
+        return is_numeric($contentLength) ? (int) $contentLength : 0;
     }
 
     /**

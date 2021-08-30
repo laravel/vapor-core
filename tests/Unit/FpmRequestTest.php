@@ -102,4 +102,43 @@ class FpmRequestTest extends TestCase
         $this->assertSame($port, $request->serverVariables['HTTP_X_FORWARDED_PORT']);
         $this->assertSame($proto, $request->serverVariables['HTTP_X_FORWARDED_PROTO']);
     }
+
+    public function test_request_content_length_is_numeric()
+    {
+        $request = FpmRequest::fromLambdaEvent([
+            'httpMethod' => 'GET',
+            'headers' => [
+                // ..
+            ],
+        ], 'index.php');
+
+        $this->assertSame(0, $request->getContentLength());
+
+        $request = FpmRequest::fromLambdaEvent([
+            'httpMethod' => 'GET',
+            'headers' => [
+                'content-length' => 1,
+            ],
+        ], 'index.php');
+
+        $this->assertSame(1, $request->getContentLength());
+
+        $request = FpmRequest::fromLambdaEvent([
+            'httpMethod' => 'GET',
+            'headers' => [
+                'content-length' => '1',
+            ],
+        ], 'index.php');
+
+        $this->assertSame(1, $request->getContentLength());
+
+        $request = FpmRequest::fromLambdaEvent([
+            'httpMethod' => 'GET',
+            'headers' => [
+                'content-length' => 'foo',
+            ],
+        ], 'index.php');
+
+        $this->assertSame(0, $request->getContentLength());
+    }
 }
