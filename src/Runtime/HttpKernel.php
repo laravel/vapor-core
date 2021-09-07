@@ -55,9 +55,16 @@ class HttpKernel
                 $this->hasValidBypassCookie($request, $_ENV['VAPOR_MAINTENANCE_MODE_SECRET'])) {
                 $response = $this->sendRequest($request);
             } else {
-                $response = new Response(
-                    file_get_contents($_ENV['LAMBDA_TASK_ROOT'].'/503.html'), 503
-                );
+
+                if ($request->wantsJson() && file_exists($_ENV['LAMBDA_TASK_ROOT'].'/503.json')) {
+                    $response = JsonResponse::fromJsonString(
+                        file_get_contents($_ENV['LAMBDA_TASK_ROOT'].'/503.json'), 503
+                    );
+                } else {
+                    $response = new Response(
+                        file_get_contents($_ENV['LAMBDA_TASK_ROOT'].'/503.html'), 503
+                    );
+                }
 
                 $this->app->terminate();
             }
