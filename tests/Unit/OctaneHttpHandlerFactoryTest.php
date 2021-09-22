@@ -12,8 +12,19 @@ use PHPUnit\Framework\TestCase;
 
 class OctaneHttpHandlerFactoryTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        if (! class_exists(\Laravel\Octane\Octane::class)) {
+            $this->markTestSkipped('Requires Laravel Octane.');
+        }
+
+        parent::setUp();
+    }
+
     protected function tearDown(): void
     {
+        parent::tearDown();
+
         Mockery::close();
     }
 
