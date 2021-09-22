@@ -127,16 +127,12 @@ class OctaneHandlerTest extends TestCase
 
         $bindResponse = $handler->handle([
             'httpMethod' => 'GET',
-            'requestContext' => [
-                'path' => '/bind',
-            ],
+            'path' => '/bind',
         ]);
 
         $boundResponse = $handler->handle([
             'httpMethod' => 'GET',
-            'requestContext' => [
-                'path' => '/bound',
-            ],
+            'path' => '/bound',
         ]);
 
         static::assertEquals('1', $bindResponse->toApiGatewayFormat()['body']);
