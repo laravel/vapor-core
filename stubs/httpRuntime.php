@@ -1,0 +1,3 @@
+<?php
+
+// This file exists for backwards compatibility purposes...
