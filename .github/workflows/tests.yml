@@ -43,4 +43,4 @@ jobs:
            composer update --prefer-dist --no-interaction --no-progress
 
       - name: Execute unit tests
-        run: vendor/bin/phpunit --testsuite=Unit
+        run: vendor/bin/phpunit

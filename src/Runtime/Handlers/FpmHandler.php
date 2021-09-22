@@ -4,8 +4,8 @@ namespace Laravel\Vapor\Runtime\Handlers;
 
 use Laravel\Vapor\Contracts\LambdaEventHandler;
 use Laravel\Vapor\Runtime\Fpm\Fpm;
-use Laravel\Vapor\Runtime\Fpm\FpmLambdaResponse;
 use Laravel\Vapor\Runtime\Fpm\FpmRequest;
+use Laravel\Vapor\Runtime\LambdaResponse;
 
 class FpmHandler implements LambdaEventHandler
 {
@@ -39,11 +39,11 @@ class FpmHandler implements LambdaEventHandler
      * Covert FPM response to Lambda-ready response.
      *
      * @param  \Laravel\Vapor\Runtime\Fpm\FpmResponse  $fpmResponse
-     * @return \Laravel\Vapor\Runtime\Fpm\FpmLambdaResponse
+     * @return \Laravel\Vapor\Runtime\LambdaResponse
      */
     public function response($fpmResponse)
     {
-        return new FpmLambdaResponse(
+        return new LambdaResponse(
             $fpmResponse->status,
             $fpmResponse->headers,
             $fpmResponse->body

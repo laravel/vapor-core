@@ -12,6 +12,8 @@ class SignedStorageUrlControllerTest extends TestCase
 {
     protected function setUp(): void
     {
+        $this->markTestSkipped('Requires an AWS account.');
+
         parent::setUp();
 
         $_ENV['AWS_BUCKET'] = 'laravel-s3-test-1';

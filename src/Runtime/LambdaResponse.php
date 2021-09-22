@@ -1,11 +1,11 @@
 <?php
 
-namespace Laravel\Vapor\Runtime\Fpm;
+namespace Laravel\Vapor\Runtime;
 
-use Laravel\Vapor\Contracts\LambdaResponse;
+use Laravel\Vapor\Contracts\LambdaResponse as LambdaResponseContract;
 use stdClass;
 
-class FpmLambdaResponse implements LambdaResponse
+class LambdaResponse implements LambdaResponseContract
 {
     /**
      * The response status code.

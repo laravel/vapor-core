@@ -1,10 +1,8 @@
 <?php
 
-namespace Laravel\Vapor\Runtime\Fpm;
+namespace Laravel\Vapor\Runtime;
 
-use Laravel\Vapor\Runtime\Response;
-
-class LoadBalancedFpmLambdaResponse extends FpmLambdaResponse
+class LoadBalancedLambdaResponse extends LambdaResponse
 {
     /**
      * Convert the response to Load Balancer's supported format.
