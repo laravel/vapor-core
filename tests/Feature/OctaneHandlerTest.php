@@ -2,6 +2,10 @@
 
 namespace Laravel\Vapor\Tests\Feature;
 
+if (\PHP_VERSION_ID < 80000) {
+    return;
+}
+
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Laravel\Octane\Events\RequestReceived;
@@ -17,7 +21,7 @@ class OctaneHandlerTest extends TestCase
 {
     protected function setUp(): void
     {
-        if (! class_exists('Laravel\Octane\Octane')) {
+        if (! class_exists(\Laravel\Octane\Octane::class)) {
             $this->markTestSkipped('Requires Laravel Octane.');
         }
 

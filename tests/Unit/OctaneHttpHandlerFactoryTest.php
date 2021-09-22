@@ -2,6 +2,10 @@
 
 namespace Laravel\Vapor\Tests\Unit;
 
+if (\PHP_VERSION_ID < 80000) {
+    return;
+}
+
 use Laravel\Vapor\Runtime\Handlers\OctaneHandler;
 use Laravel\Vapor\Runtime\Handlers\UnknownEventHandler;
 use Laravel\Vapor\Runtime\Handlers\WarmerHandler;
@@ -14,7 +18,7 @@ class OctaneHttpHandlerFactoryTest extends TestCase
 {
     protected function setUp(): void
     {
-        if (! class_exists('Laravel\Octane\Octane')) {
+        if (! class_exists(\Laravel\Octane\Octane::class)) {
             $this->markTestSkipped('Requires Laravel Octane.');
         }
 
