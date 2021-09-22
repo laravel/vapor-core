@@ -17,7 +17,7 @@ class OctaneHandlerTest extends TestCase
 {
     protected function setUp(): void
     {
-        if (! class_exists(\Laravel\Octane\Octane::class)) {
+        if (! class_exists('Laravel\Octane\Octane')) {
             $this->markTestSkipped('Requires Laravel Octane.');
         }
 
