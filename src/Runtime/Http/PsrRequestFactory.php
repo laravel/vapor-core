@@ -93,7 +93,7 @@ class PsrRequestFactory
      */
     protected function protocolVersion()
     {
-        return $this->event['requestContext']['protocol'] ?? '1.1';
+        return $this->event['requestContext']['protocol'] ?? 'HTTP/1.1';
     }
 
     /**
@@ -113,7 +113,7 @@ class PsrRequestFactory
      */
     protected function uri()
     {
-        return $this->event['requestContext']['path'] ?? '/';
+        return $this->event['path'] ?? '/';
     }
 
     /**
