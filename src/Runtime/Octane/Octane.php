@@ -18,6 +18,16 @@ class Octane implements Client
     use MarshalsPsr7RequestsAndResponses;
 
     /**
+     * @var bool
+     */
+    protected static $dbSessionWaitTimeout = false; // Solution 2...
+
+    /**
+     * @var bool
+     */
+    protected static $dbSession = false; // Solution 2...
+
+    /**
      * The octane worker.
      *
      * @var \Laravel\Octane\OctaneResponse
@@ -42,10 +52,24 @@ class Octane implements Client
         static::$worker = tap(new Worker(
                 new ApplicationFactory($basePath), new self)
         )->boot()->onRequestHandled(function ($request, $response, $sandbox) {
-            foreach ($sandbox->make('db')->getConnections() as $connection) {
-                $connection->disconnect();
+            // foreach ($sandbox->make('db')->getConnections() as $connection) {
+            //    $connection->disconnect();
+            // }
+
+            // Solution 2...
+            if (static::$dbSession && static::$dbSessionWaitTimeout == false) {
+                static::$dbSessionWaitTimeout = true;
+
+                $sandbox->make('db')->select('SET SESSION wait_timeout=1');
             }
         });
+
+        // Solution 2...
+        static::worker()->application()
+            ->make('db')
+            ->beforeExecuting(function () {
+                static::$dbSession = true;
+            });
     }
 
     /**
