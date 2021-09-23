@@ -11,6 +11,7 @@ use Laravel\Octane\MarshalsPsr7RequestsAndResponses;
 use Laravel\Octane\OctaneResponse;
 use Laravel\Octane\RequestContext;
 use Laravel\Octane\Worker;
+use PDO;
 use Throwable;
 
 class Octane implements Client
@@ -18,14 +19,16 @@ class Octane implements Client
     use MarshalsPsr7RequestsAndResponses;
 
     /**
-     * @var bool
+     * Default db session duration.
      */
-    protected static $dbSessionWaitTimeout = false; // Solution 2...
+    const DB_SESSION_DEFAULT_TTL = 28800;
 
     /**
+     * If the current request holds a db session.
+     *
      * @var bool
      */
-    protected static $dbSession = false; // Solution 2...
+    protected static $dbSession = false;
 
     /**
      * The octane worker.
@@ -45,31 +48,49 @@ class Octane implements Client
      * Boots an octane worker instance.
      *
      * @param  string  $basePath
+     * @param  int  $dbSessionTtl
      * @return void
      */
-    public static function boot($basePath)
+    public static function boot($basePath, $dbSessionTtl = 0)
     {
         static::$worker = tap(new Worker(
                 new ApplicationFactory($basePath), new self)
-        )->boot()->onRequestHandled(function ($request, $response, $sandbox) {
-            // foreach ($sandbox->make('db')->getConnections() as $connection) {
-            //    $connection->disconnect();
-            // }
+        )->boot()->onRequestHandled(static::ensureDbSessionTtl($dbSessionTtl));
 
-            // Solution 2...
-            if (static::$dbSession && static::$dbSessionWaitTimeout == false) {
-                static::$dbSessionWaitTimeout = true;
+        static::worker()->application()->make('db')->beforeExecuting(function ($query, $bindings, $connection) use ($dbSessionTtl) {
+            static::$dbSession = true;
 
-                $sandbox->make('db')->select('SET SESSION wait_timeout=1');
+            if ($dbSessionTtl) {
+                $connection->unprepared(sprintf(
+                    'SET SESSION wait_timeout=%s', static::DB_SESSION_DEFAULT_TTL
+                ));
             }
         });
+    }
 
-        // Solution 2...
-        static::worker()->application()
-            ->make('db')
-            ->beforeExecuting(function () {
-                static::$dbSession = true;
-            });
+    /**
+     * @param  int  $dbSessionTtl
+     * @return callable
+     */
+    protected static function ensureDbSessionTtl($dbSessionTtl)
+    {
+        return function ($request, $response, $sandbox) use ($dbSessionTtl) {
+            if (! static::$dbSession) {
+                return;
+            }
+
+            $connections = collect($sandbox->make('db')->getConnections());
+
+            if ($dbSessionTtl == 0) {
+                return $connections->each->disconnect();
+            }
+
+            $connections->map->getRawPdo()->filter(function ($pdo) {
+                return $pdo instanceof PDO;
+            })->each->exec(sprintf(
+                'SET SESSION wait_timeout=%s', $dbSessionTtl
+            ));
+        };
     }
 
     /**
@@ -79,6 +100,8 @@ class Octane implements Client
     public static function handle($request)
     {
         [$request, $context] = (new self)->marshalRequest($request);
+
+        static::$dbSession = false;
 
         static::$worker->handle($request, $context);
 
