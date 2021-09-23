@@ -2,6 +2,7 @@
 
 namespace Laravel\Vapor\Runtime\Octane;
 
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Laravel\Octane\ApplicationFactory;
@@ -15,13 +16,6 @@ use Throwable;
 class Octane implements Client
 {
     use MarshalsPsr7RequestsAndResponses;
-
-    /**
-     * The octane app.
-     *
-     * @var \Laravel\Octane\Worker
-     */
-    protected static $app;
 
     /**
      * The octane worker.
@@ -46,8 +40,12 @@ class Octane implements Client
     public static function boot($basePath)
     {
         static::$worker = tap(new Worker(
-            new ApplicationFactory($basePath), new self)
-        )->boot();
+                new ApplicationFactory($basePath), new self)
+        )->boot()->onRequestHandled(function ($request, $response, $sandbox) {
+            foreach ($sandbox->make('db')->getConnections() as $connection) {
+                $connection->disconnect();
+            }
+        });
     }
 
     /**
@@ -126,6 +124,11 @@ class Octane implements Client
      */
     public function error(Throwable $e, Application $app, Request $request, RequestContext $context): void
     {
-        fwrite(STDERR, $e->getMessage());
+        try {
+            $app[ExceptionHandler::class]->report($e);
+        } catch (Throwable $throwable) {
+            fwrite(STDERR, $throwable->getMessage());
+            fwrite(STDERR, $e->getMessage());
+        }
     }
 }
