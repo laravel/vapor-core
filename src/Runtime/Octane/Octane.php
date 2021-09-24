@@ -58,9 +58,9 @@ class Octane implements Client
         )->boot()->onRequestHandled(static::ensureDbSessionTtl($dbSessionTtl));
 
         static::worker()->application()->make('db')->beforeExecuting(function ($query, $bindings, $connection) use ($dbSessionTtl) {
-            static::$dbSession = true;
+            if (static::$dbSession == false && $dbSessionTtl) {
+                static::$dbSession = true;
 
-            if ($dbSessionTtl) {
                 $connection->unprepared(sprintf(
                     'SET SESSION wait_timeout=%s', static::DB_SESSION_DEFAULT_TTL
                 ));
