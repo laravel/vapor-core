@@ -7,17 +7,17 @@ use Laravel\Vapor\Runtime\LoadBalancedLambdaResponse;
 class LoadBalancedFpmHandler extends FpmHandler
 {
     /**
-     * Covert FPM response to Lambda-ready response.
+     * Covert a response to Lambda-ready response.
      *
-     * @param  \Laravel\Vapor\Runtime\Fpm\FpmResponse  $fpmResponse
+     * @param  \Laravel\Vapor\Runtime\Response  $response
      * @return \Laravel\Vapor\Runtime\LoadBalancedLambdaResponse
      */
-    public function response($fpmResponse)
+    public function response($response)
     {
         return new LoadBalancedLambdaResponse(
-            $fpmResponse->status,
-            $fpmResponse->headers,
-            $fpmResponse->body
+            $response->status,
+            $response->headers,
+            $response->body
         );
     }
 }

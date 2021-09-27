@@ -2,37 +2,22 @@
 
 namespace Laravel\Vapor\Runtime\Handlers;
 
-use Laravel\Octane\RequestContext;
-use Laravel\Vapor\Runtime\Http\LoadBalancedPsrRequestFactory;
 use Laravel\Vapor\Runtime\LoadBalancedLambdaResponse;
 
 class LoadBalancedOctaneHandler extends OctaneHandler
 {
     /**
-     * Convert Octane response to Lambda-ready response.
+     * Covert a response to Lambda-ready response.
      *
-     * @param  \Laravel\Octane\OctaneResponse  $octaneResponse
-     * @return \Laravel\Vapor\Contracts\LambdaResponse
+     * @param  \Laravel\Vapor\Runtime\Response  $response
+     * @return \Laravel\Vapor\Runtime\LoadBalancedLambdaResponse
      */
-    protected function response($octaneResponse)
+    public function response($response)
     {
         return new LoadBalancedLambdaResponse(
-            $octaneResponse->response->getStatusCode(),
-            $octaneResponse->response->headers->all(),
-            $octaneResponse->response->getContent()
+            $response->status,
+            $response->headers,
+            $response->body
         );
-    }
-
-    /**
-     * Create a new Octane request from the incoming event.
-     *
-     * @param  array  $event
-     * @return \Laravel\Octane\RequestContext
-     */
-    protected function request($event)
-    {
-        return new RequestContext([
-            'psr7Request' => (new LoadBalancedPsrRequestFactory($event))->__invoke(),
-        ]);
     }
 }

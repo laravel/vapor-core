@@ -12,7 +12,7 @@ class LambdaResponse implements LambdaResponseContract
      *
      * @var int
      */
-    protected $statusCode = 200;
+    protected $status = 200;
 
     /**
      * The response headers.

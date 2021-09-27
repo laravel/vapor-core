@@ -5,9 +5,10 @@ namespace Laravel\Vapor\Runtime\Handlers;
 use Laravel\Octane\MarshalsPsr7RequestsAndResponses;
 use Laravel\Octane\RequestContext;
 use Laravel\Vapor\Contracts\LambdaEventHandler;
-use Laravel\Vapor\Runtime\Http\PsrRequestFactory;
 use Laravel\Vapor\Runtime\LambdaResponse;
 use Laravel\Vapor\Runtime\Octane\Octane;
+use Laravel\Vapor\Runtime\Request;
+use Nyholm\Psr7\ServerRequest;
 
 class OctaneHandler implements LambdaEventHandler
 {
@@ -36,23 +37,44 @@ class OctaneHandler implements LambdaEventHandler
      */
     protected function request($event)
     {
+        $request = Request::fromLambdaEvent($event, $this->serverVariables());
+
         return new RequestContext([
-            'psr7Request' => (new PsrRequestFactory($event))->__invoke(),
+            'psr7Request' => new ServerRequest(
+                $request->serverVariables['REQUEST_METHOD'],
+                $request->serverVariables['REQUEST_URI'],
+                $request->headers,
+                $request->body,
+                $request->serverVariables['SERVER_PROTOCOL'],
+                $request->serverVariables
+            ),
         ]);
     }
 
     /**
-     * Convert Octane response to Lambda-ready response.
+     * Covert a response to Lambda-ready response.
      *
-     * @param  \Laravel\Octane\OctaneResponse  $octaneResponse
-     * @return \Laravel\Vapor\Contracts\LambdaResponse
+     * @param  \Laravel\Vapor\Runtime\Response  $response
+     * @return \Laravel\Vapor\Runtime\LambdaResponse
      */
-    protected function response($octaneResponse)
+    protected function response($response)
     {
         return new LambdaResponse(
-            $octaneResponse->response->getStatusCode(),
-            $octaneResponse->response->headers->all(),
-            $octaneResponse->response->getContent()
+            $response->status,
+            $response->headers,
+            $response->body
         );
+    }
+
+    /**
+     * Get the server variables.
+     *
+     * @return array
+     */
+    public function serverVariables()
+    {
+        return [
+            'AWS_REQUEST_ID' => $_ENV['AWS_REQUEST_ID'] ?? null,
+        ];
     }
 }

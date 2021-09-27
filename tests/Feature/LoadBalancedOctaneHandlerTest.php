@@ -6,12 +6,14 @@ if (\PHP_VERSION_ID < 80000) {
     return;
 }
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Laravel\Octane\Events\RequestReceived;
 use Laravel\Octane\Events\RequestTerminated;
 use Laravel\Octane\OctaneServiceProvider;
 use Laravel\Vapor\Runtime\Handlers\LoadBalancedOctaneHandler;
+use Laravel\Vapor\Runtime\Handlers\OctaneHandler;
 use Laravel\Vapor\Runtime\Octane\Octane;
 use Laravel\Vapor\Tests\TestCase;
 use Mockery;
@@ -27,6 +29,9 @@ class LoadBalancedOctaneHandlerTest extends TestCase
 
         parent::setUp();
 
+        $_ENV['APP_VANITY_URL'] = 'https://127.0.0.1';
+        $_ENV['LAMBDA_TASK_ROOT'] = __DIR__.'/../Fixtures';
+
         Octane::boot(app()->basePath());
 
         Octane::worker()->application()->register(OctaneServiceProvider::class);
@@ -36,12 +41,16 @@ class LoadBalancedOctaneHandlerTest extends TestCase
     {
         Mockery::close();
 
+        unset($_ENV['APP_VANITY_URL']);
+        unset($_ENV['LAMBDA_TASK_ROOT']);
+        unset($_ENV['VAPOR_MAINTENANCE_MODE_SECRET']);
+
         Octane::terminate();
 
         parent::tearDown();
     }
 
-    public function test_request_body()
+    public function test_response_body()
     {
         $handler = new LoadBalancedOctaneHandler();
 
@@ -56,7 +65,7 @@ class LoadBalancedOctaneHandlerTest extends TestCase
         static::assertEquals('Hello World', $response->toApiGatewayFormat()['body']);
     }
 
-    public function test_request_fires_events()
+    public function test_response_fires_events()
     {
         Event::fake([RequestReceived::class, RequestTerminated::class]);
 
@@ -76,7 +85,7 @@ class LoadBalancedOctaneHandlerTest extends TestCase
         Event::assertDispatched(RequestTerminated::class);
     }
 
-    public function test_request_headers()
+    public function test_response_headers()
     {
         $handler = new LoadBalancedOctaneHandler();
 
@@ -94,7 +103,7 @@ class LoadBalancedOctaneHandlerTest extends TestCase
         static::assertEquals(['Bar'], $response->toApiGatewayFormat()['multiValueHeaders']['Foo']);
     }
 
-    public function test_request_status()
+    public function test_response_status()
     {
         $handler = new LoadBalancedOctaneHandler();
 
@@ -109,7 +118,7 @@ class LoadBalancedOctaneHandlerTest extends TestCase
         static::assertEquals(500, $response->toApiGatewayFormat()['statusCode']);
     }
 
-    public function test_each_request_have_its_own_app()
+    public function test_each_response_have_its_own_app()
     {
         $handler = new LoadBalancedOctaneHandler();
 
@@ -137,5 +146,101 @@ class LoadBalancedOctaneHandlerTest extends TestCase
 
         static::assertEquals('1', $bindResponse->toApiGatewayFormat()['body']);
         static::assertEquals('not bound', $boundResponse->toApiGatewayFormat()['body']);
+    }
+
+    public function test_response_cookies()
+    {
+        $handler = new LoadBalancedOctaneHandler();
+
+        Route::get('/', function () {
+            return response('Hello World')->cookie('cookie-key', 'cookie-value', 10);
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/',
+        ]);
+
+        $setCookie = $response->toApiGatewayFormat()['multiValueHeaders']['Set-Cookie'];
+
+        static::assertStringStartsWith('cookie-key=cookie-value;', $setCookie[0]);
+    }
+
+    public function test_robots_header_is_set()
+    {
+        $handler = new LoadBalancedOctaneHandler();
+
+        Route::get('/', function () {
+            return 'Hello World';
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/',
+        ]);
+
+        $robotsTag = $response->toApiGatewayFormat()['multiValueHeaders']['X-Robots-Tag'];
+
+        static::assertEquals(['noindex, nofollow'], $robotsTag);
+    }
+
+    public function test_maintenance_mode()
+    {
+        $handler = new OctaneHandler();
+
+        $_ENV['VAPOR_MAINTENANCE_MODE'] = 'true';
+        $_ENV['APP_VANITY_URL'] = 'production.com';
+
+        Route::get('/', function () {
+            return 'Hello World';
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/',
+            'headers' => [
+                'Accept' => 'application/json',
+            ],
+        ]);
+
+        self::assertEquals('application/json', $response->toApiGatewayFormat()['headers']['Content-Type']);
+        self::assertEquals(['hello' => 'world'], json_decode($response->toApiGatewayFormat()['body'], true));
+    }
+
+    public function test_request_body()
+    {
+        $handler = new LoadBalancedOctaneHandler();
+
+        Route::get('/{content}', function ($content) {
+            return $content;
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/hello-world',
+        ]);
+
+        static::assertEquals('hello-world', $response->toApiGatewayFormat()['body']);
+    }
+
+    public function test_request_headers()
+    {
+        $handler = new LoadBalancedOctaneHandler();
+
+        Route::get('/', function (Request $request) {
+            return $request->headers->all();
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/',
+            'headers' => [
+                'My-Header' => 'my-header-value',
+            ],
+        ]);
+
+        $body = $response->toApiGatewayFormat()['body'];
+
+        static::assertEquals(['my-header-value'], json_decode($body, true)['my-header']);
     }
 }

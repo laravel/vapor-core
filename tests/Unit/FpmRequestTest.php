@@ -23,7 +23,7 @@ class FpmRequestTest extends TestCase
             'requestContext' => [
                 'elb' => true,
             ],
-        ], 'index.php');
+        ]);
 
         $this->assertSame(http_build_query(['Host' => urldecode($host)]), $request->serverVariables['QUERY_STRING']);
     }
@@ -59,7 +59,7 @@ class FpmRequestTest extends TestCase
             ],
             'queryStringParameters' => null,
             'multiValueQueryStringParameters' => null,
-        ], 'index.php');
+        ]);
 
         $this->assertSame($trace, $request->serverVariables['HTTP_X_AMZN_TRACE_ID']);
         $this->assertSame($for, $request->serverVariables['HTTP_X_FORWARDED_FOR']);
@@ -95,7 +95,7 @@ class FpmRequestTest extends TestCase
                     $proto = 'https',
                 ],
             ],
-        ], 'index.php');
+        ]);
 
         $this->assertSame($trace, $request->serverVariables['HTTP_X_AMZN_TRACE_ID']);
         $this->assertSame($for, $request->serverVariables['HTTP_X_FORWARDED_FOR']);
@@ -110,7 +110,7 @@ class FpmRequestTest extends TestCase
             'headers' => [
                 // ..
             ],
-        ], 'index.php');
+        ]);
 
         $this->assertSame(0, $request->getContentLength());
 
@@ -119,7 +119,7 @@ class FpmRequestTest extends TestCase
             'headers' => [
                 'content-length' => 1,
             ],
-        ], 'index.php');
+        ]);
 
         $this->assertSame(1, $request->getContentLength());
 
@@ -128,7 +128,7 @@ class FpmRequestTest extends TestCase
             'headers' => [
                 'content-length' => '1',
             ],
-        ], 'index.php');
+        ]);
 
         $this->assertSame(1, $request->getContentLength());
 
@@ -137,7 +137,7 @@ class FpmRequestTest extends TestCase
             'headers' => [
                 'content-length' => 'foo',
             ],
-        ], 'index.php');
+        ]);
 
         $this->assertSame(0, $request->getContentLength());
     }

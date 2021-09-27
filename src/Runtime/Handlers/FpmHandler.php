@@ -31,22 +31,22 @@ class FpmHandler implements LambdaEventHandler
     public function request($event)
     {
         return FpmRequest::fromLambdaEvent(
-            $event, Fpm::resolve()->handler(), $this->serverVariables()
+            $event, $this->serverVariables(), Fpm::resolve()->handler()
         );
     }
 
     /**
-     * Covert FPM response to Lambda-ready response.
+     * Covert a response to Lambda-ready response.
      *
-     * @param  \Laravel\Vapor\Runtime\Fpm\FpmResponse  $fpmResponse
+     * @param  \Laravel\Vapor\Runtime\Response  $response
      * @return \Laravel\Vapor\Runtime\LambdaResponse
      */
-    public function response($fpmResponse)
+    public function response($response)
     {
         return new LambdaResponse(
-            $fpmResponse->status,
-            $fpmResponse->headers,
-            $fpmResponse->body
+            $response->status,
+            $response->headers,
+            $response->body
         );
     }
 

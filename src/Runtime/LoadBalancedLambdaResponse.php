@@ -2,6 +2,8 @@
 
 namespace Laravel\Vapor\Runtime;
 
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+
 class LoadBalancedLambdaResponse extends LambdaResponse
 {
     /**
@@ -16,10 +18,25 @@ class LoadBalancedLambdaResponse extends LambdaResponse
         return [
             'isBase64Encoded' => $requiresEncoding,
             'statusCode' => $this->status,
-            'statusDescription' => $this->status.' '.Response::statusText($this->status),
+            'statusDescription' => $this->status.' '.$this->statusText($this->status),
             'multiValueHeaders' => empty($this->headers) ? [] : $this->prepareHeaders($this->headers),
             'body' => $requiresEncoding ? base64_encode($this->body) : $this->body,
         ];
+    }
+
+    /**
+     * Get the status text for the given status code.
+     *
+     * @param  int  $status
+     * @return string
+     */
+    public function statusText($status)
+    {
+        $statusTexts = SymfonyResponse::$statusTexts;
+
+        $statusTexts[419] = 'Authentication Timeout';
+
+        return $statusTexts[$status];
     }
 
     /**
