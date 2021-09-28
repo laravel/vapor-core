@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Octane\Events\RequestReceived;
 use Laravel\Octane\Events\RequestTerminated;
 use Laravel\Octane\OctaneServiceProvider;
-use Laravel\Vapor\Runtime\Handlers\LoadBalancedOctaneHandler;
 use Laravel\Vapor\Runtime\Handlers\OctaneHandler;
 use Laravel\Vapor\Runtime\Octane\Octane;
 use Laravel\Vapor\Tests\TestCase;
