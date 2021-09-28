@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Octane\Events\RequestReceived;
 use Laravel\Octane\Events\RequestTerminated;
 use Laravel\Octane\OctaneServiceProvider;
+use Laravel\Vapor\Runtime\Handlers\LoadBalancedOctaneHandler;
 use Laravel\Vapor\Runtime\Handlers\OctaneHandler;
 use Laravel\Vapor\Runtime\Octane\Octane;
 use Laravel\Vapor\Tests\TestCase;
@@ -212,16 +213,26 @@ class OctaneHandlerTest extends TestCase
     {
         $handler = new OctaneHandler();
 
-        Route::get('/{content}', function ($content) {
-            return $content;
+        Route::put('/', function (Request $request) {
+            return $request->all();
         });
 
         $response = $handler->handle([
-            'httpMethod' => 'GET',
-            'path' => '/hello-world',
+            'httpMethod' => 'POST',
+            'path' => '/',
+            'headers' => [
+                'Content-Type' => 'application/json',
+            ],
+            'body' => <<<'EOF'
+{"_method":"PUT","name":"nuno","email":"nuno@laravel.com"}
+EOF
         ]);
 
-        static::assertEquals('hello-world', $response->toApiGatewayFormat()['body']);
+        static::assertEquals([
+            '_method' => 'PUT',
+            'name' => 'nuno',
+            'email' => 'nuno@laravel.com',
+        ], json_decode($response->toApiGatewayFormat()['body'], true));
     }
 
     public function test_request_cookies()
