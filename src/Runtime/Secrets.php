@@ -3,6 +3,9 @@
 namespace Laravel\Vapor\Runtime;
 
 use Aws\Ssm\SsmClient;
+use Dotenv\Dotenv;
+use Dotenv\Exception\InvalidFileException;
+use Illuminate\Support\Str;
 
 class Secrets
 {
@@ -21,12 +24,7 @@ class Secrets
         }
 
         return tap(static::all($path, (array) $parameters), function ($variables) {
-            foreach ($variables as $key => $value) {
-                echo "Injecting secret [{$key}] into runtime.".PHP_EOL;
-
-                $_ENV[$key] = $value;
-                $_SERVER[$key] = $value;
-            }
+            self::setEnvironmentVariables($variables);
         });
     }
 
@@ -75,5 +73,28 @@ class Secrets
 
             return [$segments[count($segments) - 1] => $secret['Value']];
         })->all();
+    }
+
+    protected static function setEnvironmentVariables(array $variables)
+    {
+        foreach ($variables as $key => $value) {
+            if (Str::startsWith($key, 'DOT_ENV_')) {
+                try {
+                    $parsedDotEnv = Dotenv::parse($value);
+
+                    self::setEnvironmentVariables($parsedDotEnv);
+
+                } catch (InvalidFileException $e) {
+                    echo "Failed to parse dot env secret [{$key}] into runtime.".PHP_EOL;
+                }
+
+                continue;
+            }
+
+            echo "Injecting secret [{$key}] into runtime.".PHP_EOL;
+
+            $_ENV[$key] = $value;
+            $_SERVER[$key] = $value;
+        }
     }
 }
