@@ -2,10 +2,15 @@
 
 namespace Laravel\Vapor\Runtime\Octane;
 
+use Illuminate\Support\Arr as SupportArr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Laravel\Octane\RequestContext;
+use Laravel\Vapor\Arr;
 use Laravel\Vapor\Runtime\Request;
 use Nyholm\Psr7\ServerRequest;
+use Nyholm\Psr7\UploadedFile;
+use Riverline\MultiPartParser\Part;
 
 class OctaneRequestContextFactory
 {
@@ -20,6 +25,9 @@ class OctaneRequestContextFactory
     {
         $request = Request::fromLambdaEvent($event, $serverVariables);
 
+        $method = $request->serverVariables['REQUEST_METHOD'];
+        $contentType = array_change_key_case($request->headers)['content-type'] ?? null;
+
         $serverRequest = new ServerRequest(
             $request->serverVariables['REQUEST_METHOD'],
             $request->serverVariables['REQUEST_URI'],
@@ -30,6 +38,13 @@ class OctaneRequestContextFactory
         );
 
         $serverRequest = $serverRequest->withCookieParams(static::cookies($request->headers));
+        $serverRequest = $serverRequest->withUploadedFiles(static::uploadedFiles(
+            $method, $contentType, $request->body
+        ));
+
+        $serverRequest = $serverRequest->withParsedBody(static::parsedBody(
+            $method, $contentType, $request->body
+        ));
 
         return new RequestContext([
             'psr7Request' => $serverRequest,
@@ -55,5 +70,119 @@ class OctaneRequestContextFactory
 
             return [$key => urldecode($value)];
         })->all();
+    }
+
+    /**
+     * Create a new file instance from the given HTTP request document part.
+     *
+     * @param  \Riverline\MultipartParser\Part  $part
+     * @return \Psr\Http\Message\UploadedFileInterface
+     */
+    protected static function createFile($part)
+    {
+        file_put_contents(
+            $path = tempnam(sys_get_temp_dir(), 'vapor_upload_'),
+            $part->getBody()
+        );
+
+        return new UploadedFile(
+            $path,
+            filesize($path),
+            UPLOAD_ERR_OK,
+            $part->getFileName(),
+            $part->getMimeType()
+        );
+    }
+
+    /**
+     * Parse the files for the given HTTP request body.
+     *
+     * @param  string  $contentType
+     * @param  string  $body
+     * @return array
+     */
+    protected static function parseFiles($contentType, $body)
+    {
+        $document = new Part("Content-Type: $contentType\r\n\r\n".$body);
+
+        if (! $document->isMultiPart()) {
+            return [];
+        }
+
+        return Collection::make($document->getParts())
+            ->filter
+            ->isFile()
+            ->reduce(function ($files, $part) {
+                return Str::contains($name = $part->getName(), '[')
+                    ? Arr::setMultiPartArrayValue($files, $name, static::createFile($part))
+                    : SupportArr::set($files, $name, static::createFile($part));
+            }, []);
+    }
+
+    /**
+     * Get the uploaded files for the incoming event.
+     *
+     * @param  string  $method
+     * @param  string  $contentType
+     * @param  string  $body
+     * @return array
+     */
+    protected static function uploadedFiles($method, $contentType, $body)
+    {
+        if ($method !== 'POST' ||
+            is_null($contentType = $contentType) ||
+            $contentType === 'application/x-www-form-urlencoded') {
+            return [];
+        }
+
+        return static::parseFiles($contentType, $body);
+    }
+
+    /**
+     * Get the parsed body for the event.
+     *
+     * @param  string  $method
+     * @param  string  $contentType
+     * @param  string  $body
+     * @return array|null
+     */
+    protected static function parsedBody($method, $contentType, $body)
+    {
+        if ($method !== 'POST' || is_null($contentType)) {
+            return;
+        }
+
+        if (strtolower($contentType) === 'application/x-www-form-urlencoded') {
+            parse_str($body, $parsedBody);
+
+            return $parsedBody;
+        }
+
+        return static::parseBody($contentType, $body);
+    }
+
+    /**
+     * Parse the incoming event's request body.
+     *
+     * @param  string  $contentType
+     * @param  string  $body
+     * @return array
+     */
+    protected static function parseBody($contentType, $body)
+    {
+        $document = new Part("Content-Type: $contentType\r\n\r\n".$body);
+
+        if (! $document->isMultiPart()) {
+            return;
+        }
+
+        return Collection::make($document->getParts())
+            ->reject
+            ->isFile()
+            ->reduce(function ($parsedBody, $part) {
+                return Str::contains($name = $part->getName(), '[')
+                    ? Arr::setMultiPartArrayValue($parsedBody, $name, $part->getBody())
+                    : SupportArr::set($parsedBody, $name, $part->getBody());
+            }, []);
     }
 }

@@ -232,6 +232,54 @@ EOF
         ], json_decode($response->toApiGatewayFormat()['body'], true));
     }
 
+    public function test_request_file_uploads()
+    {
+        $handler = new LoadBalancedOctaneHandler();
+
+        Route::put('/', function (Request $request) {
+            return array_merge($request->all(), [
+                'file' => $request->file('photo')->getClientOriginalName(),
+                'photo' => $request->file('photo')->getClientOriginalName(),
+            ]);
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'POST',
+            'path' => '/',
+            'headers' => [
+                'Content-Type' => 'multipart/form-data; boundary=---------------------------317050813134112680482597024243',
+            ],
+            'body' => <<<'EOF'
+-----------------------------317050813134112680482597024243
+Content-Disposition: form-data; name="_method"
+
+PUT
+-----------------------------317050813134112680482597024243
+Content-Disposition: form-data; name="name"
+
+nuno
+-----------------------------317050813134112680482597024243
+Content-Disposition: form-data; name="email"
+
+nuno@laravel.com
+-----------------------------317050813134112680482597024243
+Content-Disposition: form-data; name="photo"; filename="photo.png"
+Content-Type: image/png
+
+foo
+-----------------------------317050813134112680482597024243--
+EOF
+        ]);
+
+        static::assertEquals([
+            '_method' => 'PUT',
+            'name' => 'nuno',
+            'email' => 'nuno@laravel.com',
+            'file' => 'photo.png',
+            'photo' => 'photo.png',
+        ], json_decode($response->toApiGatewayFormat()['body'], true));
+    }
+
     public function test_request_cookies()
     {
         $handler = new LoadBalancedOctaneHandler();
