@@ -224,6 +224,47 @@ class OctaneHandlerTest extends TestCase
         static::assertEquals('hello-world', $response->toApiGatewayFormat()['body']);
     }
 
+    public function test_request_cookies()
+    {
+        $handler = new OctaneHandler();
+
+        Route::get('/', function (Request $request) {
+            return $request->cookies->all();
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/',
+            'headers' => [
+                'cookie' => 'XSRF-TOKEN=token_value',
+            ],
+        ]);
+
+        static::assertEquals(
+            ['XSRF-TOKEN' => 'token_value'],
+            json_decode($response->toApiGatewayFormat()['body'], true)
+        );
+    }
+
+    public function test_request_query_string()
+    {
+        $handler = new OctaneHandler();
+
+        Route::get('/', function (Request $request) {
+            return $request->getQueryString();
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/?foo=bar',
+            'headers' => [
+                'cookie' => 'XSRF-TOKEN=token_value',
+            ],
+        ]);
+
+        static::assertEquals('foo=bar', $response->toApiGatewayFormat()['body']);
+    }
+
     public function test_request_headers()
     {
         $handler = new OctaneHandler();

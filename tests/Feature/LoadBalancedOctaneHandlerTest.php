@@ -13,7 +13,6 @@ use Laravel\Octane\Events\RequestReceived;
 use Laravel\Octane\Events\RequestTerminated;
 use Laravel\Octane\OctaneServiceProvider;
 use Laravel\Vapor\Runtime\Handlers\LoadBalancedOctaneHandler;
-use Laravel\Vapor\Runtime\Handlers\OctaneHandler;
 use Laravel\Vapor\Runtime\Octane\Octane;
 use Laravel\Vapor\Tests\TestCase;
 use Mockery;
@@ -186,7 +185,7 @@ class LoadBalancedOctaneHandlerTest extends TestCase
 
     public function test_maintenance_mode()
     {
-        $handler = new OctaneHandler();
+        $handler = new LoadBalancedOctaneHandler();
 
         $_ENV['VAPOR_MAINTENANCE_MODE'] = 'true';
         $_ENV['APP_VANITY_URL'] = 'production.com';
@@ -203,7 +202,7 @@ class LoadBalancedOctaneHandlerTest extends TestCase
             ],
         ]);
 
-        self::assertEquals('application/json', $response->toApiGatewayFormat()['headers']['Content-Type']);
+        self::assertEquals(['application/json'], $response->toApiGatewayFormat()['multiValueHeaders']['Content-Type']);
         self::assertEquals(['hello' => 'world'], json_decode($response->toApiGatewayFormat()['body'], true));
     }
 
@@ -221,6 +220,47 @@ class LoadBalancedOctaneHandlerTest extends TestCase
         ]);
 
         static::assertEquals('hello-world', $response->toApiGatewayFormat()['body']);
+    }
+
+    public function test_request_cookies()
+    {
+        $handler = new LoadBalancedOctaneHandler();
+
+        Route::get('/', function (Request $request) {
+            return $request->cookies->all();
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/',
+            'headers' => [
+                'cookie' => 'XSRF-TOKEN=token_value',
+            ],
+        ]);
+
+        static::assertEquals(
+            ['XSRF-TOKEN' => 'token_value'],
+            json_decode($response->toApiGatewayFormat()['body'], true)
+        );
+    }
+
+    public function test_request_query_string()
+    {
+        $handler = new LoadBalancedOctaneHandler();
+
+        Route::get('/', function (Request $request) {
+            return $request->getQueryString();
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/?foo=bar',
+            'headers' => [
+                'cookie' => 'XSRF-TOKEN=token_value',
+            ],
+        ]);
+
+        static::assertEquals('foo=bar', $response->toApiGatewayFormat()['body']);
     }
 
     public function test_request_headers()

@@ -3,12 +3,10 @@
 namespace Laravel\Vapor\Runtime\Handlers;
 
 use Laravel\Octane\MarshalsPsr7RequestsAndResponses;
-use Laravel\Octane\RequestContext;
 use Laravel\Vapor\Contracts\LambdaEventHandler;
 use Laravel\Vapor\Runtime\LambdaResponse;
 use Laravel\Vapor\Runtime\Octane\Octane;
-use Laravel\Vapor\Runtime\Request;
-use Nyholm\Psr7\ServerRequest;
+use Laravel\Vapor\Runtime\Octane\OctaneRequestContextFactory;
 
 class OctaneHandler implements LambdaEventHandler
 {
@@ -37,18 +35,7 @@ class OctaneHandler implements LambdaEventHandler
      */
     protected function request($event)
     {
-        $request = Request::fromLambdaEvent($event, $this->serverVariables());
-
-        return new RequestContext([
-            'psr7Request' => new ServerRequest(
-                $request->serverVariables['REQUEST_METHOD'],
-                $request->serverVariables['REQUEST_URI'],
-                $request->headers,
-                $request->body,
-                $request->serverVariables['SERVER_PROTOCOL'],
-                $request->serverVariables
-            ),
-        ]);
+        return OctaneRequestContextFactory::fromEvent($event, $this->serverVariables());
     }
 
     /**
