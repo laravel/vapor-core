@@ -50,7 +50,7 @@ class LoadBalancedLambdaResponse extends LambdaResponse
         $headers = [];
 
         foreach ($responseHeaders as $name => $values) {
-            $headers[static::normalizeHeaderName($name)] = $values;
+            $headers[static::normalizeHeaderName($name)] = static::normalizeHeaderValues($values);
         }
 
         if (! isset($headers['Content-Type']) || empty($headers['Content-Type'])) {
@@ -58,5 +58,18 @@ class LoadBalancedLambdaResponse extends LambdaResponse
         }
 
         return $headers;
+    }
+
+    /**
+     * Normalize the given header values into strings.
+     *
+     * @param  array  $values
+     * @return array
+     */
+    protected function normalizeHeaderValues($values)
+    {
+        return array_map(function ($value) {
+            return (string) $value;
+        }, $values);
     }
 }
