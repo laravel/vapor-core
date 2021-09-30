@@ -26,6 +26,7 @@ class OctaneRequestContextFactory
         $request = Request::fromLambdaEvent($event, $serverVariables);
 
         $method = $request->serverVariables['REQUEST_METHOD'];
+
         $contentType = array_change_key_case($request->headers)['content-type'] ?? null;
 
         $serverRequest = new ServerRequest(
@@ -38,6 +39,7 @@ class OctaneRequestContextFactory
         );
 
         $serverRequest = $serverRequest->withCookieParams(static::cookies($request->headers));
+
         $serverRequest = $serverRequest->withUploadedFiles(static::uploadedFiles(
             $method, $contentType, $request->body
         ));
