@@ -60,7 +60,7 @@ with(require __DIR__.'/bootstrap/app.php', function ($app) {
 */
 fwrite(STDERR, 'Preparing to boot Octane'.PHP_EOL);
 
-Octane::boot(__DIR__, getenv('OCTANE_DB_SESSION_TTL') ?: 0);
+Octane::boot(__DIR__, getenv('OCTANE_DATABASE_SESSION_TTL') ?: 0);
 
 /*
 |--------------------------------------------------------------------------
