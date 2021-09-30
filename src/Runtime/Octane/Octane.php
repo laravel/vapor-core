@@ -34,11 +34,13 @@ class Octane implements Client
     const DB_SESSION_DEFAULT_TTL = 28800;
 
     /**
-     * If the octane worker has a database session.
+     * List of octane database sessions.
      *
      * @var bool
      */
-    protected static $dbSession = false;
+    protected static $databaseSessions = [
+        // ..
+    ];
 
     /**
      * The octane response, if any.
@@ -58,19 +60,19 @@ class Octane implements Client
      * Boots an octane worker instance.
      *
      * @param  string  $basePath
-     * @param  int  $dbSessionTtl
+     * @param  int  $databaseSessionTtl
      * @return void
      */
-    public static function boot($basePath, $dbSessionTtl = 0)
+    public static function boot($basePath, $databaseSessionTtl = 0)
     {
         static::$worker = tap(new Worker(
                 new ApplicationFactory($basePath), new self)
-        )->boot()->onRequestHandled(static::ensureDbSessionTtl($dbSessionTtl));
+        )->boot()->onRequestHandled(static::ensureDatabaseSessionTtl($databaseSessionTtl));
 
-        if ($dbSessionTtl) {
+        if ($databaseSessionTtl) {
             static::worker()->application()->make('db')->beforeExecuting(function ($query, $bindings, $connection) {
-                if ($connection instanceof MySqlConnection && static::$dbSession == false) {
-                    static::$dbSession = true;
+                if ($connection instanceof MySqlConnection && ! in_array($connection->getName(), static::$databaseSessions)) {
+                    static::$databaseSessions[] = $connection->getName();
 
                     $connection->unprepared(sprintf(
                         'SET SESSION wait_timeout=%s', static::DB_SESSION_DEFAULT_TTL
@@ -83,34 +85,34 @@ class Octane implements Client
     /**
      * Ensures the database session has the given time-to-live in seconds.
      *
-     * @param  int  $dbSessionTtl
+     * @param  int  $databaseSessionTtl
      * @return callable
      */
-    protected static function ensureDbSessionTtl($dbSessionTtl)
+    protected static function ensureDatabaseSessionTtl($databaseSessionTtl)
     {
-        return function ($request, $response, $sandbox) use ($dbSessionTtl) {
-            if (! static::$dbSession) {
+        return function ($request, $response, $sandbox) use ($databaseSessionTtl) {
+            if (! $sandbox->resolved('db')) {
                 return;
             }
 
             $connections = collect($sandbox->make('db')->getConnections());
 
-            if ($dbSessionTtl == 0) {
+            if ($databaseSessionTtl == 0) {
                 return $connections->each->disconnect();
             }
 
             $connections->filter(function ($connection) {
-                $isMySqlConnection = $connection instanceof MySqlConnection;
+                $hasSession = in_array($connection->getName(), static::$databaseSessions);
 
-                if (! $isMySqlConnection) {
+                if (! $hasSession) {
                     $connection->disconnect();
                 }
 
-                return $isMySqlConnection;
+                return $hasSession;
             })->map->getRawPdo()->filter(function ($pdo) {
                 return $pdo instanceof PDO;
             })->each->exec(sprintf(
-                'SET SESSION wait_timeout=%s', $dbSessionTtl
+                'SET SESSION wait_timeout=%s', $databaseSessionTtl
             ));
         };
     }
@@ -125,7 +127,7 @@ class Octane implements Client
     {
         [$request, $context] = (new self)->marshalRequest($request);
 
-        static::$dbSession = false;
+        static::$databaseSessions = [];
 
         self::worker()->application()->useStoragePath(StorageDirectories::PATH);
 
