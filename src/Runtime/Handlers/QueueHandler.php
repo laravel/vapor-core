@@ -79,7 +79,7 @@ class QueueHandler implements LambdaEventHandler
      */
     protected function terminate()
     {
-        if (static::$app->resolved('db')) {
+        if (static::$app->resolved('db') && ($_ENV['VAPOR_QUEUE_DATABASE_SESSION_PERSIST'] ?? false) !== 'true') {
             collect(static::$app->make('db')->getConnections())->each->disconnect();
         }
     }

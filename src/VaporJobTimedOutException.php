@@ -10,8 +10,8 @@ class VaporJobTimedOutException extends Exception
     /**
      * Create a new exception instance.
      *
-     * @param string $name
-     * @param Throwable|null $previous
+     * @param  string  $name
+     * @param  Throwable|null  $previous
      */
     public function __construct($name, Throwable $previous = null)
     {
