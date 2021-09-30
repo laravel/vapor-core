@@ -55,7 +55,7 @@ with(require __DIR__.'/bootstrap/app.php', function ($app) {
 |
 | We need to boot the application request Octane worker so it's ready to
 | serve incoming requests. This will initialize this worker then wait
-| for lambda invocations TODO...
+| for Lambda invocations to be received for this Vapor application.
 |
 */
 fwrite(STDERR, 'Preparing to boot Octane'.PHP_EOL);

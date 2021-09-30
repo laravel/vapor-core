@@ -15,7 +15,7 @@ use Riverline\MultiPartParser\Part;
 class OctaneRequestContextFactory
 {
     /**
-     * Creates an octane request context from the given event.
+     * Creates an Octane request context from the given event.
      *
      * @param  array  $event
      * @param  array  $serverVariables
