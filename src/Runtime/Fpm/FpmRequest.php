@@ -110,7 +110,7 @@ class FpmRequest implements ProvidesRequestData
     /**
      * Get the query string from the event.
      *
-     * @param  array $event
+     * @param  array  $event
      * @return string
      */
     protected static function getQueryString(array $event)
