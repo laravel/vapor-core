@@ -3,6 +3,7 @@
 namespace Laravel\Vapor\Runtime\Octane;
 
 use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Database\MySqlConnection;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,26 +29,26 @@ class Octane implements Client
     use MarshalsPsr7RequestsAndResponses;
 
     /**
-     * Default db session duration.
+     * The default database session time-to-live.
      */
     const DB_SESSION_DEFAULT_TTL = 28800;
 
     /**
-     * If the current request holds a db session.
+     * If the octane worker has a database session.
      *
      * @var bool
      */
     protected static $dbSession = false;
 
     /**
-     * The octane worker.
+     * The octane response, if any.
      *
      * @var \Laravel\Octane\OctaneResponse|null
      */
     protected static $response;
 
     /**
-     * The octane worker.
+     * The octane worker, if any.
      *
      * @var \Laravel\Octane\Worker|null
      */
@@ -68,7 +69,7 @@ class Octane implements Client
 
         if ($dbSessionTtl) {
             static::worker()->application()->make('db')->beforeExecuting(function ($query, $bindings, $connection) {
-                if (static::$dbSession == false) {
+                if ($connection instanceof MySqlConnection && static::$dbSession == false) {
                     static::$dbSession = true;
 
                     $connection->unprepared(sprintf(
@@ -80,6 +81,8 @@ class Octane implements Client
     }
 
     /**
+     * Ensures the database session has the given time-to-live in seconds.
+     *
      * @param  int  $dbSessionTtl
      * @return callable
      */
@@ -96,7 +99,15 @@ class Octane implements Client
                 return $connections->each->disconnect();
             }
 
-            $connections->map->getRawPdo()->filter(function ($pdo) {
+            $connections->filter(function ($connection) {
+                $isMySqlConnection = $connection instanceof MySqlConnection;
+
+                if (! $isMySqlConnection) {
+                    $connection->disconnect();
+                }
+
+                return $isMySqlConnection;
+            })->map->getRawPdo()->filter(function ($pdo) {
                 return $pdo instanceof PDO;
             })->each->exec(sprintf(
                 'SET SESSION wait_timeout=%s', $dbSessionTtl
@@ -105,6 +116,8 @@ class Octane implements Client
     }
 
     /**
+     * Handle the given octane request.
+     *
      * @param  \Laravel\Octane\RequestContext  $request
      * @return \Laravel\Vapor\Runtime\Response
      */
@@ -179,7 +192,7 @@ class Octane implements Client
     }
 
     /**
-     * Marshal the given request context into an Illuminate request.
+     * Marshal the given octane request context into an Laravel foundation request.
      *
      * @param  \Laravel\Octane\RequestContext  $context
      * @return array
@@ -193,7 +206,7 @@ class Octane implements Client
     }
 
     /**
-     * Send the response to the server.
+     * Stores the response in the instance.
      *
      * @param  \Laravel\Octane\RequestContext  $context
      * @param  \Laravel\Octane\OctaneResponse  $response
