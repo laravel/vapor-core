@@ -70,7 +70,7 @@ class Octane implements Client
                 new ApplicationFactory($basePath), new self)
         )->boot()->onRequestHandled(static::manageDatabaseSessions($databaseSessionPersist, $databaseSessionTtl));
 
-        if (! $databaseSessionPersist && $databaseSessionTtl) {
+        if ($databaseSessionPersist && $databaseSessionTtl) {
             static::worker()->application()->make('db')->beforeExecuting(function ($query, $bindings, $connection) {
                 if ($connection instanceof MySqlConnection && ! in_array($connection->getName(), static::$databaseSessions)) {
                     static::$databaseSessions[] = $connection->getName();
@@ -93,13 +93,14 @@ class Octane implements Client
     protected static function manageDatabaseSessions($databaseSessionPersist, $databaseSessionTtl)
     {
         return function ($request, $response, $sandbox) use ($databaseSessionPersist, $databaseSessionTtl) {
-            if ($databaseSessionPersist || ! $sandbox->resolved('db')) {
+            if (! $sandbox->resolved('db') ||
+                ($databaseSessionPersist && $databaseSessionTtl == 0)) {
                 return;
             }
 
             $connections = collect($sandbox->make('db')->getConnections());
 
-            if ($databaseSessionTtl == 0) {
+            if (! $databaseSessionPersist) {
                 return $connections->each->disconnect();
             }
 
