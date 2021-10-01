@@ -68,7 +68,7 @@ class Octane implements Client
     {
         static::$worker = tap(new Worker(
                 new ApplicationFactory($basePath), new self)
-        )->boot()->onRequestHandled(static::ensureDatabaseSessionTtl($databaseSessionPersist, $databaseSessionTtl));
+        )->boot()->onRequestHandled(static::manageDatabaseSessions($databaseSessionPersist, $databaseSessionTtl));
 
         if (! $databaseSessionPersist && $databaseSessionTtl) {
             static::worker()->application()->make('db')->beforeExecuting(function ($query, $bindings, $connection) {
@@ -84,13 +84,13 @@ class Octane implements Client
     }
 
     /**
-     * Ensures the database session has the given time-to-live in seconds.
+     * Manage the database sessions.
      *
      * @param  bool  $databaseSessionPersist
      * @param  int  $databaseSessionTtl
      * @return callable
      */
-    protected static function ensureDatabaseSessionTtl($databaseSessionPersist, $databaseSessionTtl)
+    protected static function manageDatabaseSessions($databaseSessionPersist, $databaseSessionTtl)
     {
         return function ($request, $response, $sandbox) use ($databaseSessionPersist, $databaseSessionTtl) {
             if ($databaseSessionPersist || ! $sandbox->resolved('db')) {
