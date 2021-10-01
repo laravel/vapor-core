@@ -92,6 +92,8 @@ class Octane implements Client
      */
     protected static function manageDatabaseSessions($databaseSessionPersist, $databaseSessionTtl)
     {
+        $databaseSessionTtl = (int) $databaseSessionTtl;
+
         return function ($request, $response, $sandbox) use ($databaseSessionPersist, $databaseSessionTtl) {
             if (! $sandbox->resolved('db') ||
                 ($databaseSessionPersist && $databaseSessionTtl == 0)) {
