@@ -60,16 +60,17 @@ class Octane implements Client
      * Boots an octane worker instance.
      *
      * @param  string  $basePath
+     * @param  bool  $databaseSessionPersist
      * @param  int  $databaseSessionTtl
      * @return void
      */
-    public static function boot($basePath, $databaseSessionTtl = 0)
+    public static function boot($basePath, $databaseSessionPersist = false, $databaseSessionTtl = 0)
     {
         static::$worker = tap(new Worker(
                 new ApplicationFactory($basePath), new self)
-        )->boot()->onRequestHandled(static::ensureDatabaseSessionTtl($databaseSessionTtl));
+        )->boot()->onRequestHandled(static::ensureDatabaseSessionTtl($databaseSessionPersist, $databaseSessionTtl));
 
-        if ($databaseSessionTtl) {
+        if (! $databaseSessionPersist && $databaseSessionTtl) {
             static::worker()->application()->make('db')->beforeExecuting(function ($query, $bindings, $connection) {
                 if ($connection instanceof MySqlConnection && ! in_array($connection->getName(), static::$databaseSessions)) {
                     static::$databaseSessions[] = $connection->getName();
@@ -85,13 +86,14 @@ class Octane implements Client
     /**
      * Ensures the database session has the given time-to-live in seconds.
      *
+     * @param  bool  $databaseSessionPersist
      * @param  int  $databaseSessionTtl
      * @return callable
      */
-    protected static function ensureDatabaseSessionTtl($databaseSessionTtl)
+    protected static function ensureDatabaseSessionTtl($databaseSessionPersist, $databaseSessionTtl)
     {
-        return function ($request, $response, $sandbox) use ($databaseSessionTtl) {
-            if (! $sandbox->resolved('db')) {
+        return function ($request, $response, $sandbox) use ($databaseSessionPersist, $databaseSessionTtl) {
+            if ($databaseSessionPersist || ! $sandbox->resolved('db')) {
                 return;
             }
 
