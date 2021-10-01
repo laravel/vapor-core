@@ -262,8 +262,8 @@ EOF
 
         Route::put('/', function (Request $request) {
             return array_merge($request->all(), [
-                'file' => $request->file('photo')->getClientOriginalName(),
-                'photo' => $request->file('photo')->getClientOriginalName(),
+                'filename' => $request->file('file')->getClientOriginalName(),
+                'file' => $request->file('file')->getContent(),
             ]);
         });
 
@@ -287,10 +287,11 @@ Content-Disposition: form-data; name="email"
 
 nuno@laravel.com
 -----------------------------317050813134112680482597024243
-Content-Disposition: form-data; name="photo"; filename="photo.png"
-Content-Type: image/png
+Content-Disposition: form-data; name="file"; filename="my_uploaded.txt"
+Content-Type: text/plain
 
 foo
+
 -----------------------------317050813134112680482597024243--
 EOF
         ]);
@@ -299,8 +300,8 @@ EOF
             '_method' => 'PUT',
             'name' => 'nuno',
             'email' => 'nuno@laravel.com',
-            'file' => 'photo.png',
-            'photo' => 'photo.png',
+            'filename' => 'my_uploaded.txt',
+            'file' => 'foo',
         ], json_decode($response->toApiGatewayFormat()['body'], true));
     }
 
