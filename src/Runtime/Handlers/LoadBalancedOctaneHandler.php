@@ -4,7 +4,7 @@ namespace Laravel\Vapor\Runtime\Handlers;
 
 use Laravel\Vapor\Runtime\LoadBalancedLambdaResponse;
 
-class LoadBalancedFpmHandler extends FpmHandler
+class LoadBalancedOctaneHandler extends OctaneHandler
 {
     /**
      * Covert a response to Lambda-ready response.

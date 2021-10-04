@@ -1,10 +1,10 @@
 <?php
 
-namespace Laravel\Vapor\Runtime\Fpm;
+namespace Laravel\Vapor\Runtime;
 
-use Laravel\Vapor\Runtime\Response;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
-class LoadBalancedFpmLambdaResponse extends FpmLambdaResponse
+class LoadBalancedLambdaResponse extends LambdaResponse
 {
     /**
      * Convert the response to Load Balancer's supported format.
@@ -18,10 +18,25 @@ class LoadBalancedFpmLambdaResponse extends FpmLambdaResponse
         return [
             'isBase64Encoded' => $requiresEncoding,
             'statusCode' => $this->status,
-            'statusDescription' => $this->status.' '.Response::statusText($this->status),
+            'statusDescription' => $this->status.' '.$this->statusText($this->status),
             'multiValueHeaders' => empty($this->headers) ? [] : $this->prepareHeaders($this->headers),
             'body' => $requiresEncoding ? base64_encode($this->body) : $this->body,
         ];
+    }
+
+    /**
+     * Get the status text for the given status code.
+     *
+     * @param  int  $status
+     * @return string
+     */
+    public function statusText($status)
+    {
+        $statusTexts = SymfonyResponse::$statusTexts;
+
+        $statusTexts[419] = 'Authentication Timeout';
+
+        return $statusTexts[$status];
     }
 
     /**
@@ -35,7 +50,7 @@ class LoadBalancedFpmLambdaResponse extends FpmLambdaResponse
         $headers = [];
 
         foreach ($responseHeaders as $name => $values) {
-            $headers[static::normalizeHeaderName($name)] = $values;
+            $headers[static::normalizeHeaderName($name)] = static::normalizeHeaderValues($values);
         }
 
         if (! isset($headers['Content-Type']) || empty($headers['Content-Type'])) {
@@ -43,5 +58,18 @@ class LoadBalancedFpmLambdaResponse extends FpmLambdaResponse
         }
 
         return $headers;
+    }
+
+    /**
+     * Normalize the given header values into strings.
+     *
+     * @param  array  $values
+     * @return array
+     */
+    protected function normalizeHeaderValues($values)
+    {
+        return array_map(function ($value) {
+            return (string) $value;
+        }, $values);
     }
 }

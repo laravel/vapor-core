@@ -2,22 +2,57 @@
 
 namespace Laravel\Vapor\Runtime;
 
-use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
-
 class Response
 {
     /**
-     * Get the the status text for the given status code.
+     * The response status code.
      *
-     * @param  int  $status
-     * @return string
+     * @var int
      */
-    public static function statusText($status)
+    public $status;
+
+    /**
+     * The response headers.
+     *
+     * @var array
+     */
+    public $headers;
+
+    /**
+     * The response body.
+     *
+     * @var string
+     */
+    public $body;
+
+    /**
+     * Create a new response instance.
+     *
+     * @param  string  $body
+     * @param  array  $headers
+     * @param  int  $status
+     * @return void
+     */
+    public function __construct($body, $headers, $status)
     {
-        $statusTexts = SymfonyResponse::$statusTexts;
+        $this->body = $body;
+        $this->status = $status;
 
-        $statusTexts[419] = 'Authentication Timeout';
+        $this->headers = $this->prepareHeaders($headers);
+    }
 
-        return $statusTexts[$status];
+    /**
+     * Prepare the given response headers.
+     *
+     * @param  array  $headers
+     * @return array
+     */
+    protected function prepareHeaders(array $headers)
+    {
+        $headers = array_change_key_case($headers, CASE_LOWER);
+
+        unset($headers['status']);
+
+        return $headers;
     }
 }

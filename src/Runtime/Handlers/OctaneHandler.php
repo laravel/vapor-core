@@ -2,13 +2,16 @@
 
 namespace Laravel\Vapor\Runtime\Handlers;
 
+use Laravel\Octane\MarshalsPsr7RequestsAndResponses;
 use Laravel\Vapor\Contracts\LambdaEventHandler;
-use Laravel\Vapor\Runtime\Fpm\Fpm;
-use Laravel\Vapor\Runtime\Fpm\FpmRequest;
 use Laravel\Vapor\Runtime\LambdaResponse;
+use Laravel\Vapor\Runtime\Octane\Octane;
+use Laravel\Vapor\Runtime\Octane\OctaneRequestContextFactory;
 
-class FpmHandler implements LambdaEventHandler
+class OctaneHandler implements LambdaEventHandler
 {
+    use MarshalsPsr7RequestsAndResponses;
+
     /**
      * Handle an incoming Lambda event.
      *
@@ -17,22 +20,22 @@ class FpmHandler implements LambdaEventHandler
      */
     public function handle(array $event)
     {
+        $request = $this->request($event);
+
         return $this->response(
-            Fpm::resolve()->handle($this->request($event))
+            Octane::handle($request)
         );
     }
 
     /**
-     * Create a new fpm request from the incoming event.
+     * Create a new Octane request from the incoming event.
      *
      * @param  array  $event
-     * @return \Laravel\Vapor\Runtime\Fpm\FpmRequest
+     * @return \Laravel\Octane\RequestContext
      */
-    public function request($event)
+    protected function request($event)
     {
-        return FpmRequest::fromLambdaEvent(
-            $event, $this->serverVariables(), Fpm::resolve()->handler()
-        );
+        return OctaneRequestContextFactory::fromEvent($event, $this->serverVariables());
     }
 
     /**
@@ -41,7 +44,7 @@ class FpmHandler implements LambdaEventHandler
      * @param  \Laravel\Vapor\Runtime\Response  $response
      * @return \Laravel\Vapor\Runtime\LambdaResponse
      */
-    public function response($response)
+    protected function response($response)
     {
         return new LambdaResponse(
             $response->status,
@@ -57,8 +60,8 @@ class FpmHandler implements LambdaEventHandler
      */
     public function serverVariables()
     {
-        return array_merge(Fpm::resolve()->serverVariables(), array_filter([
+        return [
             'AWS_REQUEST_ID' => $_ENV['AWS_REQUEST_ID'] ?? null,
-        ]));
+        ];
     }
 }

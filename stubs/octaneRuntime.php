@@ -1,10 +1,10 @@
 <?php
 
 use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
-use Laravel\Vapor\Runtime\Fpm\Fpm;
-use Laravel\Vapor\Runtime\Fpm\FpmHttpHandlerFactory;
 use Laravel\Vapor\Runtime\LambdaContainer;
 use Laravel\Vapor\Runtime\LambdaRuntime;
+use Laravel\Vapor\Runtime\Octane\Octane;
+use Laravel\Vapor\Runtime\Octane\OctaneHttpHandlerFactory;
 use Laravel\Vapor\Runtime\Secrets;
 use Laravel\Vapor\Runtime\StorageDirectories;
 
@@ -25,23 +25,6 @@ $secrets = Secrets::addToEnvironment(
     $_ENV['VAPOR_SSM_PATH'],
     json_decode($_ENV['VAPOR_SSM_VARIABLES'] ?? '[]', true),
     __DIR__.'/vaporSecrets.php'
-);
-
-/*
-|--------------------------------------------------------------------------
-| Start PHP-FPM
-|--------------------------------------------------------------------------
-|
-| We need to boot the PHP-FPM process with the appropriate handler so it
-| is ready to accept requests. This will initialize this process then
-| wait for this socket to become ready before continuing execution.
-|
-*/
-
-fwrite(STDERR, 'Preparing to boot FPM'.PHP_EOL);
-
-$fpm = Fpm::boot(
-    __DIR__.'/httpHandler.php', $secrets
 );
 
 /*
@@ -67,6 +50,24 @@ with(require __DIR__.'/bootstrap/app.php', function ($app) {
 
 /*
 |--------------------------------------------------------------------------
+| Start Octane Worker
+|--------------------------------------------------------------------------
+|
+| We need to boot the application request Octane worker so it's ready to
+| serve incoming requests. This will initialize this worker then wait
+| for Lambda invocations to be received for this Vapor application.
+|
+*/
+fwrite(STDERR, 'Preparing to boot Octane'.PHP_EOL);
+
+Octane::boot(
+    __DIR__,
+    getenv('OCTANE_DATABASE_SESSION_PERSIST') === 'true',
+    getenv('OCTANE_DATABASE_SESSION_TTL') ?: 0
+);
+
+/*
+|--------------------------------------------------------------------------
 | Listen For Lambda Invocations
 |--------------------------------------------------------------------------
 |
@@ -82,12 +83,10 @@ $lambdaRuntime = LambdaRuntime::fromEnvironmentVariable();
 
 while (true) {
     $lambdaRuntime->nextInvocation(function ($invocationId, $event) {
-        return FpmHttpHandlerFactory::make($event)
+        return OctaneHttpHandlerFactory::make($event)
                     ->handle($event)
                     ->toApiGatewayFormat();
     });
-
-    $fpm->ensureRunning();
 
     LambdaContainer::terminateIfInvocationLimitHasBeenReached(
         ++$invocations, (int) ($_ENV['VAPOR_MAX_REQUESTS'] ?? 250)
