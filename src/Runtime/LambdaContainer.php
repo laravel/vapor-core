@@ -20,7 +20,9 @@ class LambdaContainer
         }
 
         if ($invocations >= $invocationLimit) {
-            Octane::terminate();
+            if (interface_exists(\Laravel\Octane\Contracts\Client::class)) {
+                Octane::terminate();
+            }
 
             echo 'Killing container. Container has processed '.$invocationLimit.' invocations. ('.$_ENV['AWS_REQUEST_ID'].')'.PHP_EOL;
 
