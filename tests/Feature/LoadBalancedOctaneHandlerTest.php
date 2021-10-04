@@ -313,13 +313,38 @@ EOF
 
         $response = $handler->handle([
             'httpMethod' => 'GET',
-            'path' => '/?foo=bar',
+            'path' => '/',
+            'multiValueQueryStringParameters' => [
+                'foo' => ['bar'],
+            ],
             'headers' => [
                 'cookie' => 'XSRF-TOKEN=token_value',
             ],
         ]);
 
         static::assertEquals('foo=bar', $response->toApiGatewayFormat()['body']);
+    }
+
+    public function test_request_query_params()
+    {
+        $handler = new LoadBalancedOctaneHandler();
+
+        Route::get('/', function (Request $request) {
+            return $request->query();
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/',
+            'multiValueQueryStringParameters' => [
+                'foo' => ['bar'],
+            ],
+            'headers' => [
+                'cookie' => 'XSRF-TOKEN=token_value',
+            ],
+        ]);
+
+        static::assertEquals(['foo' => 'bar'], json_decode($response->toApiGatewayFormat()['body'], true));
     }
 
     public function test_request_headers()

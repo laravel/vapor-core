@@ -48,6 +48,10 @@ class OctaneRequestContextFactory
             $method, $contentType, $request->body
         ));
 
+        parse_str($request->serverVariables['QUERY_STRING'], $queryParams);
+
+        $serverRequest = $serverRequest->withQueryParams($queryParams);
+
         return new RequestContext([
             'psr7Request' => $serverRequest,
         ]);
