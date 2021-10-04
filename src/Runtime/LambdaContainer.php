@@ -20,7 +20,6 @@ class LambdaContainer
         }
 
         if ($invocations >= $invocationLimit) {
-
             if (class_exists(\Laravel\Octane\Contracts\Client::class)) {
                 Octane::terminate();
             }
