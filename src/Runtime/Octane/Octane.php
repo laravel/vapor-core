@@ -66,6 +66,8 @@ class Octane implements Client
      */
     public static function boot($basePath, $databaseSessionPersist = false, $databaseSessionTtl = 0)
     {
+        self::ensureServerSoftware('vapor');
+
         $databaseSessionTtl = (int) $databaseSessionTtl;
 
         static::$worker = tap(new Worker(
@@ -184,6 +186,8 @@ class Octane implements Client
             static::$worker->terminate();
 
             static::$worker = null;
+
+            self::ensureServerSoftware(null);
         }
     }
 
@@ -240,5 +244,17 @@ class Octane implements Client
             fwrite(STDERR, $throwable->getMessage());
             fwrite(STDERR, $e->getMessage());
         }
+    }
+
+    /**
+     * Ensures the given software is set globally.
+     *
+     * @param  string|null  $software
+     * @return void
+     */
+    protected static function ensureServerSoftware($software)
+    {
+        $_ENV['SERVER_SOFTWARE'] = $software;
+        $_SERVER['SERVER_SOFTWARE'] = $software;
     }
 }
