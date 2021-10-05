@@ -247,7 +247,7 @@ class Octane implements Client
     }
 
     /**
-     * Ensures the given software is set globally.
+     * Ensures the given software name is set globally.
      *
      * @param  string|null  $software
      * @return void
