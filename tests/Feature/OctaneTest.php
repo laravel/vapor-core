@@ -69,4 +69,10 @@ class OctaneTest extends TestCase
 
         Event::assertDispatched(WorkerErrorOccurred::class);
     }
+
+    public function test_server_software()
+    {
+        self::assertSame('vapor', $_ENV['SERVER_SOFTWARE']);
+        self::assertSame('vapor', $_SERVER['SERVER_SOFTWARE']);
+    }
 }
