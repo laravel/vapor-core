@@ -239,10 +239,16 @@ class Octane implements Client
     public function error(Throwable $e, Application $app, Request $request, RequestContext $context): void
     {
         try {
-            $app[ExceptionHandler::class]->report($e);
+            static::$response = new OctaneResponse(
+                $app[ExceptionHandler::class]->render($request, $e)
+            );
         } catch (Throwable $throwable) {
             fwrite(STDERR, $throwable->getMessage());
             fwrite(STDERR, $e->getMessage());
+
+            static::$response = new OctaneResponse(
+                new \Illuminate\Http\Response('', 500)
+            );
         }
     }
 
