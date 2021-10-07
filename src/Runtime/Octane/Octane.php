@@ -34,7 +34,7 @@ class Octane implements Client
     const DB_SESSION_DEFAULT_TTL = 28800;
 
     /**
-     * List of octane database sessions.
+     * List of Octane database sessions.
      *
      * @var bool
      */
@@ -43,21 +43,21 @@ class Octane implements Client
     ];
 
     /**
-     * The octane response, if any.
+     * The Octane response, if any.
      *
      * @var \Laravel\Octane\OctaneResponse|null
      */
     protected static $response;
 
     /**
-     * The octane worker, if any.
+     * The Octane worker, if any.
      *
      * @var \Laravel\Octane\Worker|null
      */
     protected static $worker;
 
     /**
-     * Boots an octane worker instance.
+     * Boots an Octane worker instance.
      *
      * @param  string  $basePath
      * @param  bool  $databaseSessionPersist
@@ -124,7 +124,7 @@ class Octane implements Client
     }
 
     /**
-     * Handle the given octane request.
+     * Handle the given Octane request.
      *
      * @param  \Laravel\Octane\RequestContext  $request
      * @return \Laravel\Vapor\Runtime\Response
@@ -176,7 +176,7 @@ class Octane implements Client
     }
 
     /**
-     * Terminates an octane worker instance, if any.
+     * Terminates an Octane worker instance, if any.
      *
      * @return void
      */
@@ -192,17 +192,7 @@ class Octane implements Client
     }
 
     /**
-     * Gets the octane worker, if any.
-     *
-     * @return \Laravel\Octane\Worker|null
-     */
-    public static function worker()
-    {
-        return static::$worker;
-    }
-
-    /**
-     * Marshal the given octane request context into an Laravel foundation request.
+     * Marshal the given Octane request context into an Laravel foundation request.
      *
      * @param  \Laravel\Octane\RequestContext  $context
      * @return array
@@ -262,5 +252,15 @@ class Octane implements Client
     {
         $_ENV['SERVER_SOFTWARE'] = $software;
         $_SERVER['SERVER_SOFTWARE'] = $software;
+    }
+
+    /**
+     * Get the Octane worker, if any.
+     *
+     * @return \Laravel\Octane\Worker|null
+     */
+    public static function worker()
+    {
+        return static::$worker;
     }
 }
