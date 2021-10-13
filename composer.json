@@ -22,7 +22,6 @@
         "illuminate/http": "^6.0|^7.0|^8.0",
         "illuminate/queue": "^6.0|^7.0|^8.0",
         "illuminate/support": "^6.0|^7.0|^8.0",
-        "laravel/octane": "dev-feat/php-81",
         "monolog/monolog": "^1.12|^2.0",
         "nyholm/psr7": "^1.0",
         "symfony/process": "^4.3|^5.0",
