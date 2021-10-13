@@ -2,7 +2,7 @@
 
 namespace Laravel\Vapor\Tests\Feature;
 
-if (\PHP_VERSION_ID < 80000) {
+if (! interface_exists(\Laravel\Octane\Contracts\Client::class)) {
     return;
 }
 
