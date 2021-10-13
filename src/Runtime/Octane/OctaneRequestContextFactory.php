@@ -10,7 +10,7 @@ use Laravel\Vapor\Arr;
 use Laravel\Vapor\Runtime\Request;
 use Nyholm\Psr7\ServerRequest;
 use Nyholm\Psr7\UploadedFile;
-use Riverline\MultiPartParser\Part;
+use Laravel\Vapor\Support\Part;
 
 class OctaneRequestContextFactory
 {
