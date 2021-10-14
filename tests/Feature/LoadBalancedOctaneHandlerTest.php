@@ -84,6 +84,42 @@ class LoadBalancedOctaneHandlerTest extends TestCase
         Event::assertDispatched(RequestTerminated::class);
     }
 
+    public function test_response_file()
+    {
+        $handler = new LoadBalancedOctaneHandler();
+
+        Route::get('/', function (Request $request) {
+            return response()->file(__DIR__.'/../Fixtures/asset.js', [
+                'Content-Type' => 'text/javascript',
+            ]);
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/',
+        ]);
+
+        self::assertEquals(['text/javascript'], $response->toApiGatewayFormat()['multiValueHeaders']['Content-Type']);
+        self::assertEquals("console.log();\n", $response->toApiGatewayFormat()['body']);
+    }
+
+    public function test_download_file()
+    {
+        $handler = new LoadBalancedOctaneHandler();
+
+        Route::get('/', function (Request $request) {
+            return response()->download(__DIR__.'/../Fixtures/asset.js');
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/',
+        ]);
+
+        self::assertEquals(['attachment; filename=asset.js'], $response->toApiGatewayFormat()['multiValueHeaders']['Content-Disposition']);
+        self::assertEquals("console.log();\n", $response->toApiGatewayFormat()['body']);
+    }
+
     public function test_response_headers()
     {
         $handler = new LoadBalancedOctaneHandler();
