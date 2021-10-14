@@ -64,6 +64,42 @@ class OctaneHandlerTest extends TestCase
         static::assertEquals('Hello World', $response->toApiGatewayFormat()['body']);
     }
 
+    public function test_response_file()
+    {
+        $handler = new OctaneHandler();
+
+        Route::get('/', function (Request $request) {
+            return response()->file(__DIR__.'/../Fixtures/asset.js', [
+                'Content-Type' => 'text/javascript',
+            ]);
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/',
+        ]);
+
+        self::assertEquals('text/javascript', $response->toApiGatewayFormat()['headers']['Content-Type']);
+        self::assertEquals("console.log();\n", $response->toApiGatewayFormat()['body']);
+    }
+
+    public function test_response_download()
+    {
+        $handler = new OctaneHandler();
+
+        Route::get('/', function (Request $request) {
+            return response()->download(__DIR__.'/../Fixtures/asset.js');
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/',
+        ]);
+
+        self::assertEquals('attachment; filename=asset.js', $response->toApiGatewayFormat()['headers']['Content-Disposition']);
+        self::assertEquals("console.log();\n", $response->toApiGatewayFormat()['body']);
+    }
+
     public function test_response_fires_events()
     {
         Event::fake([RequestReceived::class, RequestTerminated::class]);

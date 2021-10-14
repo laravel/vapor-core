@@ -22,6 +22,7 @@ use Laravel\Vapor\Runtime\HttpKernel;
 use Laravel\Vapor\Runtime\Response;
 use Laravel\Vapor\Runtime\StorageDirectories;
 use PDO;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Throwable;
 
 class Octane implements Client
@@ -166,8 +167,12 @@ class Octane implements Client
                 });
         }
 
+        $content = $response instanceof BinaryFileResponse
+            ? $response->getFile()->getContent()
+            : $response->getContent();
+
         return tap(new Response(
-            $response->getContent(),
+            $content,
             $response->headers->all(),
             $response->getStatusCode()
         ), static function () {
