@@ -103,7 +103,7 @@ class LoadBalancedOctaneHandlerTest extends TestCase
         self::assertEquals("console.log();\n", $response->toApiGatewayFormat()['body']);
     }
 
-    public function test_download_file()
+    public function test_response_download()
     {
         $handler = new LoadBalancedOctaneHandler();
 
