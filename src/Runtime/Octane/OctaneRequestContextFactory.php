@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 use Laravel\Octane\RequestContext;
 use Laravel\Vapor\Arr;
 use Laravel\Vapor\Runtime\Request;
-use Laravel\Vapor\Support\Part;
+use Riverline\MultiPartParser\Part;
 use Nyholm\Psr7\ServerRequest;
 use Nyholm\Psr7\UploadedFile;
 
