@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Vapor\Runtime;
+namespace Laravel\Vapor\Runtime\Fpm;
 
 use Laravel\Vapor\Runtime\Handlers\FpmHandler;
 use Laravel\Vapor\Runtime\Handlers\LoadBalancedFpmHandler;
@@ -8,7 +8,7 @@ use Laravel\Vapor\Runtime\Handlers\UnknownEventHandler;
 use Laravel\Vapor\Runtime\Handlers\WarmerHandler;
 use Laravel\Vapor\Runtime\Handlers\WarmerPingHandler;
 
-class HttpHandlerFactory
+class FpmHttpHandlerFactory
 {
     /**
      * Create a new handler for the given HTTP event.
@@ -24,12 +24,10 @@ class HttpHandlerFactory
             return new WarmerPingHandler;
         } elseif (isset($event['requestContext']['elb'])) {
             return new LoadBalancedFpmHandler;
-//            return new LoadBalancedAppHandler;
         } elseif (isset($event['httpMethod'])) {
             return new FpmHandler;
-        // return new AppHandler;
-        } else {
-            return new UnknownEventHandler;
         }
+
+        return new UnknownEventHandler;
     }
 }

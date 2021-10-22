@@ -49,11 +49,11 @@ class HttpKernel
         if (static::shouldSendMaintenanceModeResponse($request)) {
             if (isset($_ENV['VAPOR_MAINTENANCE_MODE_SECRET']) &&
                 $_ENV['VAPOR_MAINTENANCE_MODE_SECRET'] == $request->path()) {
-                $response = $this->bypassResponse($_ENV['VAPOR_MAINTENANCE_MODE_SECRET']);
+                $response = static::bypassResponse($_ENV['VAPOR_MAINTENANCE_MODE_SECRET']);
 
                 $this->app->terminate();
             } elseif (isset($_ENV['VAPOR_MAINTENANCE_MODE_SECRET']) &&
-                $this->hasValidBypassCookie($request, $_ENV['VAPOR_MAINTENANCE_MODE_SECRET'])) {
+                static::hasValidBypassCookie($request, $_ENV['VAPOR_MAINTENANCE_MODE_SECRET'])) {
                 $response = $this->sendRequest($request);
             } else {
                 if ($request->wantsJson() && file_exists($_ENV['LAMBDA_TASK_ROOT'].'/503.json')) {
@@ -95,7 +95,7 @@ class HttpKernel
      * @param  string  $secret
      * @return bool
      */
-    protected function hasValidBypassCookie($request, $secret)
+    public static function hasValidBypassCookie($request, $secret)
     {
         return $request->cookie('laravel_maintenance') &&
             MaintenanceModeBypassCookie::isValid(
@@ -110,7 +110,7 @@ class HttpKernel
      * @param  string  $secret
      * @return \Illuminate\Http\RedirectResponse
      */
-    protected function bypassResponse(string $secret)
+    public static function bypassResponse(string $secret)
     {
         $response = new RedirectResponse('/');
 

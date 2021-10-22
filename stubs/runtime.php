@@ -25,9 +25,12 @@ fwrite(STDERR, 'Loaded Composer autoload file'.PHP_EOL);
 |
 */
 
-if (isset($_ENV['APP_RUNNING_IN_CONSOLE']) &&
-    $_ENV['APP_RUNNING_IN_CONSOLE'] === 'true') {
+if (isset($_ENV['APP_RUNNING_IN_CONSOLE']) && $_ENV['APP_RUNNING_IN_CONSOLE'] === 'true') {
     return require __DIR__.'/cliRuntime.php';
-} else {
-    return require __DIR__.'/fpmRuntime.php';
 }
+
+if (isset($_ENV['APP_RUNNING_IN_OCTANE']) && $_ENV['APP_RUNNING_IN_OCTANE'] === 'true') {
+    return require __DIR__.'/octaneRuntime.php';
+}
+
+return require __DIR__.'/fpmRuntime.php';

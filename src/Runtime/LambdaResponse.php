@@ -2,49 +2,79 @@
 
 namespace Laravel\Vapor\Runtime;
 
-use Psr\Http\Message\ResponseInterface;
+use Laravel\Vapor\Contracts\LambdaResponse as LambdaResponseContract;
+use stdClass;
 
-class PsrLambdaResponseFactory
+class LambdaResponse implements LambdaResponseContract
 {
     /**
-     * Create a new Lambda response array from the given PSR response.
+     * The response status code.
      *
-     * @param  \Psr\Http\Message\ResponseInterface  $response
-     * @return \Laravel\Vapor\Runtime\ArrayLambdaResponse
+     * @var int
      */
-    public static function fromPsrResponse(ResponseInterface $response)
+    protected $status = 200;
+
+    /**
+     * The response headers.
+     *
+     * @var array
+     */
+    protected $headers;
+
+    /**
+     * The response body.
+     *
+     * @var string
+     */
+    protected $body;
+
+    /**
+     * Create a new Lambda response from an FPM response.
+     *
+     * @param  int  $status
+     * @param  array  $headers
+     * @param  string  $body
+     * @return void
+     */
+    public function __construct(int $status, array $headers, $body)
     {
-        $response->getBody()->rewind();
-
-        $headers = static::parseHeaders($response);
-
-        $requiresEncoding = isset($headers['X-Vapor-Base64-Encode']);
-
-        $body = $response->getBody()->getContents();
-
-        return new ArrayLambdaResponse([
-            'isBase64Encoded' => $requiresEncoding,
-            'statusCode' => $response->getStatusCode(),
-            'headers' => $headers,
-            'body' => $requiresEncoding ? base64_encode($body) : $body,
-        ]);
+        $this->body = $body;
+        $this->status = $status;
+        $this->headers = $headers;
     }
 
     /**
-     * Parse the headers for the outgoing response.
+     * Convert the response to API Gateway's supported format.
      *
-     * @param  \Psr\Http\Message\ResponseInterface  $response
      * @return array
      */
-    protected static function parseHeaders(ResponseInterface $response)
+    public function toApiGatewayFormat()
+    {
+        $requiresEncoding = isset($this->headers['x-vapor-base64-encode'][0]);
+
+        return [
+            'isBase64Encoded' => $requiresEncoding,
+            'statusCode' => $this->status,
+            'headers' => empty($this->headers) ? new stdClass : $this->prepareHeaders($this->headers),
+            'body' => $requiresEncoding ? base64_encode($this->body) : $this->body,
+        ];
+    }
+
+    /**
+     * Prepare the given response headers for API Gateway.
+     *
+     * @param  array  $responseHeaders
+     * @return array
+     */
+    protected function prepareHeaders(array $responseHeaders)
     {
         $headers = [];
 
-        foreach ($response->getHeaders() as $name => $values) {
-            $name = static::normalizeHeaderName($name);
+        foreach ($responseHeaders as $name => $values) {
+            $name = $this->normalizeHeaderName($name);
 
             if ($name == 'Set-Cookie') {
-                $headers = array_merge($headers, static::buildCookieHeaders($values));
+                $headers = array_merge($headers, $this->buildCookieHeaders($values));
 
                 continue;
             }
@@ -67,12 +97,12 @@ class PsrLambdaResponseFactory
      * @param  array  $values
      * @return array
      */
-    protected static function buildCookieHeaders(array $values)
+    protected function buildCookieHeaders(array $values)
     {
         $headers = [];
 
         foreach ($values as $index => $value) {
-            $headers[static::cookiePermutation($index)] = $value;
+            $headers[$this->cookiePermutation($index)] = $value;
         }
 
         return $headers;
@@ -84,8 +114,9 @@ class PsrLambdaResponseFactory
      * @param  int  $index
      * @return string
      */
-    protected static function cookiePermutation($index)
+    protected function cookiePermutation($index)
     {
+        // Hard-coded to support up to 18 cookies for now...
         switch ($index) {
             case 0:
                 return 'set-cookie';
@@ -134,7 +165,7 @@ class PsrLambdaResponseFactory
      * @param  string  $name
      * @return string
      */
-    protected static function normalizeHeaderName($name)
+    protected function normalizeHeaderName($name)
     {
         return str_replace(' ', '-', ucwords(str_replace('-', ' ', $name)));
     }

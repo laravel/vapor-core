@@ -12,7 +12,7 @@ class UnknownEventHandler implements LambdaEventHandler
      * Handle an incoming Lambda event.
      *
      * @param  array  $event
-     * @param  \Laravel\Vapor\Contracts\LambdaResponse
+     * @return \Laravel\Vapor\Contracts\LambdaResponse
      */
     public function handle(array $event)
     {

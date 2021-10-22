@@ -36,7 +36,7 @@ class Arr
      * Set a multi-part body array value in the given array.
      *
      * @param  array  $array
-     * @param  string  $key
+     * @param  string  $name
      * @param  mixed  $value
      * @return array
      */
