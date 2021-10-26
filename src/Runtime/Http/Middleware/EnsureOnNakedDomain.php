@@ -27,13 +27,20 @@ class EnsureOnNakedDomain
             ), 301);
         }
 
-        if (config('vapor.redirect_to_root') === false &&
-            strpos($request->getHost(), 'www.') === false) {
-            return new RedirectResponse(str_replace(
-                $request->getScheme().'://',
-                $request->getScheme().'://www.',
-                $request->fullUrl()
-            ), 301);
+        if (config('vapor.redirect_to_root') === false) {
+            $url = parse_url(config('app.url'));
+
+            $nakedHost = preg_replace('#^www\.(.+\.)#i', '$1', $url[
+                'host'
+            ]);
+
+            if ($request->getHost() === $nakedHost) {
+                return new RedirectResponse(str_replace(
+                    $request->getScheme().'://',
+                    $request->getScheme().'://www.',
+                    $request->fullUrl()
+                ), 301);
+            }
         }
 
         return $next($request);
