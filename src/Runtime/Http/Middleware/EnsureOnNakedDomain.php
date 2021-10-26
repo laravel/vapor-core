@@ -29,6 +29,7 @@ class EnsureOnNakedDomain
 
         if (config('vapor.redirect_to_root') === false) {
             $url = parse_url(config('app.url'));
+
             $nakedHost = preg_replace('#^www\.(.+\.)#i', '$1', $url[
                 'host'
             ]);
