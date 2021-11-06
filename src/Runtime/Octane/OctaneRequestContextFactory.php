@@ -136,8 +136,8 @@ class OctaneRequestContextFactory
     protected static function uploadedFiles($method, $contentType, $body)
     {
         if ($method !== 'POST' ||
-            is_null($contentType = $contentType) ||
-            $contentType === 'application/x-www-form-urlencoded') {
+            is_null($contentType) ||
+            static::isUrlEncodedForm($contentType)) {
             return [];
         }
 
@@ -158,7 +158,7 @@ class OctaneRequestContextFactory
             return;
         }
 
-        if (strtolower($contentType) === 'application/x-www-form-urlencoded') {
+        if (static::isUrlEncodedForm($contentType)) {
             parse_str($body, $parsedBody);
 
             return $parsedBody;
@@ -190,5 +190,16 @@ class OctaneRequestContextFactory
                     ? Arr::setMultiPartArrayValue($parsedBody, $name, $part->getBody())
                     : SupportArr::set($parsedBody, $name, $part->getBody());
             }, []);
+    }
+
+    /**
+     * Check if Content-Type is Url Encoded Form.
+     *
+     * @param  string  $contentType
+     * @return bool
+     */
+    protected static function isUrlEncodedForm($contentType)
+    {
+        return Str::contains(strtolower($contentType), 'application/x-www-form-urlencoded');
     }
 }
