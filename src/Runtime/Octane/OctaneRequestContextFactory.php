@@ -193,7 +193,7 @@ class OctaneRequestContextFactory
     }
 
     /**
-     * Check if Content-Type is Url Encoded Form.
+     * Determine if the given content type represents a URL encoded form.
      *
      * @param  string  $contentType
      * @return bool
