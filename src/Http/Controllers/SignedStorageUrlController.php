@@ -35,7 +35,7 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
 
         $signedRequest = $client->createPresignedRequest(
             $this->createCommand($request, $client, $bucket, $key = ('tmp/'.$uuid)),
-            sprintf('+%s minutes', $expiresAfter),
+            sprintf('+%s minutes', $expiresAfter)
         );
 
         $uri = $signedRequest->getUri();
