@@ -64,7 +64,7 @@ class SignedStorageUrlEndpointTest extends TestCase
         parse_str($response->json()['url'], $queryParams);
         $this->assertEquals(300, $queryParams['X-Amz-Expires']);
 
-        config()->set('vapor.signed_url_expires_after', 6);
+        config()->set('vapor.signed_storage_url_expires_after', 6);
         $response = $this->json('POST', '/vapor/signed-storage-url');
         parse_str($response->json()['url'], $queryParams);
         $this->assertEquals(360, $queryParams['X-Amz-Expires']);
