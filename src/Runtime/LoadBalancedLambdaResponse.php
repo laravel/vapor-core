@@ -2,6 +2,8 @@
 
 namespace Laravel\Vapor\Runtime;
 
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class LoadBalancedLambdaResponse extends LambdaResponse
@@ -13,14 +15,15 @@ class LoadBalancedLambdaResponse extends LambdaResponse
      */
     public function toApiGatewayFormat()
     {
-        $requiresEncoding = isset($this->headers['x-vapor-base64-encode'][0]);
+        $this->headers = empty($this->headers) ? [] : $this->prepareHeaders($this->headers);
 
         return [
-            'isBase64Encoded' => $requiresEncoding,
+            'body' => $this->prepareBody(),
+            'multiValueHeaders' => $this->headers,
+            'isBase64Encoded' => $this->isEncodingRequired(),
+
             'statusCode' => $this->status,
             'statusDescription' => $this->status.' '.$this->statusText($this->status),
-            'multiValueHeaders' => empty($this->headers) ? [] : $this->prepareHeaders($this->headers),
-            'body' => $requiresEncoding ? base64_encode($this->body) : $this->body,
         ];
     }
 
@@ -71,5 +74,47 @@ class LoadBalancedLambdaResponse extends LambdaResponse
         return array_map(function ($value) {
             return (string) $value;
         }, $values);
+    }
+
+    public function isEncodingRequired()
+    {
+        return isset($this->headers['x-vapor-base64-encode'][0]) || $this->isGzipCompatible();
+    }
+
+    public function isGzipCompatible()
+    {
+        $allowedContentTypes = [
+            'text/html',
+            'text/plain',
+            'text/css',
+            'text/javascript',
+            'text/xml',
+            'application/json',
+            'application/javascript',
+            'application/xml',
+            'application/xml+rss',
+        ];
+
+        foreach ($allowedContentTypes as $contentType) {
+            if (Str::contains($this->headers['Content-Type'][0], $contentType)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function prepareBody()
+    {
+        if (!$this->isEncodingRequired()) {
+            return $this->body;
+        }
+
+        if ($this->isGzipCompatible()) {
+            $this->headers['Content-Encoding'] = ['gzip'];
+            $this->body = gzencode($this->body, 9);
+        }
+
+        return base64_encode($this->body);
     }
 }
