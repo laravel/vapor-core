@@ -135,7 +135,7 @@ class OctaneRequestContextFactory
      */
     protected static function uploadedFiles($method, $contentType, $body)
     {
-        if ($method !== 'POST' ||
+        if (! static::isPostOrPut($method) ||
             is_null($contentType) ||
             static::isUrlEncodedForm($contentType)) {
             return [];
@@ -154,8 +154,8 @@ class OctaneRequestContextFactory
      */
     protected static function parsedBody($method, $contentType, $body)
     {
-        if ($method !== 'POST' || is_null($contentType)) {
-            return;
+        if (! static::isPostOrPut($method) || is_null($contentType)) {
+            return null;
         }
 
         if (static::isUrlEncodedForm($contentType)) {
@@ -201,5 +201,16 @@ class OctaneRequestContextFactory
     protected static function isUrlEncodedForm($contentType)
     {
         return Str::contains(strtolower($contentType), 'application/x-www-form-urlencoded');
+    }
+
+    /**
+     * Determine if the given method is a post or put.
+     *
+     * @param  string  $method
+     * @return bool
+     */
+    protected static function isPostOrPut($method)
+    {
+        return in_array($method, ['POST', 'PUT']);
     }
 }
