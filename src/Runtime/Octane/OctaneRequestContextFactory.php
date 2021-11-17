@@ -204,7 +204,7 @@ class OctaneRequestContextFactory
     }
 
     /**
-     * Determine if the given method is a post or put.
+     * Determine if the given request method is allowed.
      *
      * @param  string  $method
      * @return bool
