@@ -135,7 +135,7 @@ class OctaneRequestContextFactory
      */
     protected static function uploadedFiles($method, $contentType, $body)
     {
-        if (! static::isPostOrPut($method) ||
+        if (! static::isAllowedRequestMethod($method) ||
             is_null($contentType) ||
             static::isUrlEncodedForm($contentType)) {
             return [];
@@ -154,7 +154,7 @@ class OctaneRequestContextFactory
      */
     protected static function parsedBody($method, $contentType, $body)
     {
-        if (! static::isPostOrPut($method) || is_null($contentType)) {
+        if (! static::isAllowedRequestMethod($method) || is_null($contentType)) {
             return null;
         }
 
@@ -209,8 +209,8 @@ class OctaneRequestContextFactory
      * @param  string  $method
      * @return bool
      */
-    protected static function isPostOrPut($method)
+    protected static function isAllowedRequestMethod($method)
     {
-        return in_array($method, ['POST', 'PUT']);
+        return in_array($method, ['POST', 'PATCH', 'PUT']);
     }
 }
