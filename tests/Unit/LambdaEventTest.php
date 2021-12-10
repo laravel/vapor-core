@@ -34,7 +34,7 @@ class LambdaEventTest extends TestCase
     public function getEvent()
     {
         return new LambdaEvent(json_decode(
-            file_get_contents(__DIR__.'/../Fixtures/LambdaEvent.json'),
+            file_get_contents(__DIR__.'/../Fixtures/lambdaEvent.json'),
             true
         ));
     }
