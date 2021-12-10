@@ -2,11 +2,19 @@
 
 namespace Laravel\Vapor\Tests\Unit;
 
+use Laravel\Vapor\Events\LambdaEvent;
 use Mockery;
 use Orchestra\Testbench\TestCase;
 
 class VaporWorkCommandTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        FakeJob::$handled = false;
+    }
+
     protected function tearDown(): void
     {
         Mockery::close();
@@ -18,30 +26,24 @@ class VaporWorkCommandTest extends TestCase
 
         $job = new FakeJob;
 
-        $message = base64_encode(json_encode([
-            'messageId' => 'test-message-id',
-            'receiptHandle' => 'test-receipt-handle',
-            'body' => json_encode([
-                'displayName' => FakeJob::class,
-                'job' => 'Illuminate\Queue\CallQueuedHandler@call',
-                'maxTries' => null,
-                'timeout' => null,
-                'timeoutAt' => null,
-                'data' => [
-                    'commandName' => FakeJob::class,
-                    'command' => serialize($job),
-                ],
-                'attempts' => 0,
-            ]),
-            'attributes' => [
-                'ApproximateReceiveCount' => 1,
-            ],
-            'messageAttributes' => [],
-            'eventSourceARN' => 'arn:aws:sqs:us-east-1:959512994844:vapor-test-queue-2',
-            'awsRegion' => 'us-east-1',
-        ]));
+        $event = $this->getEvent();
 
-        $this->artisan('vapor:work', ['message' => $message]);
+        $event['Records.0.body'] = json_encode([
+            'displayName' => FakeJob::class,
+            'job' => 'Illuminate\Queue\CallQueuedHandler@call',
+            'maxTries' => null,
+            'timeout' => null,
+            'timeoutAt' => null,
+            'data' => [
+                'commandName' => FakeJob::class,
+                'command' => serialize($job),
+            ],
+            'attempts' => 0,
+        ]);
+
+        $this->instance(LambdaEvent::class, $event);
+
+        $this->artisan('vapor:work');
 
         $this->assertTrue(FakeJob::$handled);
     }
@@ -77,5 +79,13 @@ class VaporWorkCommandTest extends TestCase
             'tries' => env('SQS_TRIES', 0),
             'force' => env('SQS_FORCE', false),
         ]);
+    }
+
+    public function getEvent()
+    {
+        return new LambdaEvent(json_decode(
+            file_get_contents(__DIR__.'/../Fixtures/LambdaEvent.json'),
+            true
+        ));
     }
 }

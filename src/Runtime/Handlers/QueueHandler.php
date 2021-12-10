@@ -4,6 +4,7 @@ namespace Laravel\Vapor\Runtime\Handlers;
 
 use Illuminate\Contracts\Console\Kernel;
 use Laravel\Vapor\Contracts\LambdaEventHandler;
+use Laravel\Vapor\Events\LambdaEvent;
 use Laravel\Vapor\Runtime\ArrayLambdaResponse;
 use Laravel\Vapor\Runtime\StorageDirectories;
 use Symfony\Component\Console\Input\StringInput;
@@ -34,7 +35,6 @@ class QueueHandler implements LambdaEventHandler
      * Handle an incoming Lambda event.
      *
      * @param  array  $event
-     * @param  \Laravel\Vapor\Contracts\LambdaResponse
      * @return ArrayLambdaResponse
      */
     public function handle(array $event)
@@ -52,13 +52,19 @@ class QueueHandler implements LambdaEventHandler
 
             $consoleKernel = static::$app->make(Kernel::class);
 
+            static::$app->bind(LambdaEvent::class, function () use ($event) {
+                return new LambdaEvent($event);
+            });
+
             $consoleInput = new StringInput(
-                'vapor:work '.rtrim(base64_encode(json_encode($event['Records'][0])), '=').' '.$commandOptions.' --no-interaction'
+                'vapor:work '.$commandOptions.' --no-interaction'
             );
 
-            $consoleKernel->terminate($consoleInput, $status = $consoleKernel->handle(
+            $status = $consoleKernel->handle(
                 $consoleInput, $output = new BufferedOutput
-            ));
+            );
+
+            $consoleKernel->terminate($consoleInput, $status);
 
             return new ArrayLambdaResponse([
                 'requestId' => $_ENV['AWS_REQUEST_ID'] ?? null,
@@ -68,6 +74,8 @@ class QueueHandler implements LambdaEventHandler
                 'output' => base64_encode($output->fetch()),
             ]);
         } finally {
+            unset(static::$app[LambdaEvent::class]);
+
             $this->terminate();
         }
     }
