@@ -3,8 +3,8 @@
 namespace Laravel\Vapor\Tests\Unit;
 
 use Laravel\Vapor\Events\LambdaEvent;
-use Mockery;
 use Laravel\Vapor\Runtime\Handlers\QueueHandler;
+use Mockery;
 use Orchestra\Testbench\TestCase;
 
 class QueueHandlerTest extends TestCase
