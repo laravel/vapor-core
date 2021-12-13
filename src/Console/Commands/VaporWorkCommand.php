@@ -5,7 +5,7 @@ namespace Laravel\Vapor\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\WorkerOptions;
-use InvalidArgumentException;
+use Laravel\Vapor\Events\LambdaEvent;
 use Laravel\Vapor\Queue\VaporJob;
 use Laravel\Vapor\Queue\VaporWorker;
 
@@ -19,7 +19,6 @@ class VaporWorkCommand extends Command
      * @var string
      */
     protected $signature = 'vapor:work
-                            {message : The Base64 encoded message payload}
                             {--delay=0 : The number of seconds to delay failed jobs}
                             {--timeout=0 : The number of seconds a child process can run}
                             {--tries=0 : Number of times to attempt a job before logging it failed}
@@ -69,9 +68,10 @@ class VaporWorkCommand extends Command
     /**
      * Execute the console command.
      *
+     * @param  \Laravel\Vapor\Events\LambdaEvent  $event
      * @return void
      */
-    public function handle()
+    public function handle(LambdaEvent $event)
     {
         if ($this->downForMaintenance()) {
             return;
@@ -86,7 +86,7 @@ class VaporWorkCommand extends Command
         $this->worker->setCache($this->laravel['cache']->driver());
 
         return $this->worker->runVaporJob(
-            $this->marshalJob($this->message()),
+            $this->marshalJob($this->message($event)),
             'sqs',
             $this->gatherWorkerOptions()
         );
@@ -128,17 +128,14 @@ class VaporWorkCommand extends Command
     }
 
     /**
-     * Get the decoded message payload.
+     * Get the message payload.
      *
+     * @param  \Laravel\Vapor\Events\LambdaEvent  $event
      * @return array
      */
-    protected function message()
+    protected function message($event)
     {
-        return tap(json_decode(base64_decode($this->argument('message')), true), function ($message) {
-            if ($message === false) {
-                throw new InvalidArgumentException('Unable to unserialize message.');
-            }
-        });
+        return $event['Records'][0];
     }
 
     /**

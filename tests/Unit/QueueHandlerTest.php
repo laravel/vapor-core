@@ -3,10 +3,11 @@
 namespace Laravel\Vapor\Tests\Unit;
 
 use Laravel\Vapor\Events\LambdaEvent;
+use Laravel\Vapor\Runtime\Handlers\QueueHandler;
 use Mockery;
 use Orchestra\Testbench\TestCase;
 
-class VaporWorkCommandTest extends TestCase
+class QueueHandlerTest extends TestCase
 {
     protected function setUp(): void
     {
@@ -20,7 +21,7 @@ class VaporWorkCommandTest extends TestCase
         Mockery::close();
     }
 
-    public function test_command_can_be_called()
+    public function test_job_can_be_called()
     {
         $this->assertFalse(FakeJob::$handled);
 
@@ -28,7 +29,7 @@ class VaporWorkCommandTest extends TestCase
 
         $event = $this->getEvent();
 
-        $event['Records.0.body'] = json_encode([
+        $event['Records'][0]['body'] = json_encode([
             'displayName' => FakeJob::class,
             'job' => 'Illuminate\Queue\CallQueuedHandler@call',
             'maxTries' => null,
@@ -41,10 +42,13 @@ class VaporWorkCommandTest extends TestCase
             'attempts' => 0,
         ]);
 
-        $this->instance(LambdaEvent::class, $event);
+        QueueHandler::$app = $this->app;
 
-        $this->artisan('vapor:work');
+        $queueHandler = new QueueHandler();
 
+        $this->assertFalse(QueueHandler::$app->bound(LambdaEvent::class));
+        $queueHandler->handle($event);
+        $this->assertFalse(QueueHandler::$app->bound(LambdaEvent::class));
         $this->assertTrue(FakeJob::$handled);
     }
 
@@ -72,9 +76,9 @@ class VaporWorkCommandTest extends TestCase
 
     protected function getEvent()
     {
-        return new LambdaEvent(json_decode(
+        return json_decode(
             file_get_contents(__DIR__.'/../Fixtures/lambdaEvent.json'),
             true
-        ));
+        );
     }
 }
