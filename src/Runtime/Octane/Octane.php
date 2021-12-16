@@ -172,6 +172,40 @@ class Octane implements Client
     }
 
     /**
+     * Send the request to the worker.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Laravel\Octane\RequestContext  $context
+     * @return \Laravel\Octane\OctaneResponse
+     */
+    protected static function sendRequest($request, $context)
+    {
+        return (new Pipeline)->send($request)
+            ->through([
+                new EnsureOnNakedDomain,
+                new RedirectStaticAssets,
+                new EnsureVanityUrlIsNotIndexed,
+                new EnsureBinaryEncoding(),
+            ])->then(function ($request) use ($context) {
+                static::$worker->handle($request, $context);
+
+                return static::$response->response;
+            });
+    }
+
+    /**
+     * Determine if the incoming request has a maintenance mode bypass cookie.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $secret
+     * @return bool
+     */
+    public static function hasValidBypassCookie($request, $secret)
+    {
+        return HttpKernel::hasValidBypassCookie($request, $secret);
+    }
+
+    /**
      * Terminates an Octane worker instance, if any.
      *
      * @return void
@@ -258,39 +292,5 @@ class Octane implements Client
     public static function worker()
     {
         return static::$worker;
-    }
-
-    /**
-     * Send the request to the worker.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Laravel\Octane\RequestContext  $context
-     * @return \Laravel\Octane\OctaneResponse
-     */
-    protected static function sendRequest($request, $context)
-    {
-        return (new Pipeline)->send($request)
-            ->through([
-                new EnsureOnNakedDomain,
-                new RedirectStaticAssets,
-                new EnsureVanityUrlIsNotIndexed,
-                new EnsureBinaryEncoding(),
-            ])->then(function ($request) use ($context) {
-                static::$worker->handle($request, $context);
-
-                return static::$response->response;
-            });
-    }
-
-    /**
-     * Determine if the incoming request has a maintenance mode bypass cookie.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  string  $secret
-     * @return bool
-     */
-    public static function hasValidBypassCookie($request, $secret)
-    {
-        return HttpKernel::hasValidBypassCookie($request, $secret);
     }
 }
