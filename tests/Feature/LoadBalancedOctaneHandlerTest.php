@@ -99,8 +99,8 @@ class LoadBalancedOctaneHandlerTest extends TestCase
             'path' => '/',
         ]);
 
-        self::assertEquals(['text/javascript'], $response->toApiGatewayFormat()['multiValueHeaders']['Content-Type']);
-        self::assertEquals("console.log();\n", $response->toApiGatewayFormat()['body']);
+        static::assertEquals(['text/javascript'], $response->toApiGatewayFormat()['multiValueHeaders']['Content-Type']);
+        static::assertEquals("console.log();\n", $response->toApiGatewayFormat()['body']);
     }
 
     public function test_response_download()
@@ -116,8 +116,8 @@ class LoadBalancedOctaneHandlerTest extends TestCase
             'path' => '/',
         ]);
 
-        self::assertEquals(['attachment; filename=asset.js'], $response->toApiGatewayFormat()['multiValueHeaders']['Content-Disposition']);
-        self::assertEquals("console.log();\n", $response->toApiGatewayFormat()['body']);
+        static::assertEquals(['attachment; filename=asset.js'], $response->toApiGatewayFormat()['multiValueHeaders']['Content-Disposition']);
+        static::assertEquals("console.log();\n", $response->toApiGatewayFormat()['body']);
     }
 
     public function test_response_headers()
@@ -238,8 +238,8 @@ class LoadBalancedOctaneHandlerTest extends TestCase
             ],
         ]);
 
-        self::assertEquals(['application/json'], $response->toApiGatewayFormat()['multiValueHeaders']['Content-Type']);
-        self::assertEquals(['hello' => 'world'], json_decode($response->toApiGatewayFormat()['body'], true));
+        static::assertEquals(['application/json'], $response->toApiGatewayFormat()['multiValueHeaders']['Content-Type']);
+        static::assertEquals(['message' => 'We are currently down for maintenance.'], json_decode($response->toApiGatewayFormat()['body'], true));
     }
 
     public function test_request_body()
@@ -402,5 +402,68 @@ EOF
         $body = $response->toApiGatewayFormat()['body'];
 
         static::assertEquals(['my-header-value'], json_decode($body, true)['my-header']);
+    }
+
+    public function test_maintenance_mode_with_valid_bypass_cookie()
+    {
+        $octane = new class() extends Octane
+        {
+            public static function hasValidBypassCookie($request, $secret)
+            {
+                return true;
+            }
+        };
+
+        $handler = new class() extends LoadBalancedOctaneHandler
+        {
+            public function request($event)
+            {
+                return parent::request($event);
+            }
+
+            public function response($response)
+            {
+                return parent::response($response);
+            }
+        };
+
+        $_ENV['VAPOR_MAINTENANCE_MODE'] = 'true';
+        $_ENV['APP_VANITY_URL'] = 'production.com';
+        $_ENV['VAPOR_MAINTENANCE_MODE_SECRET'] = 'my-secret';
+
+        Route::get('/', function () {
+            return 'Hello World';
+        });
+
+        $response = $handler->response($octane::handle($handler->request([
+            'httpMethod' => 'GET',
+            'path' => '/',
+        ])));
+
+        static::assertEquals('Hello World', $response->toApiGatewayFormat()['body']);
+    }
+
+    public function test_maintenance_mode_with_invalid_bypass_cookie()
+    {
+        $handler = new LoadBalancedOctaneHandler();
+
+        $_ENV['VAPOR_MAINTENANCE_MODE'] = 'true';
+        $_ENV['APP_VANITY_URL'] = 'production.com';
+        $_ENV['VAPOR_MAINTENANCE_MODE_SECRET'] = 'my-secret';
+
+        Route::get('/', function () {
+            return 'Hello World';
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/',
+            'headers' => [
+                'Accept' => 'application/json',
+            ],
+        ]);
+
+        static::assertEquals(['application/json'], $response->toApiGatewayFormat()['multiValueHeaders']['Content-Type']);
+        static::assertEquals(['message' => 'We are currently down for maintenance.'], json_decode($response->toApiGatewayFormat()['body'], true));
     }
 }

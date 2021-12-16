@@ -79,8 +79,8 @@ class OctaneHandlerTest extends TestCase
             'path' => '/',
         ]);
 
-        self::assertEquals('text/javascript', $response->toApiGatewayFormat()['headers']['Content-Type']);
-        self::assertEquals("console.log();\n", $response->toApiGatewayFormat()['body']);
+        static::assertEquals('text/javascript', $response->toApiGatewayFormat()['headers']['Content-Type']);
+        static::assertEquals("console.log();\n", $response->toApiGatewayFormat()['body']);
     }
 
     public function test_response_download()
@@ -96,8 +96,8 @@ class OctaneHandlerTest extends TestCase
             'path' => '/',
         ]);
 
-        self::assertEquals('attachment; filename=asset.js', $response->toApiGatewayFormat()['headers']['Content-Disposition']);
-        self::assertEquals("console.log();\n", $response->toApiGatewayFormat()['body']);
+        static::assertEquals('attachment; filename=asset.js', $response->toApiGatewayFormat()['headers']['Content-Disposition']);
+        static::assertEquals("console.log();\n", $response->toApiGatewayFormat()['body']);
     }
 
     public function test_response_fires_events()
@@ -240,8 +240,8 @@ class OctaneHandlerTest extends TestCase
             ],
         ]);
 
-        self::assertEquals('application/json', $response->toApiGatewayFormat()['headers']['Content-Type']);
-        self::assertEquals(['hello' => 'world'], json_decode($response->toApiGatewayFormat()['body'], true));
+        static::assertEquals('application/json', $response->toApiGatewayFormat()['headers']['Content-Type']);
+        static::assertEquals(['message' => 'We are currently down for maintenance.'], json_decode($response->toApiGatewayFormat()['body'], true));
     }
 
     public function test_request_body()
@@ -404,5 +404,68 @@ EOF
         $body = $response->toApiGatewayFormat()['body'];
 
         static::assertEquals(['my-token'], json_decode($body, true)['x-xsrf-token']);
+    }
+
+    public function test_maintenance_mode_with_valid_bypass_cookie()
+    {
+        $octane = new class() extends Octane
+        {
+            public static function hasValidBypassCookie($request, $secret)
+            {
+                return true;
+            }
+        };
+
+        $handler = new class() extends OctaneHandler
+        {
+            public function request($event)
+            {
+                return parent::request($event);
+            }
+
+            public function response($response)
+            {
+                return parent::response($response);
+            }
+        };
+
+        $_ENV['VAPOR_MAINTENANCE_MODE'] = 'true';
+        $_ENV['APP_VANITY_URL'] = 'production.com';
+        $_ENV['VAPOR_MAINTENANCE_MODE_SECRET'] = 'my-secret';
+
+        Route::get('/', function () {
+            return 'Hello World';
+        });
+
+        $response = $handler->response($octane::handle($handler->request([
+            'httpMethod' => 'GET',
+            'path' => '/',
+        ])));
+
+        static::assertEquals('Hello World', $response->toApiGatewayFormat()['body']);
+    }
+
+    public function test_maintenance_mode_with_invalid_bypass_cookie()
+    {
+        $handler = new OctaneHandler();
+
+        $_ENV['VAPOR_MAINTENANCE_MODE'] = 'true';
+        $_ENV['APP_VANITY_URL'] = 'production.com';
+        $_ENV['VAPOR_MAINTENANCE_MODE_SECRET'] = 'my-secret';
+
+        Route::get('/', function () {
+            return 'Hello World';
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/',
+            'headers' => [
+                'Accept' => 'application/json',
+            ],
+        ]);
+
+        static::assertEquals('application/json', $response->toApiGatewayFormat()['headers']['Content-Type']);
+        static::assertEquals(['message' => 'We are currently down for maintenance.'], json_decode($response->toApiGatewayFormat()['body'], true));
     }
 }

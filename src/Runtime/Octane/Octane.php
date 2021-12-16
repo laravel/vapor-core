@@ -143,7 +143,8 @@ class Octane implements Client
                 $_ENV['VAPOR_MAINTENANCE_MODE_SECRET'] == $request->path()) {
                 $response = HttpKernel::bypassResponse($_ENV['VAPOR_MAINTENANCE_MODE_SECRET']);
             } elseif (isset($_ENV['VAPOR_MAINTENANCE_MODE_SECRET']) &&
-                HttpKernel::hasValidBypassCookie($request, $_ENV['VAPOR_MAINTENANCE_MODE_SECRET'])) {
+                static::hasValidBypassCookie($request, $_ENV['VAPOR_MAINTENANCE_MODE_SECRET'])) {
+                $response = static::sendRequest($request, $context);
             } elseif ($request->wantsJson() && file_exists($_ENV['LAMBDA_TASK_ROOT'].'/503.json')) {
                 $response = JsonResponse::fromJsonString(
                     file_get_contents($_ENV['LAMBDA_TASK_ROOT'].'/503.json'), 503
@@ -154,17 +155,7 @@ class Octane implements Client
                 );
             }
         } else {
-            $response = (new Pipeline)->send($request)
-                ->through([
-                    new EnsureOnNakedDomain,
-                    new RedirectStaticAssets,
-                    new EnsureVanityUrlIsNotIndexed,
-                    new EnsureBinaryEncoding(),
-                ])->then(function ($request) use ($context) {
-                    static::$worker->handle($request, $context);
-
-                    return static::$response->response;
-                });
+            $response = static::sendRequest($request, $context);
         }
 
         $content = $response instanceof BinaryFileResponse
@@ -178,6 +169,40 @@ class Octane implements Client
         ), static function () {
             static::$response = null;
         });
+    }
+
+    /**
+     * Send the request to the worker.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Laravel\Octane\RequestContext  $context
+     * @return \Laravel\Octane\OctaneResponse
+     */
+    protected static function sendRequest($request, $context)
+    {
+        return (new Pipeline)->send($request)
+            ->through([
+                new EnsureOnNakedDomain,
+                new RedirectStaticAssets,
+                new EnsureVanityUrlIsNotIndexed,
+                new EnsureBinaryEncoding(),
+            ])->then(function ($request) use ($context) {
+                static::$worker->handle($request, $context);
+
+                return static::$response->response;
+            });
+    }
+
+    /**
+     * Determine if the incoming request has a maintenance mode bypass cookie.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $secret
+     * @return bool
+     */
+    public static function hasValidBypassCookie($request, $secret)
+    {
+        return HttpKernel::hasValidBypassCookie($request, $secret);
     }
 
     /**
