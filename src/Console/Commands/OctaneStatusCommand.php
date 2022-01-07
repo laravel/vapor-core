@@ -33,7 +33,7 @@ class OctaneStatusCommand extends Command
     }
 
     /**
-     * Check if the enviroment is running on Octane.
+     * Determine if the enviroment is running on Octane.
      *
      * @return bool
      */
