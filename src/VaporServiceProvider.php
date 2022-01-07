@@ -27,7 +27,7 @@ class VaporServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->ensureRoutesAreDefined();
-        $this->overrideOctaneStatusCommand();
+        $this->registerOctaneCommands();
 
         if (($_ENV['VAPOR_SERVERLESS_DB'] ?? null) === 'true') {
             Schema::defaultStringLength(191);
@@ -166,8 +166,20 @@ class VaporServiceProvider extends ServiceProvider
         $this->commands(['command.vapor.work']);
     }
 
-    protected function overrideOctaneStatusCommand()
+    /**
+     * Register the Vapor "Octane" console commands.
+     *
+     * @return void
+     *
+     * @throws \InvalidArgumentException
+     */
+    protected function registerOctaneCommands()
     {
+        // Ensure we are running on Vapor...
+        if (! isset($_ENV['VAPOR_SSM_PATH'])) {
+            return;
+        }
+
         if ($this->app->runningInConsole()) {
             $this->commands(OctaneStatusCommand::class);
         }

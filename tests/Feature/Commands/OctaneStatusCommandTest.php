@@ -6,6 +6,13 @@ use Laravel\Vapor\Tests\TestCase;
 
 class OctaneStatusCommandTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        $_ENV['VAPOR_SSM_PATH'] = 'foo';
+
+        parent::setUp();
+    }
+
     public function test_when_octane_is_not_running()
     {
         $this->artisan('octane:status')
@@ -25,6 +32,7 @@ class OctaneStatusCommandTest extends TestCase
     protected function tearDown(): void
     {
         unset($_ENV['OCTANE_DATABASE_SESSION_TTL']);
+        unset($_ENV['VAPOR_SSM_PATH']);
 
         parent::tearDown();
     }
