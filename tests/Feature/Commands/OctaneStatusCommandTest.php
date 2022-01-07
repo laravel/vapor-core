@@ -2,6 +2,10 @@
 
 namespace Laravel\Vapor\Tests\Feature\Commands;
 
+if (! interface_exists(\Laravel\Octane\Contracts\Client::class)) {
+    return;
+}
+
 use Laravel\Vapor\Tests\TestCase;
 
 class OctaneStatusCommandTest extends TestCase
