@@ -31,7 +31,7 @@ class OctaneRequestContextFactory
 
         $serverRequest = new ServerRequest(
             $request->serverVariables['REQUEST_METHOD'],
-            $request->serverVariables['REQUEST_URI'],
+            static::parseUri($request->serverVariables['REQUEST_URI']),
             $request->headers,
             $request->body,
             $request->serverVariables['SERVER_PROTOCOL'],
@@ -190,6 +190,21 @@ class OctaneRequestContextFactory
                     ? Arr::setMultiPartArrayValue($parsedBody, $name, $part->getBody())
                     : SupportArr::set($parsedBody, $name, $part->getBody());
             }, []);
+    }
+
+    /**
+     * Parse the incoming event's request uri.
+     *
+     * @param  string  $uri
+     * @return string
+     */
+    protected static function parseUri($uri)
+    {
+        if (parse_url($uri) === false) {
+            return '/';
+        }
+
+        return $uri;
     }
 
     /**
