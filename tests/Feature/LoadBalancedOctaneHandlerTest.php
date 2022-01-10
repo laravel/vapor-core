@@ -64,6 +64,22 @@ class LoadBalancedOctaneHandlerTest extends TestCase
         static::assertEquals('Hello World', $response->toApiGatewayFormat()['body']);
     }
 
+    public function test_invalid_uri()
+    {
+        $handler = new LoadBalancedOctaneHandler();
+
+        Route::get('/', function () {
+            return 'Hello World';
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/////foo',
+        ]);
+
+        static::assertEquals('Hello World', $response->toApiGatewayFormat()['body']);
+    }
+
     public function test_response_fires_events()
     {
         Event::fake([RequestReceived::class, RequestTerminated::class]);

@@ -64,6 +64,22 @@ class OctaneHandlerTest extends TestCase
         static::assertEquals('Hello World', $response->toApiGatewayFormat()['body']);
     }
 
+    public function test_invalid_uri()
+    {
+        $handler = new OctaneHandler();
+
+        Route::get('/', function () {
+            return 'Hello World';
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/////foo',
+        ]);
+
+        static::assertEquals('Hello World', $response->toApiGatewayFormat()['body']);
+    }
+
     public function test_response_file()
     {
         $handler = new OctaneHandler();
