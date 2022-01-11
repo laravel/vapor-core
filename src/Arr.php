@@ -57,7 +57,7 @@ class Arr
             }
 
             // If this segment is malformed, we will just use the key as-is since there
-            // is nothign we can do with it from here. We will return the array back
+            // is nothing we can do with it from here. We will return the array back
             // to the caller with the value set. We cannot continue looping on it.
             if (static::malformedMultipartSegment($segment)) {
                 $array[$name] = $value;
