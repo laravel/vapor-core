@@ -20,6 +20,7 @@ class StorageDirectories
     {
         $directories = [
             self::PATH.'/app',
+            self::PATH.'/logs',
             self::PATH.'/bootstrap/cache',
             self::PATH.'/framework/cache',
             self::PATH.'/framework/views',
