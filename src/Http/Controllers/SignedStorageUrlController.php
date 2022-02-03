@@ -31,7 +31,7 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
 
         $uuid = (string) Str::uuid();
 
-        $key = $request->input('key') ?: 'tmp/' . $uuid;
+        $key = $request->input('key') ?: 'tmp/'.$uuid;
 
         $expiresAfter = config('vapor.signed_storage_url_expires_after', 5);
 
@@ -45,11 +45,11 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
         $response = [
             'bucket'  => $bucket,
             'key'     => $key,
-            'url'     => $uri->getScheme() . '://' . $uri->getAuthority() . $uri->getPath() . '?' . $uri->getQuery(),
+            'url'     => $uri->getScheme().'://'.$uri->getAuthority().$uri->getPath().'?'.$uri->getQuery(),
             'headers' => $this->headers($request, $signedRequest),
         ];
 
-        if (!$request->has('key')) {
+        if (! $request->has('key')) {
             $response['uuid'] = $uuid;
         }
 
