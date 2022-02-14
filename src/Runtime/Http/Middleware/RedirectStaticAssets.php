@@ -15,7 +15,7 @@ class RedirectStaticAssets
      */
     public function handle($request, $next)
     {
-        if (config('vapor.redirect_favicon_ico', true) && $request->path() === 'favicon.ico') {
+        if (config('vapor.redirect_favicon', true) && $request->path() === 'favicon.ico') {
             return new RedirectResponse($_ENV['ASSET_URL'].'/favicon.ico', 302, [
                 'Cache-Control' => 'public, max-age=3600',
             ]);
