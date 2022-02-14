@@ -32,7 +32,7 @@ class RedirectStaticAssetsTest extends TestCase
         $response = $this->get('/favicon.ico');
         $response->assertStatus(302)->assertRedirect('https://asset-url.com/favicon.ico');
 
-        config()->set('vapor.redirect_favicon_ico', false);
+        config()->set('vapor.redirect_favicon', false);
 
         $response = $this->get('/favicon.ico');
         $response->assertStatus(200)->assertSee('My own favicon.');
