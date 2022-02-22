@@ -7,6 +7,33 @@ use Illuminate\Queue\Jobs\SqsJob;
 class VaporJob extends SqsJob
 {
     /**
+     * Get the number of times the job has been attempted.
+     *
+     * @return int
+     */
+    public function attempts()
+    {
+        return max(
+            ($this->payload()['attempts'] ?? 0) + 1,
+            $this->container->make(JobAttempts::class)->get($this)
+        );
+    }
+
+    /**
+     * Delete the job from the queue.
+     *
+     * @return void
+     */
+    public function delete()
+    {
+        parent::delete();
+
+        $this->container
+             ->make(JobAttempts::class)
+             ->forget($this);
+    }
+
+    /**
      * Release the job back into the queue.
      *
      * @param  int  $delay
@@ -34,32 +61,5 @@ class VaporJob extends SqsJob
         $this->container
              ->make(JobAttempts::class)
              ->transfer($this, $jobId);
-    }
-
-    /**
-     * Get the number of times the job has been attempted.
-     *
-     * @return int
-     */
-    public function attempts()
-    {
-        return max(
-            ($this->payload()['attempts'] ?? 0) + 1,
-            $this->container->make(JobAttempts::class)->get($this)
-        );
-    }
-
-    /**
-     * Delete the job from the queue.
-     *
-     * @return void
-     */
-    public function delete()
-    {
-        parent::delete();
-
-        $this->container
-             ->make(JobAttempts::class)
-             ->forget($this);
     }
 }

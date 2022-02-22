@@ -8,6 +8,7 @@ use Illuminate\Cache\ArrayStore;
 use Laravel\Vapor\Queue\JobAttempts;
 use Laravel\Vapor\Queue\VaporJob;
 use Laravel\Vapor\Tests\TestCase;
+use Laravel\Vapor\Tests\Unit\FakeJob;
 use Laravel\Vapor\VaporServiceProvider;
 use Mockery;
 
@@ -27,7 +28,7 @@ class VaporJobTest extends TestCase
         ];
     }
 
-    public function test_job_is_deleted_on_release_and_new_job_is_created_without_cache()
+    public function test_job_release_attempts_without_cache()
     {
         unset($_ENV['VAPOR_CACHE_JOB_ATTEMPTS']);
 
@@ -58,7 +59,7 @@ class VaporJobTest extends TestCase
         $this->assertSame(0, resolve(JobAttempts::class)->get('my-released-job-id'));
     }
 
-    public function test_job_is_deleted_on_release_and_new_job_is_created_with_cache()
+    public function test_job_release_attempts_with_cache()
     {
         $_ENV['VAPOR_CACHE_JOB_ATTEMPTS'] = 'true';
 
@@ -133,7 +134,7 @@ class VaporJobTest extends TestCase
         $this->assertSame(4, resolve(JobAttempts::class)->get($job));
     }
 
-    public function test_highest_attempts_takes_priority()
+    public function test_job_attempts_priority()
     {
         $_ENV['VAPOR_CACHE_JOB_ATTEMPTS'] = 'true';
 
@@ -160,7 +161,7 @@ class VaporJobTest extends TestCase
         $this->assertSame(2, $job->attempts());
     }
 
-    public function test_handles_job_missing_attempts()
+    public function test_job_attempts_when_its_missing_from_payload()
     {
         unset($_ENV['VAPOR_CACHE_JOB_ATTEMPTS']);
 
@@ -198,6 +199,86 @@ class VaporJobTest extends TestCase
         $this->assertSame(3, $job->attempts());
 
         $job->delete();
+
+        $this->assertSame(0, resolve(JobAttempts::class)->get($job));
+    }
+
+    public function test_job_fire_without_cache()
+    {
+        unset($_ENV['VAPOR_CACHE_JOB_ATTEMPTS']);
+
+        $sqs = Mockery::mock(SqsClient::class);
+
+        $sqs->shouldReceive('deleteMessage')->once()->with([
+            'QueueUrl' => 'test-vapor-queue-url',
+            'ReceiptHandle' => 'my-job-receipt',
+        ]);
+
+        $job = new FakeJob;
+
+        $job = new VaporJob($this->app, $sqs, [
+            'ReceiptHandle' => 'my-job-receipt',
+            'Body' => json_encode([
+                'displayName' => FakeJob::class,
+                'job' => 'Illuminate\Queue\CallQueuedHandler@call',
+                'maxTries' => null,
+                'timeout' => null,
+                'timeoutAt' => null,
+                'data' => [
+                    'commandName' => FakeJob::class,
+                    'command' => serialize($job),
+                ],
+                'attempts' => 3,
+            ]),
+            'MessageId' => 'my-job-id',
+        ], 'sqs', 'test-vapor-queue-url');
+
+        resolve(JobAttempts::class)->increment($job);
+        resolve(JobAttempts::class)->increment($job);
+        resolve(JobAttempts::class)->increment($job);
+        resolve(JobAttempts::class)->increment($job);
+
+        $job->fire();
+
+        $this->assertSame(0, resolve(JobAttempts::class)->get($job));
+    }
+
+    public function test_job_fire_with_cache()
+    {
+        $_ENV['VAPOR_CACHE_JOB_ATTEMPTS'] = 'true';
+
+        $sqs = Mockery::mock(SqsClient::class);
+
+        $sqs->shouldReceive('deleteMessage')->once()->with([
+            'QueueUrl' => 'test-vapor-queue-url',
+            'ReceiptHandle' => 'my-job-receipt',
+        ]);
+
+        $job = new FakeJob;
+
+        $job = new VaporJob($this->app, $sqs, [
+            'ReceiptHandle' => 'my-job-receipt',
+            'Body' => json_encode([
+                'displayName' => FakeJob::class,
+                'job' => 'Illuminate\Queue\CallQueuedHandler@call',
+                'maxTries' => null,
+                'timeout' => null,
+                'timeoutAt' => null,
+                'data' => [
+                    'commandName' => FakeJob::class,
+                    'command' => serialize($job),
+                ],
+                'attempts' => 3,
+            ]),
+            'MessageId' => 'my-job-id',
+        ], 'sqs', 'test-vapor-queue-url');
+
+        resolve(JobAttempts::class)->increment($job);
+        resolve(JobAttempts::class)->increment($job);
+        resolve(JobAttempts::class)->increment($job);
+        resolve(JobAttempts::class)->increment($job);
+
+        $job->fire();
 
         $this->assertSame(0, resolve(JobAttempts::class)->get($job));
     }

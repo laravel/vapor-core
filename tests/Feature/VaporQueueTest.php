@@ -64,7 +64,7 @@ class VaporQueueTest extends TestCase
         $this->assertSame('attribute-value', $queue->push($job));
     }
 
-    public function test_queue_pop_increments_number_of_attempts()
+    public function test_queue_pop()
     {
         $_ENV['VAPOR_CACHE_JOB_ATTEMPTS'] = 'true';
 
