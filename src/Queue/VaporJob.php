@@ -18,18 +18,22 @@ class VaporJob extends SqsJob
 
         $payload = $this->payload();
 
-        $payload['attempts'] = ($payload['attempts'] ?? 0) + 1;
+        $payload['attempts'] = $this->attempts();
 
         $this->sqs->deleteMessage([
             'QueueUrl' => $this->queue,
             'ReceiptHandle' => $this->job['ReceiptHandle'],
         ]);
 
-        $this->sqs->sendMessage([
+        $jobId = $this->sqs->sendMessage([
             'QueueUrl' => $this->queue,
             'MessageBody' => json_encode($payload),
             'DelaySeconds' => $this->secondsUntil($delay),
-        ]);
+        ])->get('MessageId');
+
+        $this->container
+             ->make(JobAttempts::class)
+             ->transfer($this, $jobId);
     }
 
     /**
@@ -39,6 +43,23 @@ class VaporJob extends SqsJob
      */
     public function attempts()
     {
-        return ($this->payload()['attempts'] ?? 0) + 1;
+        return max(
+            ($this->payload()['attempts'] ?? 0) + 1,
+            $this->container->make(JobAttempts::class)->get($this)
+        );
+    }
+
+    /**
+     * Delete the job from the queue.
+     *
+     * @return void
+     */
+    public function delete()
+    {
+        parent::delete();
+
+        $this->container
+             ->make(JobAttempts::class)
+             ->forget($this);
     }
 }

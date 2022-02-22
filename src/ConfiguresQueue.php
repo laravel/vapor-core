@@ -2,7 +2,10 @@
 
 namespace Laravel\Vapor;
 
+use Illuminate\Cache\NullStore;
+use Illuminate\Cache\Repository;
 use Illuminate\Contracts\Debug\ExceptionHandler;
+use Laravel\Vapor\Queue\JobAttempts;
 use Laravel\Vapor\Queue\VaporWorker;
 
 trait ConfiguresQueue
@@ -28,6 +31,14 @@ trait ConfiguresQueue
                 $this->app['events'],
                 $this->app[ExceptionHandler::class],
                 $isDownForMaintenance
+            );
+        });
+
+        $this->app->singleton(JobAttempts::class, function () {
+            return new JobAttempts(
+                isset($_ENV['VAPOR_CACHE_JOB_ATTEMPTS']) && $_ENV['VAPOR_CACHE_JOB_ATTEMPTS'] === 'true'
+                    ? $this->app['cache']->driver()
+                    : new Repository(new NullStore())
             );
         });
     }
