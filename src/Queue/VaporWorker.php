@@ -5,7 +5,6 @@ namespace Laravel\Vapor\Queue;
 use Illuminate\Queue\Worker;
 use Illuminate\Queue\WorkerOptions;
 use Laravel\Vapor\VaporJobTimedOutException;
-use Laravel\Vapor\Queue\JobAttempts;
 
 class VaporWorker extends Worker
 {
