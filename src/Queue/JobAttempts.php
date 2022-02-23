@@ -8,6 +8,11 @@ use Illuminate\Contracts\Queue\Job;
 class JobAttempts
 {
     /**
+     * The number of seconds job attempts should remain on cache.
+     */
+    const TTL = 1209600;
+
+    /**
      * The cache repository implementation.
      *
      * @var \Illuminate\Contracts\Cache\Repository
@@ -33,7 +38,13 @@ class JobAttempts
      */
     public function increment($job)
     {
-        $this->cache->increment($this->key($job));
+        if ($this->has($job)) {
+            $this->cache->increment($this->key($job));
+
+            return;
+        }
+
+        $this->cache->put($this->key($job), 1, static::TTL);
     }
 
     /**
@@ -44,7 +55,7 @@ class JobAttempts
      */
     public function get($job)
     {
-        return $this->cache->get($this->key($job), 0);
+        return (int) $this->cache->get($this->key($job), 0);
     }
 
     /**
@@ -67,9 +78,20 @@ class JobAttempts
      */
     public function transfer($from, $to)
     {
-        $this->cache->put($this->key($to), $this->get($from));
+        $this->cache->put($this->key($to), $this->get($from), static::TTL);
 
         $this->cache->forget($this->key($from));
+    }
+
+    /**
+     * Check if the job have been attempted before.
+     *
+     * @param  \Illuminate\Contracts\Queue\Job|string  $job
+     * @return bool
+     */
+    protected function has($job)
+    {
+        return ! is_null($this->cache->get($this->key($job)));
     }
 
     /**
