@@ -3,16 +3,27 @@
 namespace Laravel\Vapor\Tests\Unit;
 
 use Aws\Sqs\SqsClient;
-use Illuminate\Container\Container;
+use Illuminate\Cache\ArrayStore;
+use Laravel\Vapor\Queue\JobAttempts;
 use Laravel\Vapor\Queue\VaporQueue;
+use Laravel\Vapor\Tests\TestCase;
+use Laravel\Vapor\VaporServiceProvider;
 use Mockery;
-use PHPUnit\Framework\TestCase;
 
 class VaporQueueTest extends TestCase
 {
-    protected function tearDown(): void
+    protected function setUp(): void
     {
-        Mockery::close();
+        parent::setUp();
+
+        $this->app->singleton('cache.store', ArrayStore::class);
+    }
+
+    protected function getPackageProviders($app): array
+    {
+        return [
+            VaporServiceProvider::class,
+        ];
     }
 
     public function test_proper_payload_array_is_created()
@@ -49,7 +60,28 @@ class VaporQueueTest extends TestCase
         $sqs->shouldReceive('get')->andReturn('attribute-value');
 
         $queue = new VaporQueue($sqs, 'test-vapor-queue-url');
-        $queue->setContainer(new Container());
+        $queue->setContainer($this->app);
         $this->assertSame('attribute-value', $queue->push($job));
+    }
+
+    public function test_queue_pop()
+    {
+        $_ENV['VAPOR_CACHE_JOB_ATTEMPTS'] = 'true';
+
+        $sqs = Mockery::mock(SqsClient::class);
+
+        $job = new FakeJob;
+
+        $sqs->shouldReceive('receiveMessage')->once()->andReturn([
+            'Messages' => [
+                ['MessageId' => 'my-job-id'],
+            ],
+        ]);
+
+        $queue = new VaporQueue($sqs, 'test-vapor-queue-url');
+        $queue->setContainer($this->app);
+        $job = $queue->pop();
+
+        $this->assertSame(1, resolve(JobAttempts::class)->get('my-job-id'));
     }
 }

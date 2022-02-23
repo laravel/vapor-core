@@ -28,6 +28,8 @@ class VaporWorker extends Worker
             max($this->timeoutForJob($job, $options), 0)
         );
 
+        app(JobAttempts::class)->increment($job);
+
         $this->runJob($job, $connectionName, $options);
 
         pcntl_alarm(0);
