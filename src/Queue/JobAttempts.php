@@ -3,6 +3,7 @@
 namespace Laravel\Vapor\Queue;
 
 use Illuminate\Contracts\Cache\Repository as Cache;
+use Illuminate\Contracts\Queue\Job;
 
 class JobAttempts
 {
@@ -27,7 +28,7 @@ class JobAttempts
     /**
      * Increment the number of times the job has been attempted.
      *
-     * @param  \Laravel\Vapor\Queue\VaporJob  $job
+     * @param  \Illuminate\Contracts\Queue\Job  $job
      * @return void
      */
     public function increment($job)
@@ -38,7 +39,7 @@ class JobAttempts
     /**
      * Get the number of times the job has been attempted.
      *
-     * @param  \Laravel\Vapor\Queue\VaporJob|string  $job
+     * @param  \Illuminate\Contracts\Queue\Job|string  $job
      * @return int
      */
     public function get($job)
@@ -49,7 +50,7 @@ class JobAttempts
     /**
      * Forget the number of times the job has been attempted.
      *
-     * @param  \Laravel\Vapor\Queue\VaporJob|string  $job
+     * @param  \Illuminate\Contracts\Queue\Job|string  $job
      * @return int
      */
     public function forget($job)
@@ -60,8 +61,8 @@ class JobAttempts
     /**
      * Transfer the job attemps.
      *
-     * @param  \Laravel\Vapor\Queue\VaporJob|string  $from
-     * @param  \Laravel\Vapor\Queue\VaporJob|string  $to
+     * @param  \Illuminate\Contracts\Queue\Job|string  $from
+     * @param  \Illuminate\Contracts\Queue\Job|string  $to
      * @return void
      */
     public function transfer($from, $to)
@@ -74,12 +75,12 @@ class JobAttempts
     /**
      * Gets the cache key for the given job.
      *
-     * @param  \Laravel\Vapor\Queue\VaporJob|string  $job
+     * @param  \Illuminate\Contracts\Queue\Job|string  $job
      * @return string
      */
     protected function key($job)
     {
-        $jobId = $job instanceof VaporJob ? $job->getJobId() : $job;
+        $jobId = $job instanceof Job ? $job->getJobId() : $job;
 
         return 'laravel_vapor_job_attemps:'.$jobId;
     }
