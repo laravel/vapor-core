@@ -31,6 +31,28 @@ class JobAttempts
     }
 
     /**
+     * Determine if the job have been attempted before.
+     *
+     * @param  \Illuminate\Contracts\Queue\Job|string  $job
+     * @return bool
+     */
+    protected function has($job)
+    {
+        return ! is_null($this->cache->get($this->key($job)));
+    }
+
+    /**
+     * Get the number of times the job has been attempted.
+     *
+     * @param  \Illuminate\Contracts\Queue\Job|string  $job
+     * @return int
+     */
+    public function get($job)
+    {
+        return (int) $this->cache->get($this->key($job), 0);
+    }
+
+    /**
      * Increment the number of times the job has been attempted.
      *
      * @param  \Illuminate\Contracts\Queue\Job  $job
@@ -48,29 +70,7 @@ class JobAttempts
     }
 
     /**
-     * Get the number of times the job has been attempted.
-     *
-     * @param  \Illuminate\Contracts\Queue\Job|string  $job
-     * @return int
-     */
-    public function get($job)
-    {
-        return (int) $this->cache->get($this->key($job), 0);
-    }
-
-    /**
-     * Forget the number of times the job has been attempted.
-     *
-     * @param  \Illuminate\Contracts\Queue\Job|string  $job
-     * @return int
-     */
-    public function forget($job)
-    {
-        $this->cache->forget($this->key($job));
-    }
-
-    /**
-     * Transfer the job attemps.
+     * Transfer the job attempts from one job to another.
      *
      * @param  \Illuminate\Contracts\Queue\Job|string  $from
      * @param  \Illuminate\Contracts\Queue\Job|string  $to
@@ -84,14 +84,14 @@ class JobAttempts
     }
 
     /**
-     * Check if the job have been attempted before.
+     * Forget the number of times the job has been attempted.
      *
      * @param  \Illuminate\Contracts\Queue\Job|string  $job
-     * @return bool
+     * @return int
      */
-    protected function has($job)
+    public function forget($job)
     {
-        return ! is_null($this->cache->get($this->key($job)));
+        $this->cache->forget($this->key($job));
     }
 
     /**
