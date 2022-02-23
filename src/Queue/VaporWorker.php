@@ -5,6 +5,7 @@ namespace Laravel\Vapor\Queue;
 use Illuminate\Queue\Worker;
 use Illuminate\Queue\WorkerOptions;
 use Laravel\Vapor\VaporJobTimedOutException;
+use Laravel\Vapor\Queue\JobAttempts;
 
 class VaporWorker extends Worker
 {
@@ -27,6 +28,8 @@ class VaporWorker extends Worker
         pcntl_alarm(
             max($this->timeoutForJob($job, $options), 0)
         );
+
+        app(JobAttempts::class)->increment($job);
 
         $this->runJob($job, $connectionName, $options);
 
