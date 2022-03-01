@@ -16,7 +16,7 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
      * Create a new signed URL.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
