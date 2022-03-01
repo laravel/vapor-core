@@ -145,7 +145,7 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
             }
         }
 
-        return S3Client::factory($config);
+        return new S3Client($config);
     }
 
     /**
