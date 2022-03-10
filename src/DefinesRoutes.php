@@ -19,7 +19,7 @@ trait DefinesRoutes
 
         if (config('vapor.signed_storage.enabled', true)) {
             Route::post(
-                '/vapor/signed-storage-url',
+                config('vapor.signed_storage.url', '/vapor/signed-storage-url'),
                 Contracts\SignedStorageUrlController::class.'@store'
             )->middleware(config('vapor.middleware', 'web'));
         }
