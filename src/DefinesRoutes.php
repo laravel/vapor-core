@@ -17,9 +17,11 @@ trait DefinesRoutes
             return;
         }
 
-        Route::post(
-            '/vapor/signed-storage-url',
-            Contracts\SignedStorageUrlController::class.'@store'
-        )->middleware(config('vapor.middleware', 'web'));
+        if (config('vapor.define_routes', true)) {
+            Route::post(
+                '/vapor/signed-storage-url',
+                Contracts\SignedStorageUrlController::class.'@store'
+            )->middleware(config('vapor.middleware', 'web'));
+        }
     }
 }
