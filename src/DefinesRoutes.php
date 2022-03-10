@@ -17,7 +17,7 @@ trait DefinesRoutes
             return;
         }
 
-        if (config('vapor.define_routes', true)) {
+        if (config('vapor.signed_storage.enabled', true)) {
             Route::post(
                 '/vapor/signed-storage-url',
                 Contracts\SignedStorageUrlController::class.'@store'
