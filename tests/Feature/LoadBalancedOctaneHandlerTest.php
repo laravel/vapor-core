@@ -284,6 +284,31 @@ EOF
         ], json_decode($response->toApiGatewayFormat()['body'], true));
     }
 
+    public function test_request_form_url_encoded_without_inline_input_method()
+    {
+        $handler = new LoadBalancedOctaneHandler();
+
+        Route::put('/', function (Request $request) {
+            return $request->all();
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'PUT',
+            'path' => '/',
+            'headers' => [
+                'Content-Type' => 'application/x-www-form-urlencoded; charset=utf-8',
+            ],
+            'body' => <<<'EOF'
+name=nuno&email=nuno@laravel.com
+EOF
+        ]);
+
+        static::assertEquals([
+            'name' => 'nuno',
+            'email' => 'nuno@laravel.com',
+        ], json_decode($response->toApiGatewayFormat()['body'], true));
+    }
+
     public function test_request_file_uploads()
     {
         $handler = new LoadBalancedOctaneHandler();
@@ -326,6 +351,50 @@ EOF
 
         static::assertEquals([
             '_method' => 'PUT',
+            'name' => 'nuno',
+            'email' => 'nuno@laravel.com',
+            'filename' => 'my_uploaded.txt',
+            'file' => 'foo',
+        ], json_decode($response->toApiGatewayFormat()['body'], true));
+    }
+
+    public function test_request_file_uploads_without_inline_input_method()
+    {
+        $handler = new LoadBalancedOctaneHandler();
+
+        Route::put('/', function (Request $request) {
+            return array_merge($request->all(), [
+                'filename' => $request->file('file')->getClientOriginalName(),
+                'file' => $request->file('file')->getContent(),
+            ]);
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'PUT',
+            'path' => '/',
+            'headers' => [
+                'Content-Type' => 'multipart/form-data; boundary=---------------------------317050813134112680482597024243',
+            ],
+            'body' => <<<'EOF'
+-----------------------------317050813134112680482597024243
+Content-Disposition: form-data; name="name"
+
+nuno
+-----------------------------317050813134112680482597024243
+Content-Disposition: form-data; name="email"
+
+nuno@laravel.com
+-----------------------------317050813134112680482597024243
+Content-Disposition: form-data; name="file"; filename="my_uploaded.txt"
+Content-Type: text/plain
+
+foo
+
+-----------------------------317050813134112680482597024243--
+EOF
+        ]);
+
+        static::assertEquals([
             'name' => 'nuno',
             'email' => 'nuno@laravel.com',
             'filename' => 'my_uploaded.txt',
