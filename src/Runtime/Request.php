@@ -67,6 +67,8 @@ class Request
             'REMOTE_PORT' => $headers['x-forwarded-port'] ?? 80,
             'REQUEST_METHOD' => $event['httpMethod'],
             'REQUEST_URI' => $uri,
+            'REQUEST_TIME' => time(),
+            'REQUEST_TIME_FLOAT' => microtime(true),
             'SERVER_ADDR' => '127.0.0.1',
             'SERVER_NAME' => $headers['host'] ?? 'localhost',
             'SERVER_PORT' => $headers['x-forwarded-port'] ?? 80,
