@@ -67,7 +67,7 @@ class OctaneRequestContextFactory
     {
         $headers = array_change_key_case($headers);
 
-        if (! isset($headers['cookie'])) {
+        if (! isset($headers['cookie']) || empty($headers['cookie'])) {
             return [];
         }
 
