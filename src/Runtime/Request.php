@@ -72,7 +72,7 @@ class Request
             'SERVER_ADDR' => '127.0.0.1',
             'SERVER_NAME' => $headers['host'] ?? 'localhost',
             'SERVER_PORT' => $headers['x-forwarded-port'] ?? 80,
-            'SERVER_PROTOCOL' =>  $event['requestContext']['protocol'] ?? $event['requestContext']['http']['protocol'] ??'HTTP/1.1',
+            'SERVER_PROTOCOL' =>  $event['requestContext']['protocol'] ?? $event['requestContext']['http']['protocol'] ?? 'HTTP/1.1',
             'SERVER_SOFTWARE' => 'vapor',
         ]);
 
