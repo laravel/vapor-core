@@ -131,7 +131,11 @@ class Request
             return http_build_query(
                 collect($event['queryStringParameters'] ?? [])
                 ->mapWithKeys(function ($value, $key) {
-                    return [$key => explode(',', $value)];
+                    $values = explode(',', $value);
+
+                    return count($values) === 1
+                        ? [$key => $values[0]]
+                        : [(substr($key, -2) == '[]' ? substr($key, 0, -2) : $key) => $values];
                 })->all()
             );
         }
