@@ -61,7 +61,7 @@ class Request
 
         $serverVariables = array_merge($serverVariables, [
             'GATEWAY_INTERFACE' => 'FastCGI/1.0',
-            'PATH_INFO' => $event['path'] ??  $event['requestContext']['http']['path'] ?? '/',
+            'PATH_INFO' => $event['path'] ?? $event['requestContext']['http']['path'] ?? '/',
             'QUERY_STRING' => $queryString,
             'REMOTE_ADDR' => '127.0.0.1',
             'REMOTE_PORT' => $headers['x-forwarded-port'] ?? 80,
@@ -236,8 +236,8 @@ class Request
      */
     protected static function ensureContentLengthIsSet(array $event, array $headers, array $serverVariables, $requestBody)
     {
-        if ((! isset($headers['content-length']) && isset($event['httpMethod']) && !in_array(strtoupper($event['httpMethod']), ['TRACE'])) ||
-            (! isset($headers['content-length']) && isset($event['requestContext']['http']['method']) && !in_array(strtoupper($event['requestContext']['http']['method']), ['TRACE']))) {
+        if ((! isset($headers['content-length']) && isset($event['httpMethod']) && ! in_array(strtoupper($event['httpMethod']), ['TRACE'])) ||
+            (! isset($headers['content-length']) && isset($event['requestContext']['http']['method']) && ! in_array(strtoupper($event['requestContext']['http']['method']), ['TRACE']))) {
             $headers['content-length'] = strlen($requestBody);
         }
 
