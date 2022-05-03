@@ -174,13 +174,6 @@ class Request
      */
     protected static function getHeaders(array $event)
     {
-        if (isset($event['version']) && $event['version'] === '2.0') {
-            return collect($event['headers'] ?? [])
-                ->mapWithKeys(function ($headers, $name) {
-                    return [$name => Arr::last(explode(',', $headers))];
-                })->all();
-        }
-
         if (! isset($event['multiValueHeaders'])) {
             return array_change_key_case(
                 $event['headers'] ?? [], CASE_LOWER
