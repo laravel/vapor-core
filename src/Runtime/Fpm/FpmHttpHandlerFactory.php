@@ -24,7 +24,7 @@ class FpmHttpHandlerFactory
             return new WarmerPingHandler;
         } elseif (isset($event['requestContext']['elb'])) {
             return new LoadBalancedFpmHandler;
-        } elseif (isset($event['httpMethod'])) {
+        } elseif (isset($event['httpMethod']) || isset($event['requestContext']['http']['method'])) {
             return new FpmHandler;
         }
 

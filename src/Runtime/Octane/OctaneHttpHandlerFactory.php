@@ -24,7 +24,7 @@ class OctaneHttpHandlerFactory
             return new WarmerPingHandler;
         } elseif (isset($event['requestContext']['elb'])) {
             return new LoadBalancedOctaneHandler;
-        } elseif (isset($event['httpMethod'])) {
+        } elseif (isset($event['httpMethod']) || isset($event['requestContext']['http']['method'])) {
             return new OctaneHandler;
         }
 

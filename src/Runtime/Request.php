@@ -61,18 +61,18 @@ class Request
 
         $serverVariables = array_merge($serverVariables, [
             'GATEWAY_INTERFACE' => 'FastCGI/1.0',
-            'PATH_INFO' => $event['path'] ?? '/',
+            'PATH_INFO' => $event['path'] ?? $event['requestContext']['http']['path'] ?? '/',
             'QUERY_STRING' => $queryString,
             'REMOTE_ADDR' => '127.0.0.1',
             'REMOTE_PORT' => $headers['x-forwarded-port'] ?? 80,
-            'REQUEST_METHOD' => $event['httpMethod'],
+            'REQUEST_METHOD' => $event['httpMethod'] ?? $event['requestContext']['http']['method'],
             'REQUEST_URI' => $uri,
             'REQUEST_TIME' => time(),
             'REQUEST_TIME_FLOAT' => microtime(true),
             'SERVER_ADDR' => '127.0.0.1',
             'SERVER_NAME' => $headers['host'] ?? 'localhost',
             'SERVER_PORT' => $headers['x-forwarded-port'] ?? 80,
-            'SERVER_PROTOCOL' => $event['requestContext']['protocol'] ?? 'HTTP/1.1',
+            'SERVER_PROTOCOL' =>  $event['requestContext']['protocol'] ?? $event['requestContext']['http']['protocol'] ?? 'HTTP/1.1',
             'SERVER_SOFTWARE' => 'vapor',
         ]);
 
@@ -107,7 +107,7 @@ class Request
      */
     protected static function getUriAndQueryString(array $event)
     {
-        $uri = $event['path'] ?? '/';
+        $uri = $event['requestContext']['http']['path'] ?? $event['path'] ?? '/';
 
         $queryString = self::getQueryString($event);
 
@@ -127,6 +127,19 @@ class Request
      */
     protected static function getQueryString(array $event)
     {
+        if (isset($event['version']) && $event['version'] === '2.0') {
+            return http_build_query(
+                collect($event['queryStringParameters'] ?? [])
+                ->mapWithKeys(function ($value, $key) {
+                    $values = explode(',', $value);
+
+                    return count($values) === 1
+                        ? [$key => $values[0]]
+                        : [(substr($key, -2) == '[]' ? substr($key, 0, -2) : $key) => $values];
+                })->all()
+            );
+        }
+
         if (! isset($event['multiValueQueryStringParameters'])) {
             return http_build_query(
                 $event['queryStringParameters'] ?? []
@@ -200,7 +213,8 @@ class Request
      */
     protected static function ensureContentTypeIsSet(array $event, array $headers, array $serverVariables)
     {
-        if ((strtoupper($event['httpMethod']) === 'POST') && ! isset($headers['content-type'])) {
+        if ((! isset($headers['content-type']) && isset($event['httpMethod']) && (strtoupper($event['httpMethod']) === 'POST')) ||
+            (! isset($headers['content-type']) && isset($event['requestContext']['http']['method']) && (strtoupper($event['requestContext']['http']['method']) === 'POST'))) {
             $headers['content-type'] = 'application/x-www-form-urlencoded';
         }
 
@@ -222,7 +236,8 @@ class Request
      */
     protected static function ensureContentLengthIsSet(array $event, array $headers, array $serverVariables, $requestBody)
     {
-        if (! in_array(strtoupper($event['httpMethod']), ['TRACE']) && ! isset($headers['content-length'])) {
+        if ((! isset($headers['content-length']) && isset($event['httpMethod']) && ! in_array(strtoupper($event['httpMethod']), ['TRACE'])) ||
+            (! isset($headers['content-length']) && isset($event['requestContext']['http']['method']) && ! in_array(strtoupper($event['requestContext']['http']['method']), ['TRACE']))) {
             $headers['content-length'] = strlen($requestBody);
         }
 
@@ -244,6 +259,10 @@ class Request
     {
         if (isset($event['requestContext']['identity']['sourceIp'])) {
             $headers['x-vapor-source-ip'] = $event['requestContext']['identity']['sourceIp'];
+        }
+
+        if (isset($event['requestContext']['http']['sourceIp'])) {
+            $headers['x-vapor-source-ip'] = $event['requestContext']['http']['sourceIp'];
         }
 
         return $headers;

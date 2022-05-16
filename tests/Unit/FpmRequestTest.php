@@ -41,7 +41,7 @@ class FpmRequestTest extends TestCase
                 'X-Amzn-Trace-Id' => $trace,
                 'X-Forwarded-For' => $for,
                 'X-Forwarded-Port' => $port,
-                'X-Forwarded-Proto' => $port,
+                'X-Forwarded-Proto' => $proto,
             ],
             'multiValueHeaders' => [
                 'X-Amzn-Trace-Id' => [
@@ -65,6 +65,61 @@ class FpmRequestTest extends TestCase
         $this->assertSame($for, $request->serverVariables['HTTP_X_FORWARDED_FOR']);
         $this->assertSame($port, $request->serverVariables['HTTP_X_FORWARDED_PORT']);
         $this->assertSame($proto, $request->serverVariables['HTTP_X_FORWARDED_PROTO']);
+    }
+
+    public function test_api_gateway_v2_headers_are_handled()
+    {
+        $trace = 'Root=1-7696740c-c075312a25f21abe1ca19805;foobar';
+        $for = '172.105.167.153, 70.132.20.166';
+        $port = '443';
+        $proto = 'https';
+
+        $request = FpmRequest::fromLambdaEvent([
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                    'protocol' => 'HTTP/1.1',
+                ],
+            ],
+            'headers' => [
+                'x-amzn-trace-id' => $trace,
+                'x-forwarded-for' => $for,
+                'x-forwarded-port' => $port,
+                'x-forwarded-proto' => $proto,
+            ],
+            'queryStringParameters' => null,
+        ]);
+
+        $this->assertSame($trace, $request->serverVariables['HTTP_X_AMZN_TRACE_ID']);
+        $this->assertSame($for, $request->serverVariables['HTTP_X_FORWARDED_FOR']);
+        $this->assertSame($port, $request->serverVariables['HTTP_X_FORWARDED_PORT']);
+        $this->assertSame($proto, $request->serverVariables['HTTP_X_FORWARDED_PROTO']);
+    }
+
+    public function test_api_gateway_v2_query_parameters_are_handled()
+    {
+        $request = FpmRequest::fromLambdaEvent([
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                    'protocol' => 'HTTP/1.1',
+                ],
+            ],
+            'queryStringParameters' => [
+                'key1' => 'value1',
+                'key2' => 'value2,value3',
+            ],
+        ]);
+
+        $this->assertSame(
+            http_build_query([
+                'key1' => 'value1',
+                'key2' => ['value2', 'value3'],
+            ]),
+            $request->serverVariables['QUERY_STRING']
+        );
     }
 
     public function test_load_balancer_headers_are_over_spoofed_headers()
