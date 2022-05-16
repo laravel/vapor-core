@@ -92,7 +92,9 @@ class FpmRequestTest extends TestCase
         ]);
 
         $this->assertSame($trace, $request->serverVariables['HTTP_X_AMZN_TRACE_ID']);
-        $this->assertSame($for, $request->serverVariables['HTTP_X_FORWARDED_FOR']);
+
+        // Vapor does not support multiple values on the same header...
+        $this->assertSame('70.132.20.166', $request->serverVariables['HTTP_X_FORWARDED_FOR']);
         $this->assertSame($port, $request->serverVariables['HTTP_X_FORWARDED_PORT']);
         $this->assertSame($proto, $request->serverVariables['HTTP_X_FORWARDED_PROTO']);
     }

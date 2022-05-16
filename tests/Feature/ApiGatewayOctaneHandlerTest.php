@@ -12,13 +12,13 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Octane\Events\RequestReceived;
 use Laravel\Octane\Events\RequestTerminated;
 use Laravel\Octane\OctaneServiceProvider;
-use Laravel\Vapor\Runtime\Handlers\LoadBalancedOctaneHandler;
+use Laravel\Vapor\Runtime\Handlers\OctaneHandler;
 use Laravel\Vapor\Runtime\Octane\Octane;
 use Laravel\Vapor\Tests\TestCase;
 use Mockery;
 use RuntimeException;
 
-class LoadBalancedOctaneHandlerTest extends TestCase
+class ApiGatewayOctaneHandlerTest extends TestCase
 {
     protected function setUp(): void
     {
@@ -51,7 +51,7 @@ class LoadBalancedOctaneHandlerTest extends TestCase
 
     public function test_response_body()
     {
-        $handler = new LoadBalancedOctaneHandler();
+        $handler = new OctaneHandler();
 
         Route::get('/', function () {
             return 'Hello World';
@@ -66,7 +66,7 @@ class LoadBalancedOctaneHandlerTest extends TestCase
 
     public function test_invalid_uri()
     {
-        $handler = new LoadBalancedOctaneHandler();
+        $handler = new OctaneHandler();
 
         Route::get('/', function () {
             return 'Hello World';
@@ -80,11 +80,47 @@ class LoadBalancedOctaneHandlerTest extends TestCase
         static::assertEquals('Hello World', $response->toApiGatewayFormat()['body']);
     }
 
+    public function test_response_file()
+    {
+        $handler = new OctaneHandler();
+
+        Route::get('/', function (Request $request) {
+            return response()->file(__DIR__.'/../Fixtures/asset.js', [
+                'Content-Type' => 'text/javascript',
+            ]);
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/',
+        ]);
+
+        static::assertEquals('text/javascript', $response->toApiGatewayFormat()['headers']['Content-Type']);
+        static::assertEquals("console.log();\n", $response->toApiGatewayFormat()['body']);
+    }
+
+    public function test_response_download()
+    {
+        $handler = new OctaneHandler();
+
+        Route::get('/', function (Request $request) {
+            return response()->download(__DIR__.'/../Fixtures/asset.js');
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/',
+        ]);
+
+        static::assertEquals('attachment; filename=asset.js', $response->toApiGatewayFormat()['headers']['Content-Disposition']);
+        static::assertEquals("console.log();\n", $response->toApiGatewayFormat()['body']);
+    }
+
     public function test_response_fires_events()
     {
         Event::fake([RequestReceived::class, RequestTerminated::class]);
 
-        $handler = new LoadBalancedOctaneHandler();
+        $handler = new OctaneHandler();
 
         Route::get('/', function () {
             return response('Hello World')->withHeaders([
@@ -100,45 +136,9 @@ class LoadBalancedOctaneHandlerTest extends TestCase
         Event::assertDispatched(RequestTerminated::class);
     }
 
-    public function test_response_file()
-    {
-        $handler = new LoadBalancedOctaneHandler();
-
-        Route::get('/', function (Request $request) {
-            return response()->file(__DIR__.'/../Fixtures/asset.js', [
-                'Content-Type' => 'text/javascript',
-            ]);
-        });
-
-        $response = $handler->handle([
-            'httpMethod' => 'GET',
-            'path' => '/',
-        ]);
-
-        static::assertEquals(['text/javascript'], $response->toApiGatewayFormat()['multiValueHeaders']['Content-Type']);
-        static::assertEquals("console.log();\n", $response->toApiGatewayFormat()['body']);
-    }
-
-    public function test_response_download()
-    {
-        $handler = new LoadBalancedOctaneHandler();
-
-        Route::get('/', function (Request $request) {
-            return response()->download(__DIR__.'/../Fixtures/asset.js');
-        });
-
-        $response = $handler->handle([
-            'httpMethod' => 'GET',
-            'path' => '/',
-        ]);
-
-        static::assertEquals(['attachment; filename=asset.js'], $response->toApiGatewayFormat()['multiValueHeaders']['Content-Disposition']);
-        static::assertEquals("console.log();\n", $response->toApiGatewayFormat()['body']);
-    }
-
     public function test_response_headers()
     {
-        $handler = new LoadBalancedOctaneHandler();
+        $handler = new OctaneHandler();
 
         Route::get('/', function () {
             return response('Hello World')->withHeaders([
@@ -150,13 +150,13 @@ class LoadBalancedOctaneHandlerTest extends TestCase
             'httpMethod' => 'GET',
         ]);
 
-        static::assertArrayHasKey('Foo', $response->toApiGatewayFormat()['multiValueHeaders']);
-        static::assertEquals(['Bar'], $response->toApiGatewayFormat()['multiValueHeaders']['Foo']);
+        static::assertArrayHasKey('Foo', $response->toApiGatewayFormat()['headers']);
+        static::assertEquals('Bar', $response->toApiGatewayFormat()['headers']['Foo']);
     }
 
     public function test_response_status()
     {
-        $handler = new LoadBalancedOctaneHandler();
+        $handler = new OctaneHandler();
 
         Route::get('/', function () {
             throw new RuntimeException('Something wrong happened.');
@@ -169,9 +169,9 @@ class LoadBalancedOctaneHandlerTest extends TestCase
         static::assertEquals(500, $response->toApiGatewayFormat()['statusCode']);
     }
 
-    public function test_each_response_have_its_own_app()
+    public function test_each_request_have_its_own_app()
     {
-        $handler = new LoadBalancedOctaneHandler();
+        $handler = new OctaneHandler();
 
         Route::get('/bind', function () {
             app()->bind('counter', function () {
@@ -187,12 +187,12 @@ class LoadBalancedOctaneHandlerTest extends TestCase
 
         $bindResponse = $handler->handle([
             'httpMethod' => 'GET',
-            'path' => 'bind',
+            'path' => '/bind',
         ]);
 
         $boundResponse = $handler->handle([
             'httpMethod' => 'GET',
-            'path' => 'bound',
+            'path' => '/bound',
         ]);
 
         static::assertEquals('1', $bindResponse->toApiGatewayFormat()['body']);
@@ -201,7 +201,7 @@ class LoadBalancedOctaneHandlerTest extends TestCase
 
     public function test_response_cookies()
     {
-        $handler = new LoadBalancedOctaneHandler();
+        $handler = new OctaneHandler();
 
         Route::get('/', function () {
             return response('Hello World')->cookie('cookie-key', 'cookie-value', 10);
@@ -212,14 +212,16 @@ class LoadBalancedOctaneHandlerTest extends TestCase
             'path' => '/',
         ]);
 
-        $setCookie = $response->toApiGatewayFormat()['multiValueHeaders']['Set-Cookie'];
+        $setCookie = $response->toApiGatewayFormat()['headers']['set-cookie'];
 
-        static::assertStringStartsWith('cookie-key=cookie-value;', $setCookie[0]);
+        static::assertStringStartsWith('cookie-key=cookie-value;', $setCookie);
     }
 
     public function test_robots_header_is_set()
     {
-        $handler = new LoadBalancedOctaneHandler();
+        $handler = new OctaneHandler();
+
+        $_ENV['APP_VANITY_URL'] = 'https://127.0.0.1';
 
         Route::get('/', function () {
             return 'Hello World';
@@ -230,14 +232,14 @@ class LoadBalancedOctaneHandlerTest extends TestCase
             'path' => '/',
         ]);
 
-        $robotsTag = $response->toApiGatewayFormat()['multiValueHeaders']['X-Robots-Tag'];
+        $robotsTag = $response->toApiGatewayFormat()['headers']['X-Robots-Tag'];
 
-        static::assertEquals(['noindex, nofollow'], $robotsTag);
+        static::assertEquals('noindex, nofollow', $robotsTag);
     }
 
     public function test_maintenance_mode()
     {
-        $handler = new LoadBalancedOctaneHandler();
+        $handler = new OctaneHandler();
 
         $_ENV['VAPOR_MAINTENANCE_MODE'] = 'true';
         $_ENV['APP_VANITY_URL'] = 'production.com';
@@ -254,13 +256,13 @@ class LoadBalancedOctaneHandlerTest extends TestCase
             ],
         ]);
 
-        static::assertEquals(['application/json'], $response->toApiGatewayFormat()['multiValueHeaders']['Content-Type']);
+        static::assertEquals('application/json', $response->toApiGatewayFormat()['headers']['Content-Type']);
         static::assertEquals(['message' => 'We are currently down for maintenance.'], json_decode($response->toApiGatewayFormat()['body'], true));
     }
 
     public function test_request_body()
     {
-        $handler = new LoadBalancedOctaneHandler();
+        $handler = new OctaneHandler();
 
         Route::put('/', function (Request $request) {
             return $request->all();
@@ -286,7 +288,7 @@ EOF
 
     public function test_request_form_url_encoded_without_inline_input_method()
     {
-        $handler = new LoadBalancedOctaneHandler();
+        $handler = new OctaneHandler();
 
         Route::put('/', function (Request $request) {
             return $request->all();
@@ -309,9 +311,31 @@ EOF
         ], json_decode($response->toApiGatewayFormat()['body'], true));
     }
 
+    public function test_request_cookies()
+    {
+        $handler = new OctaneHandler();
+
+        Route::get('/', function (Request $request) {
+            return $request->cookies->all();
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/',
+            'headers' => [
+                'cookie' => 'XSRF-TOKEN=token_value',
+            ],
+        ]);
+
+        static::assertEquals(
+            ['XSRF-TOKEN' => 'token_value'],
+            json_decode($response->toApiGatewayFormat()['body'], true)
+        );
+    }
+
     public function test_request_file_uploads()
     {
-        $handler = new LoadBalancedOctaneHandler();
+        $handler = new OctaneHandler();
 
         Route::put('/', function (Request $request) {
             return array_merge($request->all(), [
@@ -360,7 +384,7 @@ EOF
 
     public function test_request_file_uploads_without_inline_input_method()
     {
-        $handler = new LoadBalancedOctaneHandler();
+        $handler = new OctaneHandler();
 
         Route::put('/', function (Request $request) {
             return array_merge($request->all(), [
@@ -402,31 +426,9 @@ EOF
         ], json_decode($response->toApiGatewayFormat()['body'], true));
     }
 
-    public function test_request_cookies()
-    {
-        $handler = new LoadBalancedOctaneHandler();
-
-        Route::get('/', function (Request $request) {
-            return $request->cookies->all();
-        });
-
-        $response = $handler->handle([
-            'httpMethod' => 'GET',
-            'path' => '/',
-            'headers' => [
-                'cookie' => 'XSRF-TOKEN=token_value',
-            ],
-        ]);
-
-        static::assertEquals(
-            ['XSRF-TOKEN' => 'token_value'],
-            json_decode($response->toApiGatewayFormat()['body'], true)
-        );
-    }
-
     public function test_request_query_string()
     {
-        $handler = new LoadBalancedOctaneHandler();
+        $handler = new OctaneHandler();
 
         Route::get('/', function (Request $request) {
             return $request->getQueryString();
@@ -449,7 +451,7 @@ EOF
 
     public function test_request_query_params()
     {
-        $handler = new LoadBalancedOctaneHandler();
+        $handler = new OctaneHandler();
 
         Route::get('/', function (Request $request) {
             return $request->query();
@@ -475,7 +477,7 @@ EOF
 
     public function test_request_headers()
     {
-        $handler = new LoadBalancedOctaneHandler();
+        $handler = new OctaneHandler();
 
         Route::get('/', function (Request $request) {
             return $request->headers->all();
@@ -496,7 +498,7 @@ EOF
 
     public function test_request_multi_headers()
     {
-        $handler = new LoadBalancedOctaneHandler();
+        $handler = new OctaneHandler();
 
         Route::get('/', function (Request $request) {
             return $request->headers->all();
@@ -527,7 +529,7 @@ EOF
             }
         };
 
-        $handler = new class() extends LoadBalancedOctaneHandler
+        $handler = new class() extends OctaneHandler
         {
             public function request($event)
             {
@@ -558,7 +560,7 @@ EOF
 
     public function test_maintenance_mode_with_invalid_bypass_cookie()
     {
-        $handler = new LoadBalancedOctaneHandler();
+        $handler = new OctaneHandler();
 
         $_ENV['VAPOR_MAINTENANCE_MODE'] = 'true';
         $_ENV['APP_VANITY_URL'] = 'production.com';
@@ -576,7 +578,7 @@ EOF
             ],
         ]);
 
-        static::assertEquals(['application/json'], $response->toApiGatewayFormat()['multiValueHeaders']['Content-Type']);
+        static::assertEquals('application/json', $response->toApiGatewayFormat()['headers']['Content-Type']);
         static::assertEquals(['message' => 'We are currently down for maintenance.'], json_decode($response->toApiGatewayFormat()['body'], true));
     }
 }
