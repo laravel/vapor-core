@@ -2,6 +2,7 @@
 
 namespace Laravel\Vapor;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 
 trait ConfiguresRedis
@@ -17,7 +18,7 @@ trait ConfiguresRedis
             return;
         }
 
-        Config::set('database.redis', [
+        Config::set('database.redis', array_merge(Arr::except(Config::get('database.redis', []), ['default', 'cache']), [
             'client' => $_ENV['REDIS_CLIENT'] ?? 'phpredis',
             'options' => array_merge(Config::get('database.redis.options', []), [
                 'cluster' => $_ENV['REDIS_CLUSTER'] ?? 'redis',
@@ -40,6 +41,6 @@ trait ConfiguresRedis
                     ],
                 ],
             ]),
-        ]);
+        ]));
     }
 }
