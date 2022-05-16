@@ -43,28 +43,14 @@ class FpmRequestTest extends TestCase
                 'X-Forwarded-Port' => $port,
                 'X-Forwarded-Proto' => $proto,
             ],
-            'multiValueHeaders' => [
-                'X-Amzn-Trace-Id' => [
-                    $trace,
-                ],
-                'X-Forwarded-For' => [
-                    $for,
-                ],
-                'X-Forwarded-Port' => [
-                    $port,
-                ],
-                'X-Forwarded-Proto' => [
-                    $proto,
-                ],
-            ],
             'queryStringParameters' => null,
             'multiValueQueryStringParameters' => null,
         ]);
 
-        $this->assertSame($trace, $request->serverVariables['HTTP_X_AMZN_TRACE_ID']);
-        $this->assertSame($for, $request->serverVariables['HTTP_X_FORWARDED_FOR']);
-        $this->assertSame($port, $request->serverVariables['HTTP_X_FORWARDED_PORT']);
-        $this->assertSame($proto, $request->serverVariables['HTTP_X_FORWARDED_PROTO']);
+        $this->assertSame('Root=1-7696740c-c075312a25f21abe1ca19805;foobar', $request->serverVariables['HTTP_X_AMZN_TRACE_ID']);
+        $this->assertSame('70.132.20.166', $request->serverVariables['HTTP_X_FORWARDED_FOR']);
+        $this->assertSame('443', $request->serverVariables['HTTP_X_FORWARDED_PORT']);
+        $this->assertSame('https', $request->serverVariables['HTTP_X_FORWARDED_PROTO']);
     }
 
     public function test_api_gateway_v2_headers_are_handled()
@@ -91,12 +77,10 @@ class FpmRequestTest extends TestCase
             'queryStringParameters' => null,
         ]);
 
-        $this->assertSame($trace, $request->serverVariables['HTTP_X_AMZN_TRACE_ID']);
-
-        // Vapor does not support multiple values on the same header...
+        $this->assertSame('Root=1-7696740c-c075312a25f21abe1ca19805;foobar', $request->serverVariables['HTTP_X_AMZN_TRACE_ID']);
         $this->assertSame('70.132.20.166', $request->serverVariables['HTTP_X_FORWARDED_FOR']);
-        $this->assertSame($port, $request->serverVariables['HTTP_X_FORWARDED_PORT']);
-        $this->assertSame($proto, $request->serverVariables['HTTP_X_FORWARDED_PROTO']);
+        $this->assertSame('443', $request->serverVariables['HTTP_X_FORWARDED_PORT']);
+        $this->assertSame('https', $request->serverVariables['HTTP_X_FORWARDED_PROTO']);
     }
 
     public function test_api_gateway_v2_query_parameters_are_handled()
