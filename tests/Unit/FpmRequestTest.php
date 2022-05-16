@@ -30,14 +30,14 @@ class FpmRequestTest extends TestCase
 
     public function test_api_gateway_headers_are_handled()
     {
-        $trace = 'Root=1-7696740c-c075312a25f21abe1ca19805;foobar';
-        $for = '172.105.167.153, 70.132.20.166';
-        $port = '443';
-        $proto = 'https';
+        $trace = ['Root=1-7696740c-c075312a25f21abe1ca19805;foobar'];
+        $for = ['172.105.167.153', '70.132.20.166'];
+        $port = ['443'];
+        $proto = ['https'];
 
         $request = FpmRequest::fromLambdaEvent([
             'httpMethod' => 'GET',
-            'headers' => [
+            'multiValueHeaders' => [
                 'X-Amzn-Trace-Id' => $trace,
                 'X-Forwarded-For' => $for,
                 'X-Forwarded-Port' => $port,
@@ -70,7 +70,7 @@ class FpmRequestTest extends TestCase
     public function test_api_gateway_v2_headers_are_handled()
     {
         $trace = 'Root=1-7696740c-c075312a25f21abe1ca19805;foobar';
-        $for = '172.105.167.153, 70.132.20.166';
+        $for = '172.105.167.153,70.132.20.166';
         $port = '443';
         $proto = 'https';
 
