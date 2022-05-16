@@ -30,47 +30,33 @@ class FpmRequestTest extends TestCase
 
     public function test_api_gateway_headers_are_handled()
     {
-        $trace = 'Root=1-7696740c-c075312a25f21abe1ca19805;foobar';
-        $for = '172.105.167.153, 70.132.20.166';
-        $port = '443';
-        $proto = 'https';
+        $trace = ['Root=1-7696740c-c075312a25f21abe1ca19805;foobar'];
+        $for = ['172.105.167.153', '70.132.20.166'];
+        $port = ['443'];
+        $proto = ['https'];
 
         $request = FpmRequest::fromLambdaEvent([
             'httpMethod' => 'GET',
-            'headers' => [
+            'multiValueHeaders' => [
                 'X-Amzn-Trace-Id' => $trace,
                 'X-Forwarded-For' => $for,
                 'X-Forwarded-Port' => $port,
                 'X-Forwarded-Proto' => $proto,
             ],
-            'multiValueHeaders' => [
-                'X-Amzn-Trace-Id' => [
-                    $trace,
-                ],
-                'X-Forwarded-For' => [
-                    $for,
-                ],
-                'X-Forwarded-Port' => [
-                    $port,
-                ],
-                'X-Forwarded-Proto' => [
-                    $proto,
-                ],
-            ],
             'queryStringParameters' => null,
             'multiValueQueryStringParameters' => null,
         ]);
 
-        $this->assertSame($trace, $request->serverVariables['HTTP_X_AMZN_TRACE_ID']);
-        $this->assertSame($for, $request->serverVariables['HTTP_X_FORWARDED_FOR']);
-        $this->assertSame($port, $request->serverVariables['HTTP_X_FORWARDED_PORT']);
-        $this->assertSame($proto, $request->serverVariables['HTTP_X_FORWARDED_PROTO']);
+        $this->assertSame('Root=1-7696740c-c075312a25f21abe1ca19805;foobar', $request->serverVariables['HTTP_X_AMZN_TRACE_ID']);
+        $this->assertSame('70.132.20.166', $request->serverVariables['HTTP_X_FORWARDED_FOR']);
+        $this->assertSame('443', $request->serverVariables['HTTP_X_FORWARDED_PORT']);
+        $this->assertSame('https', $request->serverVariables['HTTP_X_FORWARDED_PROTO']);
     }
 
     public function test_api_gateway_v2_headers_are_handled()
     {
         $trace = 'Root=1-7696740c-c075312a25f21abe1ca19805;foobar';
-        $for = '172.105.167.153, 70.132.20.166';
+        $for = '172.105.167.153,70.132.20.166';
         $port = '443';
         $proto = 'https';
 
@@ -91,10 +77,10 @@ class FpmRequestTest extends TestCase
             'queryStringParameters' => null,
         ]);
 
-        $this->assertSame($trace, $request->serverVariables['HTTP_X_AMZN_TRACE_ID']);
-        $this->assertSame($for, $request->serverVariables['HTTP_X_FORWARDED_FOR']);
-        $this->assertSame($port, $request->serverVariables['HTTP_X_FORWARDED_PORT']);
-        $this->assertSame($proto, $request->serverVariables['HTTP_X_FORWARDED_PROTO']);
+        $this->assertSame('Root=1-7696740c-c075312a25f21abe1ca19805;foobar', $request->serverVariables['HTTP_X_AMZN_TRACE_ID']);
+        $this->assertSame('70.132.20.166', $request->serverVariables['HTTP_X_FORWARDED_FOR']);
+        $this->assertSame('443', $request->serverVariables['HTTP_X_FORWARDED_PORT']);
+        $this->assertSame('https', $request->serverVariables['HTTP_X_FORWARDED_PROTO']);
     }
 
     public function test_api_gateway_v2_query_parameters_are_handled()

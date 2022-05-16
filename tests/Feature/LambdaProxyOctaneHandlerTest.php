@@ -18,7 +18,7 @@ use Laravel\Vapor\Tests\TestCase;
 use Mockery;
 use RuntimeException;
 
-class OctaneHandlerTest extends TestCase
+class LambdaProxyOctaneHandlerTest extends TestCase
 {
     protected function setUp(): void
     {
@@ -58,7 +58,12 @@ class OctaneHandlerTest extends TestCase
         });
 
         $response = $handler->handle([
-            'httpMethod' => 'GET',
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                ],
+            ],
         ]);
 
         static::assertEquals('Hello World', $response->toApiGatewayFormat()['body']);
@@ -73,8 +78,13 @@ class OctaneHandlerTest extends TestCase
         });
 
         $response = $handler->handle([
-            'httpMethod' => 'GET',
-            'path' => '/////foo',
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                    'path' => '/////foo',
+                ],
+            ],
         ]);
 
         static::assertEquals('Hello World', $response->toApiGatewayFormat()['body']);
@@ -91,8 +101,13 @@ class OctaneHandlerTest extends TestCase
         });
 
         $response = $handler->handle([
-            'httpMethod' => 'GET',
-            'path' => '/',
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                    'path' => '/',
+                ],
+            ],
         ]);
 
         static::assertEquals('text/javascript', $response->toApiGatewayFormat()['headers']['Content-Type']);
@@ -108,8 +123,12 @@ class OctaneHandlerTest extends TestCase
         });
 
         $response = $handler->handle([
-            'httpMethod' => 'GET',
-            'path' => '/',
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                ],
+            ],
         ]);
 
         static::assertEquals('attachment; filename=asset.js', $response->toApiGatewayFormat()['headers']['Content-Disposition']);
@@ -129,7 +148,12 @@ class OctaneHandlerTest extends TestCase
         });
 
         $handler->handle([
-            'httpMethod' => 'GET',
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                ],
+            ],
         ]);
 
         Event::assertDispatched(RequestReceived::class);
@@ -147,7 +171,12 @@ class OctaneHandlerTest extends TestCase
         });
 
         $response = $handler->handle([
-            'httpMethod' => 'GET',
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                ],
+            ],
         ]);
 
         static::assertArrayHasKey('Foo', $response->toApiGatewayFormat()['headers']);
@@ -163,7 +192,12 @@ class OctaneHandlerTest extends TestCase
         });
 
         $response = $handler->handle([
-            'httpMethod' => 'GET',
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                ],
+            ],
         ]);
 
         static::assertEquals(500, $response->toApiGatewayFormat()['statusCode']);
@@ -186,13 +220,23 @@ class OctaneHandlerTest extends TestCase
         });
 
         $bindResponse = $handler->handle([
-            'httpMethod' => 'GET',
-            'path' => '/bind',
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                    'path' => '/bind',
+                ],
+            ],
         ]);
 
         $boundResponse = $handler->handle([
-            'httpMethod' => 'GET',
-            'path' => '/bound',
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                    'path' => '/bound',
+                ],
+            ],
         ]);
 
         static::assertEquals('1', $bindResponse->toApiGatewayFormat()['body']);
@@ -208,8 +252,13 @@ class OctaneHandlerTest extends TestCase
         });
 
         $response = $handler->handle([
-            'httpMethod' => 'GET',
-            'path' => '/',
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                    'path' => '/',
+                ],
+            ],
         ]);
 
         $setCookie = $response->toApiGatewayFormat()['headers']['set-cookie'];
@@ -228,8 +277,13 @@ class OctaneHandlerTest extends TestCase
         });
 
         $response = $handler->handle([
-            'httpMethod' => 'GET',
-            'path' => '/',
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                    'path' => '/',
+                ],
+            ],
         ]);
 
         $robotsTag = $response->toApiGatewayFormat()['headers']['X-Robots-Tag'];
@@ -249,8 +303,13 @@ class OctaneHandlerTest extends TestCase
         });
 
         $response = $handler->handle([
-            'httpMethod' => 'GET',
-            'path' => '/',
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                    'path' => '/',
+                ],
+            ],
             'headers' => [
                 'Accept' => 'application/json',
             ],
@@ -269,8 +328,13 @@ class OctaneHandlerTest extends TestCase
         });
 
         $response = $handler->handle([
-            'httpMethod' => 'POST',
-            'path' => '/',
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'POST',
+                    'path' => '/',
+                ],
+            ],
             'headers' => [
                 'Content-Type' => 'application/json',
             ],
@@ -295,8 +359,13 @@ EOF
         });
 
         $response = $handler->handle([
-            'httpMethod' => 'PUT',
-            'path' => '/',
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'PUT',
+                    'path' => '/',
+                ],
+            ],
             'headers' => [
                 'Content-Type' => 'application/x-www-form-urlencoded; charset=utf-8',
             ],
@@ -320,8 +389,13 @@ EOF
         });
 
         $response = $handler->handle([
-            'httpMethod' => 'GET',
-            'path' => '/',
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                    'path' => '/',
+                ],
+            ],
             'headers' => [
                 'cookie' => 'XSRF-TOKEN=token_value',
             ],
@@ -345,8 +419,13 @@ EOF
         });
 
         $response = $handler->handle([
-            'httpMethod' => 'POST',
-            'path' => '/',
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'POST',
+                    'path' => '/',
+                ],
+            ],
             'headers' => [
                 'Content-Type' => 'multipart/form-data; boundary=---------------------------317050813134112680482597024243',
             ],
@@ -394,8 +473,13 @@ EOF
         });
 
         $response = $handler->handle([
-            'httpMethod' => 'PUT',
-            'path' => '/',
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'PUT',
+                    'path' => '/',
+                ],
+            ],
             'headers' => [
                 'Content-Type' => 'multipart/form-data; boundary=---------------------------317050813134112680482597024243',
             ],
@@ -435,17 +519,23 @@ EOF
         });
 
         $response = $handler->handle([
-            'httpMethod' => 'GET',
-            'path' => '/',
-            'multiValueQueryStringParameters' => [
-                'foo' => ['bar'],
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                    'path' => '/',
+                ],
+            ],
+            'queryStringParameters' => [
+                'param1' => 'value1',
+                'param2' => 'value1,value2',
             ],
             'headers' => [
                 'cookie' => 'XSRF-TOKEN=token_value',
             ],
         ]);
 
-        static::assertEquals('foo=bar', $response->toApiGatewayFormat()['body']);
+        static::assertEquals('param1=value1&param2[0]=value1&param2[1]=value2', urldecode($response->toApiGatewayFormat()['body']));
     }
 
     public function test_request_query_params()
@@ -457,17 +547,26 @@ EOF
         });
 
         $response = $handler->handle([
-            'httpMethod' => 'GET',
-            'path' => '/',
-            'multiValueQueryStringParameters' => [
-                'foo' => ['bar'],
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                    'path' => '/',
+                ],
+            ],
+            'queryStringParameters' => [
+                'param1' => 'value1',
+                'param2' => 'value1,value2',
             ],
             'headers' => [
                 'cookie' => 'XSRF-TOKEN=token_value',
             ],
         ]);
 
-        static::assertEquals(['foo' => 'bar'], json_decode($response->toApiGatewayFormat()['body'], true));
+        static::assertEquals([
+            'param1' => 'value1',
+            'param2' => ['value1', 'value2'],
+        ], json_decode($response->toApiGatewayFormat()['body'], true));
     }
 
     public function test_request_headers()
@@ -479,7 +578,13 @@ EOF
         });
 
         $response = $handler->handle([
-            'httpMethod' => 'GET',
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                    'path' => '/',
+                ],
+            ],
             'path' => '/',
             'headers' => [
                 'X-Xsrf-Token' => 'my-token',
@@ -489,6 +594,34 @@ EOF
         $body = $response->toApiGatewayFormat()['body'];
 
         static::assertEquals(['my-token'], json_decode($body, true)['x-xsrf-token']);
+    }
+
+    public function test_request_multi_headers()
+    {
+        $handler = new OctaneHandler();
+
+        Route::get('/', function (Request $request) {
+            return $request->headers->all();
+        });
+
+        $response = $handler->handle([
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                    'path' => '/',
+                ],
+            ],
+            'headers' => [
+                'X-Xsrf-Token' => 'my-token',
+                'X-Multi-Header' => 'value1,value2',
+            ],
+        ]);
+
+        $body = $response->toApiGatewayFormat()['body'];
+
+        static::assertEquals(['my-token'], json_decode($body, true)['x-xsrf-token']);
+        static::assertEquals(['value2'], json_decode($body, true)['x-multi-header']);
     }
 
     public function test_maintenance_mode_with_valid_bypass_cookie()
@@ -523,8 +656,13 @@ EOF
         });
 
         $response = $handler->response($octane::handle($handler->request([
-            'httpMethod' => 'GET',
-            'path' => '/',
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                    'path' => '/',
+                ],
+            ],
         ])));
 
         static::assertEquals('Hello World', $response->toApiGatewayFormat()['body']);
@@ -543,8 +681,13 @@ EOF
         });
 
         $response = $handler->handle([
-            'httpMethod' => 'GET',
-            'path' => '/',
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                    'path' => '/',
+                ],
+            ],
             'headers' => [
                 'Accept' => 'application/json',
             ],
