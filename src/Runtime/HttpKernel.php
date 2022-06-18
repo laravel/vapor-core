@@ -10,11 +10,13 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Pipeline\Pipeline;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Facade;
 use Laravel\Vapor\Runtime\Http\Middleware\EnsureBinaryEncoding;
 use Laravel\Vapor\Runtime\Http\Middleware\EnsureOnNakedDomain;
 use Laravel\Vapor\Runtime\Http\Middleware\EnsureVanityUrlIsNotIndexed;
 use Laravel\Vapor\Runtime\Http\Middleware\RedirectStaticAssets;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class HttpKernel
 {
@@ -58,11 +60,13 @@ class HttpKernel
             } else {
                 if ($request->wantsJson() && file_exists($_ENV['LAMBDA_TASK_ROOT'].'/503.json')) {
                     $response = JsonResponse::fromJsonString(
-                        file_get_contents($_ENV['LAMBDA_TASK_ROOT'].'/503.json'), 503
+                        file_get_contents($_ENV['LAMBDA_TASK_ROOT'].'/503.json'),
+                        503
                     );
                 } else {
                     $response = new Response(
-                        file_get_contents($_ENV['LAMBDA_TASK_ROOT'].'/503.html'), 503
+                        file_get_contents($_ENV['LAMBDA_TASK_ROOT'].'/503.html'),
+                        503
                     );
                 }
 
@@ -114,9 +118,14 @@ class HttpKernel
     {
         $response = new RedirectResponse('/');
 
-        $response->headers->setCookie(
-            MaintenanceModeBypassCookie::create($secret)
-        );
+        $expiresAt = Carbon::now()->addHours(12);
+
+        $cookie = new Cookie('laravel_maintenance', base64_encode(json_encode([
+            'expires_at' => $expiresAt->getTimestamp(),
+            'mac' => hash_hmac('sha256', $expiresAt->getTimestamp(), $secret),
+        ])), $expiresAt);
+
+        $response->headers->setCookie($cookie);
 
         return $response;
     }
