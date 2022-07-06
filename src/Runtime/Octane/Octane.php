@@ -114,7 +114,7 @@ class Octane implements Client
                 if (! $hasSession) {
                     try {
                         $connection->disconnect();
-                    } catch (\ErrorException $e) {
+                    } catch (Throwable $e) {
                         // Ignore if errors as it is likely already disconnected.
                     }
                 }
