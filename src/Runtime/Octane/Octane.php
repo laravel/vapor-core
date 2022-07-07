@@ -112,7 +112,11 @@ class Octane implements Client
                 $hasSession = in_array($connection->getName(), static::$databaseSessions);
 
                 if (! $hasSession) {
-                    $connection->disconnect();
+                    try {
+                        $connection->disconnect();
+                    } catch (Throwable $e) {
+                        // Likely already disconnected...
+                    }
                 }
 
                 return $hasSession;
