@@ -49,13 +49,17 @@ class HttpKernel
         $this->app->useStoragePath(StorageDirectories::PATH);
 
         if (static::shouldSendMaintenanceModeResponse($request)) {
-            if (isset($_ENV['VAPOR_MAINTENANCE_MODE_SECRET']) &&
-                $_ENV['VAPOR_MAINTENANCE_MODE_SECRET'] == $request->path()) {
+            if (
+                isset($_ENV['VAPOR_MAINTENANCE_MODE_SECRET']) &&
+                $_ENV['VAPOR_MAINTENANCE_MODE_SECRET'] == $request->path()
+            ) {
                 $response = static::bypassResponse($_ENV['VAPOR_MAINTENANCE_MODE_SECRET']);
 
                 $this->app->terminate();
-            } elseif (isset($_ENV['VAPOR_MAINTENANCE_MODE_SECRET']) &&
-                static::hasValidBypassCookie($request, $_ENV['VAPOR_MAINTENANCE_MODE_SECRET'])) {
+            } elseif (
+                isset($_ENV['VAPOR_MAINTENANCE_MODE_SECRET']) &&
+                static::hasValidBypassCookie($request, $_ENV['VAPOR_MAINTENANCE_MODE_SECRET'])
+            ) {
                 $response = $this->sendRequest($request);
             } else {
                 if ($request->wantsJson() && file_exists($_ENV['LAMBDA_TASK_ROOT'].'/503.json')) {
@@ -119,11 +123,13 @@ class HttpKernel
         $response = new RedirectResponse('/');
 
         $expiresAt = Carbon::now()->addHours(12);
+        $path = isset($_ENV['VAPOR_MAINTENANCE_MODE_COOKIE_PATH']) ? $_ENV['VAPOR_MAINTENANCE_MODE_COOKIE_PATH'] : '/';
+        $domain = isset($_ENV['VAPOR_MAINTENANCE_MODE_COOKIE_DOMAIN']) ? $_ENV['VAPOR_MAINTENANCE_MODE_COOKIE_DOMAIN'] : null;
 
         $cookie = new Cookie('laravel_maintenance', base64_encode(json_encode([
             'expires_at' => $expiresAt->getTimestamp(),
             'mac' => hash_hmac('sha256', $expiresAt->getTimestamp(), $secret),
-        ])), $expiresAt);
+        ])), $expiresAt, $path, $domain);
 
         $response->headers->setCookie($cookie);
 
