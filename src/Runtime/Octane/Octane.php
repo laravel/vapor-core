@@ -115,7 +115,7 @@ class Octane implements Client
                     try {
                         $connection->disconnect();
                     } catch (Throwable $e) {
-                        // Ignore if errors as it is likely already disconnected.
+                        // Likely already disconnected...
                     }
                 }
 
