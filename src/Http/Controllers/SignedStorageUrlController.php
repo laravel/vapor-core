@@ -32,9 +32,10 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
         $uuid = (string) Str::uuid();
 
         $expiresAfter = config('vapor.signed_storage_url_expires_after', 5);
+        $keyPrefix = config('vapor.key_prefix', 'tmp/');
 
         $signedRequest = $client->createPresignedRequest(
-            $this->createCommand($request, $client, $bucket, $key = ('tmp/'.$uuid)),
+            $this->createCommand($request, $client, $bucket, $key = ($keyPrefix.$uuid)),
             sprintf('+%s minutes', $expiresAfter)
         );
 

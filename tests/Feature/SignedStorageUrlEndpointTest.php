@@ -69,4 +69,51 @@ class SignedStorageUrlEndpointTest extends TestCase
         parse_str($response->json()['url'], $queryParams);
         $this->assertEquals(360, $queryParams['X-Amz-Expires']);
     }
+
+    public function test_custom_key_prefix(): void
+    {
+        Config::set([
+            'filesystems.disks.s3.bucket' => $_ENV['AWS_BUCKET'] = 'storage',
+            'filesystems.disks.s3.key' => $_ENV['AWS_ACCESS_KEY_ID'] = 'sail',
+            'filesystems.disks.s3.region' => $_ENV['AWS_DEFAULT_REGION'] = 'us-east-1',
+            'filesystems.disks.s3.secret' => $_ENV['AWS_SECRET_ACCESS_KEY'] = 'password',
+            'filesystems.disks.s3.url' => $_ENV['AWS_URL'] = 'http://minio:9000',
+            'filesystems.disks.s3.use_path_style_endpoint' => true,
+        ]);
+
+        Gate::define('uploadFiles', static function ($user = null, $bucket = null): bool {
+            return true;
+        });
+
+        $response = $this->json('POST', '/vapor/signed-storage-url');
+        parse_str($response->json()['url'], $queryParams);
+        $this->assertEquals(300, $queryParams['X-Amz-Expires']);
+
+        config()->set('vapor.key_prefix', 'testKeyPrefix/');
+        $response = $this->json('POST', '/vapor/signed-storage-url');
+        $this->assertEquals('testKeyPrefix/'.$response->json('uuid'), $response->json('key'));
+    }
+
+    public function test_default_key_prefix(): void
+    {
+        Config::set([
+            'filesystems.disks.s3.bucket' => $_ENV['AWS_BUCKET'] = 'storage',
+            'filesystems.disks.s3.key' => $_ENV['AWS_ACCESS_KEY_ID'] = 'sail',
+            'filesystems.disks.s3.region' => $_ENV['AWS_DEFAULT_REGION'] = 'us-east-1',
+            'filesystems.disks.s3.secret' => $_ENV['AWS_SECRET_ACCESS_KEY'] = 'password',
+            'filesystems.disks.s3.url' => $_ENV['AWS_URL'] = 'http://minio:9000',
+            'filesystems.disks.s3.use_path_style_endpoint' => true,
+        ]);
+
+        Gate::define('uploadFiles', static function ($user = null, $bucket = null): bool {
+            return true;
+        });
+
+        $response = $this->json('POST', '/vapor/signed-storage-url');
+        parse_str($response->json()['url'], $queryParams);
+        $this->assertEquals(300, $queryParams['X-Amz-Expires']);
+
+        $response = $this->json('POST', '/vapor/signed-storage-url');
+        $this->assertEquals('tmp/'.$response->json('uuid'), $response->json('key'));
+    }
 }
