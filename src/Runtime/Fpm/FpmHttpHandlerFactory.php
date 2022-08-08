@@ -2,7 +2,6 @@
 
 namespace Laravel\Vapor\Runtime\Fpm;
 
-use Laravel\Vapor\Runtime\Handlers\ApiGatewayVersion2FpmHandler;
 use Laravel\Vapor\Runtime\Handlers\FpmHandler;
 use Laravel\Vapor\Runtime\Handlers\LoadBalancedFpmHandler;
 use Laravel\Vapor\Runtime\Handlers\PayloadFormatVersion2FpmHandler;
