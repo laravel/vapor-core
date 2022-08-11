@@ -2,6 +2,7 @@
 
 use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
 use Laravel\Vapor\Runtime\CliHandlerFactory;
+use Laravel\Vapor\Runtime\EnvironmentVariables;
 use Laravel\Vapor\Runtime\LambdaContainer;
 use Laravel\Vapor\Runtime\LambdaRuntime;
 use Laravel\Vapor\Runtime\Secrets;
@@ -22,6 +23,19 @@ Secrets::addToEnvironment(
     $_ENV['VAPOR_SSM_PATH'],
     json_decode($_ENV['VAPOR_SSM_VARIABLES'] ?? '[]', true),
     __DIR__.'/vaporSecrets.php'
+);
+
+/*
+|--------------------------------------------------------------------------
+| Inject Environment Variables Into Environment
+|--------------------------------------------------------------------------
+|
+| TODO...
+|
+*/
+
+EnvironmentVariables::addToEnvironment(
+    __DIR__.'/vaporEnvironmentVariables.php'
 );
 
 /*

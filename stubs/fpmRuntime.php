@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
+use Laravel\Vapor\Runtime\EnvironmentVariables;
 use Laravel\Vapor\Runtime\Fpm\Fpm;
 use Laravel\Vapor\Runtime\Fpm\FpmHttpHandlerFactory;
 use Laravel\Vapor\Runtime\LambdaContainer;
@@ -29,6 +30,19 @@ $secrets = Secrets::addToEnvironment(
 
 /*
 |--------------------------------------------------------------------------
+| Inject Environment Variables Into Environment
+|--------------------------------------------------------------------------
+|
+| TODO...
+|
+*/
+
+$variables = EnvironmentVariables::addToEnvironment(
+    __DIR__.'/vaporEnvironmentVariables.php'
+);
+
+/*
+|--------------------------------------------------------------------------
 | Start PHP-FPM
 |--------------------------------------------------------------------------
 |
@@ -41,7 +55,7 @@ $secrets = Secrets::addToEnvironment(
 fwrite(STDERR, 'Preparing to boot FPM'.PHP_EOL);
 
 $fpm = Fpm::boot(
-    __DIR__.'/httpHandler.php', $secrets
+    __DIR__.'/httpHandler.php', array_merge($secrets, $variables)
 );
 
 /*
