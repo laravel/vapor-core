@@ -18,7 +18,7 @@ class EnvironmentVariablesTest extends TestCase
         $this->assertSame('https://my.cloudfront.net/mix-url', $_SERVER['MIX_URL']);
     }
 
-    public function testDoesInjectsEnvironmentVariablesBecauseTheyAlreadyExist()
+    public function testDoesNotInjectsEnvironmentVariablesBecauseTheyAlreadyExist()
     {
         $_ENV['ASSET_URL'] = 'https://my.cloudfront.net/existing-asset-url';
         $_ENV['MIX_URL'] = 'https://my.cloudfront.net/existing-mix-url';
@@ -33,6 +33,17 @@ class EnvironmentVariablesTest extends TestCase
 
         $this->assertSame('https://my.cloudfront.net/existing-asset-url', $_SERVER['ASSET_URL']);
         $this->assertSame('https://my.cloudfront.net/existing-mix-url', $_SERVER['MIX_URL']);
+    }
+
+    public function testDoesNotInjectsBecauseFileDoesNotExist()
+    {
+        EnvironmentVariables::addToEnvironment(__DIR__.'/../../Fixtures/FileDoesNotExist.php');
+
+        $this->assertFalse(isset($_ENV['ASSET_URL']));
+        $this->assertFalse(isset($_ENV['MIX_URL']));
+
+        $this->assertFalse(isset($_SERVER['ASSET_URL']));
+        $this->assertFalse(isset($_SERVER['MIX_URL']));
     }
 
     protected function tearDown(): void
