@@ -72,7 +72,7 @@ class Request
             'SERVER_ADDR' => '127.0.0.1',
             'SERVER_NAME' => $headers['host'] ?? 'localhost',
             'SERVER_PORT' => $headers['x-forwarded-port'] ?? 80,
-            'SERVER_PROTOCOL' =>  $event['requestContext']['protocol'] ?? $event['requestContext']['http']['protocol'] ?? 'HTTP/1.1',
+            'SERVER_PROTOCOL' => $event['requestContext']['protocol'] ?? $event['requestContext']['http']['protocol'] ?? 'HTTP/1.1',
             'SERVER_SOFTWARE' => 'vapor',
         ]);
 
@@ -174,15 +174,6 @@ class Request
      */
     protected static function getHeaders(array $event)
     {
-        if (isset($event['version']) && $event['version'] === '2.0') {
-            return array_change_key_case(
-                collect($event['headers'] ?? [])
-                    ->mapWithKeys(function ($headers, $name) {
-                        return [$name => Arr::last(explode(',', $headers))];
-                    })->all(), CASE_LOWER
-            );
-        }
-
         if (! isset($event['multiValueHeaders'])) {
             return array_change_key_case(
                 $event['headers'] ?? [], CASE_LOWER

@@ -78,7 +78,7 @@ class FpmRequestTest extends TestCase
         ]);
 
         $this->assertSame('Root=1-7696740c-c075312a25f21abe1ca19805;foobar', $request->serverVariables['HTTP_X_AMZN_TRACE_ID']);
-        $this->assertSame('70.132.20.166', $request->serverVariables['HTTP_X_FORWARDED_FOR']);
+        $this->assertSame('172.105.167.153,70.132.20.166', $request->serverVariables['HTTP_X_FORWARDED_FOR']);
         $this->assertSame('443', $request->serverVariables['HTTP_X_FORWARDED_PORT']);
         $this->assertSame('https', $request->serverVariables['HTTP_X_FORWARDED_PROTO']);
     }
