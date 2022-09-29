@@ -38,7 +38,7 @@ class Environment
     protected $environmentFile;
 
     /**
-     * The encrypted environment file name
+     * The encrypted environment file name.
      *
      * @var string
      */
