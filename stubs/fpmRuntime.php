@@ -9,6 +9,8 @@ use Laravel\Vapor\Runtime\LambdaRuntime;
 use Laravel\Vapor\Runtime\Secrets;
 use Laravel\Vapor\Runtime\StorageDirectories;
 
+$app = require __DIR__.'/bootstrap/app.php';
+
 /*
 |--------------------------------------------------------------------------
 | Inject SSM Secrets Into Environment
@@ -30,27 +32,6 @@ $secrets = Secrets::addToEnvironment(
 
 /*
 |--------------------------------------------------------------------------
-| Cache Configuration
-|--------------------------------------------------------------------------
-|
-| To give the application a speed boost, we are going to cache all of the
-| configuration files into a single file. The file will be loaded once
-| by the runtime then it will read the configuration values from it.
-|
-*/
-
-with(require __DIR__.'/bootstrap/app.php', function ($app) {
-    StorageDirectories::create();
-
-    $app->useStoragePath(StorageDirectories::PATH);
-
-    fwrite(STDERR, 'Caching Laravel configuration'.PHP_EOL);
-
-    $app->make(ConsoleKernelContract::class)->call('config:cache');
-});
-
-/*
-|--------------------------------------------------------------------------
 | Inject decrypted environment variables
 |--------------------------------------------------------------------------
 |
@@ -62,7 +43,26 @@ with(require __DIR__.'/bootstrap/app.php', function ($app) {
 
 fwrite(STDERR, 'Attempting to decrypt environment variables into runtime'.PHP_EOL);
 
-Environment::decrypt();
+Environment::decrypt($app);
+
+/*
+|--------------------------------------------------------------------------
+| Cache Configuration
+|--------------------------------------------------------------------------
+|
+| To give the application a speed boost, we are going to cache all of the
+| configuration files into a single file. The file will be loaded once
+| by the runtime then it will read the configuration values from it.
+|
+*/
+
+StorageDirectories::create();
+
+$app->useStoragePath(StorageDirectories::PATH);
+
+fwrite(STDERR, 'Caching Laravel configuration'.PHP_EOL);
+
+$app->make(ConsoleKernelContract::class)->call('config:cache');
 
 /*
 |--------------------------------------------------------------------------

@@ -3,34 +3,98 @@
 namespace Laravel\Vapor\Runtime;
 
 use Dotenv\Dotenv;
-use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\File;
+use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Contracts\Foundation\Application;
+use Throwable;
 
 class Environment
 {
     /**
-     * Decrypt and encrypted environment file into the runtime.
+     * The writable path for the environment file.
+     *
+     * @var string
+     */
+    protected $writePath = '/tmp';
+
+    /**
+     * The application instance.
+     *
+     * @var \Illuminate\Contracts\Foundation\Application
+     */
+    protected $app;
+
+    /**
+     * The environment name.
+     *
+     * @var string
+     */
+    protected $environment;
+
+    /**
+     * The environment file name.
+     *
+     * @var string
+     */
+    protected $environmentFile;
+
+    /**
+     * The encrypted environment file name
+     *
+     * @var string
+     */
+    protected $encryptedFile;
+
+    /**
+     * The console kernel instance.
+     *
+     * @var \Illuminate\Contracts\Console\Kernel
+     */
+    protected $console;
+
+    public function __construct(Application $app)
+    {
+        $this->app = $app;
+        $this->environment = isset($_ENV['APP_ENV']) ? $_ENV['APP_ENV'] : 'production';
+        $this->environmentFile = '.env.'.$this->environment;
+        $this->encryptedFile = '.env.'.$this->environment.'.encrypted';
+    }
+
+    /**
+     * Decrypt the environment file and load it into the runtime.
      *
      * @return void
      */
-    public static function decrypt()
+    public function decryptEnvironment()
     {
-        if (static::cannotBeDecrypted()) {
-            return;
+        $basePath = $this->app->basePath();
+
+        try {
+            if (! $this->canBeDecrypted()) {
+                return;
+            }
+
+            $this->copyEncryptedFile();
+
+            $this->app->setBasePath($this->writePath);
+
+            $this->decryptFile();
+
+            $this->loadEnvironment();
+        } catch (Throwable $e) {
+            fwrite(STDERR, $e->getMessage().PHP_EOL);
         }
 
-        $basePath = app()->basePath();
+        $this->app->setBasePath($basePath);
+    }
 
-        File::copy(static::encryptedFilePath(), '/tmp/'.static::encryptedFile());
-
-        app()->setBasePath('/tmp');
-
-        app()->make(ConsoleKernelContract::class)->call('env:decrypt', ['--env' => static::environment()]);
-
-        Dotenv::createImmutable(app()->basePath(), static::environmentFile())->load();
-
-        app()->setBasePath($basePath);
+    /**
+     * Decrypt the environment file and load it into the runtime.
+     *
+     * @return void
+     */
+    public static function decrypt($app)
+    {
+        (new static($app))->decryptEnvironment();
     }
 
     /**
@@ -38,7 +102,7 @@ class Environment
      *
      * @return bool
      */
-    public static function canBeDecrypted()
+    public function canBeDecrypted()
     {
         if (! isset($_ENV['LARAVEL_ENV_ENCRYPTION_KEY'])) {
             fwrite(STDERR, 'No decryption key set.'.PHP_EOL);
@@ -46,13 +110,13 @@ class Environment
             return false;
         }
 
-        if (! in_array('env:decrypt', array_keys(Artisan::all()))) {
+        if (! in_array('env:decrypt', array_keys($this->console()->all()))) {
             fwrite(STDERR, 'Decrypt command not available.'.PHP_EOL);
 
             return false;
         }
 
-        if (! File::exists(app()->basePath(static::encryptedFile()))) {
+        if (! file_exists($this->app->basePath($this->encryptedFile))) {
             fwrite(STDERR, 'Encrypted environment file not found.'.PHP_EOL);
 
             return false;
@@ -62,52 +126,53 @@ class Environment
     }
 
     /**
-     * Determine is it is not possible to decrypt an environment.
+     * Copy the encrypted environment file to the writable path.
      *
-     * @return bool
+     * @return void
      */
-    public static function cannotBeDecrypted()
+    public function copyEncryptedFile()
     {
-        return ! static::canBeDecrypted();
+        copy(
+            $this->app->basePath($this->encryptedFile),
+            $this->writePath.DIRECTORY_SEPARATOR.$this->encryptedFile
+        );
     }
 
     /**
-     * Returns the current environment.
+     * Decrypt the environment file.
      *
-     * @return string
+     * @return void
      */
-    public static function environment()
+    public function decryptFile()
     {
-        return isset($_ENV['APP_ENV']) ? $_ENV['APP_ENV'] : 'production';
+        fwrite(STDERR, 'Decrypting environment variables.'.PHP_EOL);
+
+        $this->console()->call('env:decrypt', ['--env' => $this->environment]);
     }
 
     /**
-     * Returns the environment file name for the current environment.
+     * Load the decrypted environment file.
      *
-     * @return string
+     * @return void
      */
-    public static function environmentFile()
+    public function loadEnvironment()
     {
-        return '.env.'.static::environment();
+        fwrite(STDERR, 'Loading decrypted environment variables.'.PHP_EOL);
+
+        Dotenv::createImmutable($this->app->basePath(), $this->environmentFile)->load();
     }
 
     /**
-     * Returns the encrypted file name for the current environment.
+     * Get a console kernel instance.
      *
-     * @return string
+     * @return \Illuminate\Contracts\Console\Kernel
      */
-    public static function encryptedFile()
+    public function console()
     {
-        return static::environmentFile().'.encrypted';
-    }
+        if (! $this->console) {
+            $this->console = $this->app->make(Kernel::class);
+        }
 
-    /**
-     * Returns the full path to the encrypted file for the current environment.
-     *
-     * @return string
-     */
-    public static function encryptedFilePath()
-    {
-        return app()->basePath(static::encryptedFile());
+        return $this->console;
     }
 }
