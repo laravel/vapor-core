@@ -621,7 +621,7 @@ EOF
         $body = $response->toApiGatewayFormat()['body'];
 
         static::assertEquals(['my-token'], json_decode($body, true)['x-xsrf-token']);
-        static::assertEquals(['value2'], json_decode($body, true)['x-multi-header']);
+        static::assertEquals(['value1,value2'], json_decode($body, true)['x-multi-header']);
     }
 
     public function test_maintenance_mode_with_valid_bypass_cookie()
