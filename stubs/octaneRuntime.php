@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
+use Laravel\Vapor\Runtime\Environment;
 use Laravel\Vapor\Runtime\LambdaContainer;
 use Laravel\Vapor\Runtime\LambdaRuntime;
 use Laravel\Vapor\Runtime\Octane\Octane;
@@ -47,6 +48,21 @@ with(require __DIR__.'/bootstrap/app.php', function ($app) {
 
     $app->make(ConsoleKernelContract::class)->call('config:cache');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Inject decrypted environment variables
+|--------------------------------------------------------------------------
+|
+| Next, we will check to see whether a decryption key has been set on the
+| environment. If so, we will attempt to discover an encrypted file at
+| the root of the application and decrypt it into the Vapor runtime.
+|
+*/
+
+fwrite(STDERR, 'Attempting to decrypt environment variables into runtime'.PHP_EOL);
+
+Environment::decrypt();
 
 /*
 |--------------------------------------------------------------------------

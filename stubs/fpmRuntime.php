@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
+use Laravel\Vapor\Runtime\Environment;
 use Laravel\Vapor\Runtime\Fpm\Fpm;
 use Laravel\Vapor\Runtime\Fpm\FpmHttpHandlerFactory;
 use Laravel\Vapor\Runtime\LambdaContainer;
@@ -29,23 +30,6 @@ $secrets = Secrets::addToEnvironment(
 
 /*
 |--------------------------------------------------------------------------
-| Start PHP-FPM
-|--------------------------------------------------------------------------
-|
-| We need to boot the PHP-FPM process with the appropriate handler so it
-| is ready to accept requests. This will initialize this process then
-| wait for this socket to become ready before continuing execution.
-|
-*/
-
-fwrite(STDERR, 'Preparing to boot FPM'.PHP_EOL);
-
-$fpm = Fpm::boot(
-    __DIR__.'/httpHandler.php', $secrets
-);
-
-/*
-|--------------------------------------------------------------------------
 | Cache Configuration
 |--------------------------------------------------------------------------
 |
@@ -64,6 +48,38 @@ with(require __DIR__.'/bootstrap/app.php', function ($app) {
 
     $app->make(ConsoleKernelContract::class)->call('config:cache');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Inject decrypted environment variables
+|--------------------------------------------------------------------------
+|
+| Next, we will check to see whether a decryption key has been set on the
+| environment. If so, we will attempt to discover an encrypted file at
+| the root of the application and decrypt it into the Vapor runtime.
+|
+*/
+
+fwrite(STDERR, 'Attempting to decrypt environment variables into runtime'.PHP_EOL);
+
+Environment::decrypt();
+
+/*
+|--------------------------------------------------------------------------
+| Start PHP-FPM
+|--------------------------------------------------------------------------
+|
+| We need to boot the PHP-FPM process with the appropriate handler so it
+| is ready to accept requests. This will initialize this process then
+| wait for this socket to become ready before continuing execution.
+|
+*/
+
+fwrite(STDERR, 'Preparing to boot FPM'.PHP_EOL);
+
+$fpm = Fpm::boot(
+    __DIR__.'/httpHandler.php', $secrets
+);
 
 /*
 |--------------------------------------------------------------------------
