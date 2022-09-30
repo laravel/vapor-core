@@ -11,6 +11,8 @@ use Laravel\Vapor\Runtime\StorageDirectories;
 
 $app = require __DIR__.'/bootstrap/app.php';
 
+$console = $app->make(ConsoleKernelContract::class);
+
 /*
 |--------------------------------------------------------------------------
 | Inject SSM Secrets Into Environment
@@ -62,7 +64,24 @@ $app->useStoragePath(StorageDirectories::PATH);
 
 fwrite(STDERR, 'Caching Laravel configuration'.PHP_EOL);
 
-$app->make(ConsoleKernelContract::class)->call('config:cache');
+$console->call('config:cache');
+
+/*
+|--------------------------------------------------------------------------
+| Cache Routes
+|--------------------------------------------------------------------------
+|
+| To further boost performance, we will attempt to cache the routes of the
+| application. Doing so will drastically decrease the amount of time it
+| takes to register all of the routes when firing up the application.
+|
+*/
+
+if (in_array('route:cache', array_keys($console->all()))) {
+    fwrite(STDERR, 'Caching Laravel routes'.PHP_EOL);
+
+    $console->call('route:cache');
+}
 
 /*
 |--------------------------------------------------------------------------
