@@ -96,7 +96,7 @@ class LambdaProxyOctaneHandlerTest extends TestCase
 
         Route::get('/', function (Request $request) {
             return response()->file(__DIR__.'/../Fixtures/asset.js', [
-                'Content-Type' => 'text/javascript',
+                'Content-Type' => 'text/javascript; charset=UTF-8',
             ]);
         });
 
@@ -110,7 +110,7 @@ class LambdaProxyOctaneHandlerTest extends TestCase
             ],
         ]);
 
-        static::assertEquals('text/javascript', $response->toApiGatewayFormat()['headers']['Content-Type']);
+        static::assertEquals('text/javascript; charset=UTF-8', $response->toApiGatewayFormat()['headers']['Content-Type']);
         static::assertEquals("console.log();\n", $response->toApiGatewayFormat()['body']);
     }
 
