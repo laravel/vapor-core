@@ -54,7 +54,7 @@ class Environment
     public function __construct(Application $app)
     {
         $this->app = $app;
-        $this->environment = isset($_ENV['APP_ENV']) ? $_ENV['APP_ENV'] : 'production';
+        $this->environment = $_ENV['APP_ENV'] ?? 'production';
         $this->environmentFile = '.env.'.$this->environment;
         $this->encryptedFile = '.env.'.$this->environment.'.encrypted';
     }
