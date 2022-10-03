@@ -77,7 +77,7 @@ $console->call('config:cache');
 |
 */
 
-if (in_array('route:cache', array_keys($console->all()))) {
+if (version_compare($app->version(), '8.0', '>=')) {
     fwrite(STDERR, 'Caching Laravel routes'.PHP_EOL);
 
     $console->call('route:cache');
