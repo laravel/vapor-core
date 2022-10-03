@@ -77,7 +77,11 @@ $console->call('config:cache');
 |
 */
 
-if (version_compare($app->version(), '8.0', '>=')) {
+if (
+    version_compare($app->version(), '8.0', '>=')
+        && isset($_ENV['VAPOR_CACHE_ROUTES'])
+        && $_ENV['VAPOR_CACHE_ROUTES'] === 'true'
+) {
     fwrite(STDERR, 'Caching Laravel routes'.PHP_EOL);
 
     $console->call('route:cache');
