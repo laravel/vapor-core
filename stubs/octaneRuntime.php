@@ -32,7 +32,7 @@ $secrets = Secrets::addToEnvironment(
 
 /*
 |--------------------------------------------------------------------------
-| Inject decrypted environment variables
+| Inject Decrypted Environment Variables
 |--------------------------------------------------------------------------
 |
 | Next, we will check to see whether a decryption key has been set on the

@@ -51,12 +51,29 @@ class Environment
      */
     protected $console;
 
+    /**
+     * Create a new environment manager instance.
+     *
+     * @param  \Illuminate\Contracts\Foundation\Application  $app
+     * @return void
+     */
     public function __construct(Application $app)
     {
         $this->app = $app;
+
         $this->environment = $_ENV['APP_ENV'] ?? 'production';
         $this->environmentFile = '.env.'.$this->environment;
         $this->encryptedFile = '.env.'.$this->environment.'.encrypted';
+    }
+
+    /**
+     * Decrypt the environment file and load it into the runtime.
+     *
+     * @return void
+     */
+    public static function decrypt($app)
+    {
+        (new static($app))->decryptEnvironment();
     }
 
     /**
@@ -88,17 +105,7 @@ class Environment
     }
 
     /**
-     * Decrypt the environment file and load it into the runtime.
-     *
-     * @return void
-     */
-    public static function decrypt($app)
-    {
-        (new static($app))->decryptEnvironment();
-    }
-
-    /**
-     * Determine if it is possible to decrypt an environment file.
+     * Determine if it is possible to decrypt the environment file.
      *
      * @return bool
      */
@@ -163,7 +170,7 @@ class Environment
     }
 
     /**
-     * Get a console kernel instance.
+     * Get the console kernel implementation.
      *
      * @return \Illuminate\Contracts\Console\Kernel
      */
