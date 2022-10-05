@@ -1,12 +1,15 @@
 <?php
 
 use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
+use Laravel\Vapor\Runtime\Environment;
 use Laravel\Vapor\Runtime\Fpm\Fpm;
 use Laravel\Vapor\Runtime\Fpm\FpmHttpHandlerFactory;
 use Laravel\Vapor\Runtime\LambdaContainer;
 use Laravel\Vapor\Runtime\LambdaRuntime;
 use Laravel\Vapor\Runtime\Secrets;
 use Laravel\Vapor\Runtime\StorageDirectories;
+
+$app = require __DIR__.'/bootstrap/app.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +32,40 @@ $secrets = Secrets::addToEnvironment(
 
 /*
 |--------------------------------------------------------------------------
+| Inject Decrypted Environment Variables
+|--------------------------------------------------------------------------
+|
+| Next, we will check to see whether a decryption key has been set on the
+| environment. If so, we will attempt to discover an encrypted file at
+| the root of the application and decrypt it into the Vapor runtime.
+|
+*/
+
+fwrite(STDERR, 'Attempting to decrypt environment variables into runtime'.PHP_EOL);
+
+Environment::decrypt($app);
+
+/*
+|--------------------------------------------------------------------------
+| Cache Configuration
+|--------------------------------------------------------------------------
+|
+| To give the application a speed boost, we are going to cache all of the
+| configuration files into a single file. The file will be loaded once
+| by the runtime then it will read the configuration values from it.
+|
+*/
+
+StorageDirectories::create();
+
+$app->useStoragePath(StorageDirectories::PATH);
+
+fwrite(STDERR, 'Caching Laravel configuration'.PHP_EOL);
+
+$app->make(ConsoleKernelContract::class)->call('config:cache');
+
+/*
+|--------------------------------------------------------------------------
 | Start PHP-FPM
 |--------------------------------------------------------------------------
 |
@@ -43,27 +80,6 @@ fwrite(STDERR, 'Preparing to boot FPM'.PHP_EOL);
 $fpm = Fpm::boot(
     __DIR__.'/httpHandler.php', $secrets
 );
-
-/*
-|--------------------------------------------------------------------------
-| Cache Configuration
-|--------------------------------------------------------------------------
-|
-| To give the application a speed boost, we are going to cache all of the
-| configuration files into a single file. The file will be loaded once
-| by the runtime then it will read the configuration values from it.
-|
-*/
-
-with(require __DIR__.'/bootstrap/app.php', function ($app) {
-    StorageDirectories::create();
-
-    $app->useStoragePath(StorageDirectories::PATH);
-
-    fwrite(STDERR, 'Caching Laravel configuration'.PHP_EOL);
-
-    $app->make(ConsoleKernelContract::class)->call('config:cache');
-});
 
 /*
 |--------------------------------------------------------------------------
