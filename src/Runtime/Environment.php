@@ -109,7 +109,7 @@ class Environment
             return false;
         }
 
-        if (version_compare($this->app->version(), '9.32.0', '<')) {
+        if (version_compare($this->app->version(), '9.37.0', '<')) {
             fwrite(STDERR, 'Decrypt command not available.'.PHP_EOL);
 
             return false;
