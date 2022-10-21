@@ -112,8 +112,6 @@ class Environment
     public function canBeDecrypted()
     {
         if (! isset($_ENV['LARAVEL_ENV_ENCRYPTION_KEY'])) {
-            fwrite(STDERR, 'No decryption key set.'.PHP_EOL);
-
             return false;
         }
 

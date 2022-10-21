@@ -41,8 +41,6 @@ $secrets = Secrets::addToEnvironment(
 |
 */
 
-fwrite(STDERR, 'Attempting to decrypt environment variables into runtime'.PHP_EOL);
-
 Environment::decrypt($app);
 
 /*
