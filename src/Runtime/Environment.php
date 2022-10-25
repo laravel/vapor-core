@@ -83,8 +83,6 @@ class Environment
      */
     public function decryptEnvironment()
     {
-        $basePath = $this->app->basePath();
-
         try {
             if (! $this->canBeDecrypted()) {
                 return;
@@ -92,16 +90,12 @@ class Environment
 
             $this->copyEncryptedFile();
 
-            $this->app->setBasePath($this->writePath);
-
             $this->decryptFile();
 
             $this->loadEnvironment();
         } catch (Throwable $e) {
             fwrite(STDERR, $e->getMessage().PHP_EOL);
         }
-
-        $this->app->setBasePath($basePath);
     }
 
     /**
@@ -115,7 +109,7 @@ class Environment
             return false;
         }
 
-        if (! in_array('env:decrypt', array_keys($this->console()->all()))) {
+        if (version_compare($this->app->version(), '9.37.0', '<')) {
             fwrite(STDERR, 'Decrypt command not available.'.PHP_EOL);
 
             return false;
@@ -152,7 +146,7 @@ class Environment
     {
         fwrite(STDERR, 'Decrypting environment variables.'.PHP_EOL);
 
-        $this->console()->call('env:decrypt', ['--env' => $this->environment]);
+        $this->console()->call('env:decrypt', ['--env' => $this->environment, '--path' => $this->writePath]);
     }
 
     /**
@@ -164,7 +158,7 @@ class Environment
     {
         fwrite(STDERR, 'Loading decrypted environment variables.'.PHP_EOL);
 
-        Dotenv::createImmutable($this->app->basePath(), $this->environmentFile)->load();
+        Dotenv::createImmutable($this->writePath, $this->environmentFile)->load();
     }
 
     /**
