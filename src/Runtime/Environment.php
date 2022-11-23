@@ -158,7 +158,7 @@ class Environment
     {
         fwrite(STDERR, 'Loading decrypted environment variables.'.PHP_EOL);
 
-        Dotenv::createImmutable($this->writePath, $this->environmentFile)->load();
+        Dotenv::createMutable($this->writePath, $this->environmentFile)->load();
     }
 
     /**
