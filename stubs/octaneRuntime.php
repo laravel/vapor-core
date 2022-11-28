@@ -24,7 +24,7 @@ $app = require __DIR__.'/bootstrap/app.php';
 
 fwrite(STDERR, 'Preparing to add secrets to runtime'.PHP_EOL);
 
-$secrets = Secrets::addToEnvironment(
+Secrets::addToEnvironment(
     $_ENV['VAPOR_SSM_PATH'],
     json_decode($_ENV['VAPOR_SSM_VARIABLES'] ?? '[]', true),
     __DIR__.'/vaporSecrets.php'
