@@ -424,6 +424,28 @@ EOF
         );
     }
 
+    public function test_request_ignores_invalid_cookies()
+    {
+        $handler = new LoadBalancedOctaneHandler();
+
+        Route::get('/', function (Request $request) {
+            return $request->cookies->all();
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/',
+            'headers' => [
+                'cookie' => 'cookieKey1; cookieKey2=cookieValue2',
+            ],
+        ]);
+
+        static::assertEquals(
+            ['cookieKey2' => 'cookieValue2'],
+            json_decode($response->toApiGatewayFormat()['body'], true)
+        );
+    }
+
     public function test_request_query_string()
     {
         $handler = new LoadBalancedOctaneHandler();

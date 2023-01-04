@@ -72,10 +72,16 @@ class OctaneRequestContextFactory
         }
 
         return Collection::make(explode('; ', $headers['cookie']))->mapWithKeys(function ($cookie) {
-            [$key, $value] = explode('=', trim($cookie), 2);
+            $cookie = explode('=', trim($cookie), 2);
 
-            return [$key => urldecode($value)];
-        })->all();
+            $key = $cookie[0];
+
+            if (! isset($cookie[1])) {
+                return [$key => null];
+            }
+
+            return [$key => urldecode($cookie[1])];
+        })->filter()->all();
     }
 
     /**
