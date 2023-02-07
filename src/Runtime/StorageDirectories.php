@@ -21,6 +21,7 @@ class StorageDirectories
         $directories = [
             self::PATH.'/app',
             self::PATH.'/logs',
+            self::PATH.'/.laravel/cache',
             self::PATH.'/bootstrap/cache',
             self::PATH.'/framework/cache',
             self::PATH.'/framework/views',

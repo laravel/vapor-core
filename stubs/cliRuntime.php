@@ -8,7 +8,11 @@ use Laravel\Vapor\Runtime\LambdaRuntime;
 use Laravel\Vapor\Runtime\Secrets;
 use Laravel\Vapor\Runtime\StorageDirectories;
 
-$app = require __DIR__.'/bootstrap/app.php';
+$appPath = file_exists(__DIR__.'/.laravel/app.php') 
+                        ? __DIR__.'/.laravel/app.php' 
+                        : __DIR__.'/bootstrap/app.php';
+
+$app = require $appPath;
 
 /*
 |--------------------------------------------------------------------------

@@ -27,7 +27,11 @@ class QueueHandler implements LambdaEventHandler
     public function __construct()
     {
         if (! isset(static::$app)) {
-            static::$app = require $_ENV['LAMBDA_TASK_ROOT'].'/bootstrap/app.php';
+            $appPath = file_exists($_ENV['LAMBDA_TASK_ROOT'].'/.laravel/app.php') 
+                                ? $_ENV['LAMBDA_TASK_ROOT'].'/.laravel/app.php' 
+                                : $_ENV['LAMBDA_TASK_ROOT'].'/bootstrap/app.php';
+
+            static::$app = require $appPath;
         }
     }
 
