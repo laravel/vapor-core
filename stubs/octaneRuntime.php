@@ -9,8 +9,8 @@ use Laravel\Vapor\Runtime\Octane\OctaneHttpHandlerFactory;
 use Laravel\Vapor\Runtime\Secrets;
 use Laravel\Vapor\Runtime\StorageDirectories;
 
-$appPath = file_exists(__DIR__.'/.laravel/app.php') 
-                        ? __DIR__.'/.laravel/app.php' 
+$appPath = file_exists(__DIR__.'/.laravel/app.php')
+                        ? __DIR__.'/.laravel/app.php'
                         : __DIR__.'/bootstrap/app.php';
 
 $app = require $appPath;

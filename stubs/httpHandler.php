@@ -36,8 +36,8 @@ require __DIR__.'/vendor/autoload.php';
 |
 */
 
-$appPath = file_exists(__DIR__.'/.laravel/app.php') 
-                        ? __DIR__.'/.laravel/app.php' 
+$appPath = file_exists(__DIR__.'/.laravel/app.php')
+                        ? __DIR__.'/.laravel/app.php'
                         : __DIR__.'/bootstrap/app.php';
 
 $app = require_once $appPath;
