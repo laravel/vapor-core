@@ -17,8 +17,8 @@ class VaporListFailedCommand extends Command
                             {--limit=20 : The number of failed jobs to return}
                             {--offset=1 : The offset to start returning failed jobs}
                             {--queue= : The queue to filter by}
-                            {--search= : The search term to filter by}
-                            {--start= : The start time to filter by}';
+                            {--query= : The search query to filter by}
+                            {--start= : The start timestamp to filter by}';
 
     /**
      * The console command description.
@@ -48,13 +48,13 @@ class VaporListFailedCommand extends Command
 
         if ($queue = $this->option('queue')) {
             $failedJobs = $failedJobs->filter(function ($job) use ($queue) {
-                return $queue == $job->queue;
+                return Str::afterLast($job->queue, '/') === $queue;
             });
         }
 
-        if ($search = $this->option('search')) {
-            $failedJobs = $failedJobs->filter(function ($job) use ($search) {
-                return Str::contains(json_encode($job), $search);
+        if ($query = $this->option('query')) {
+            $failedJobs = $failedJobs->filter(function ($job) use ($query) {
+                return Str::contains(json_encode($job), $query);
             });
         }
 
@@ -64,9 +64,11 @@ class VaporListFailedCommand extends Command
             });
         }
 
+        $total = count($failedJobs);
+
         $failedJobs = $failedJobs->forPage(
-            $this->option('offset'),
-            $this->option('limit')
+            $offset = $this->option('offset'),
+            $limit = $this->option('limit')
         )->map(function ($failed) {
             return array_merge((array) $failed, [
                 'payload' => Str::limit($failed->payload, 1000),
@@ -75,9 +77,18 @@ class VaporListFailedCommand extends Command
                 'queue' => Str::afterLast($failed->queue, '/'),
                 'exception_title' => Str::before($failed->exception, "\n"),
             ]);
-        })->toJson();
+        })->values()->toArray();
 
-        $this->output->writeln($failedJobs);
+        $failedJobs = [
+            'failed_jobs' => $failedJobs,
+            'total' => $total,
+            'has_next_page' => $total > $limit * $offset,
+            'has_previous_page' => $offset > 1 && $total > $limit * ($offset - 1),
+        ];
+
+        $this->output->writeln(
+            json_encode($failedJobs)
+        );
     }
 
     /**
