@@ -15,7 +15,7 @@ class VaporListFailedCommand extends Command
      */
     protected $signature = 'vapor:failed
                             {--limit= : The number of failed jobs to return}
-                            {--offset=1 : The offset to start returning failed jobs}
+                            {--page=1 : The page of failed jobs to return}
                             {--queue= : The queue to filter by}
                             {--query= : The search query to filter by}
                             {--start= : The start timestamp to filter by}';
@@ -66,11 +66,11 @@ class VaporListFailedCommand extends Command
 
         $total = count($failedJobs);
 
-        $offset = $this->option('offset');
+        $page = $this->option('page');
         $limit = $this->option('limit');
 
         if ($limit) {
-            $failedJobs = $failedJobs->forPage($offset, $limit);
+            $failedJobs = $failedJobs->forPage($page, $limit);
         }
 
         $failedJobs = $failedJobs->map(function ($failed) {
@@ -86,8 +86,8 @@ class VaporListFailedCommand extends Command
         $failedJobs = [
             'failed_jobs' => $failedJobs,
             'total' => $total,
-            'has_next_page' => $limit && $total > $limit * $offset,
-            'has_previous_page' => $limit && $offset > 1 && $total > $limit * ($offset - 1),
+            'has_next_page' => $limit && $total > $limit * $page,
+            'has_previous_page' => $limit && $page > 1 && $total > $limit * ($page - 1),
         ];
 
         $this->output->writeln(
