@@ -6,14 +6,14 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
-class VaporListFailedCommand extends Command
+class VaporQueueListFailedCommand extends Command
 {
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $signature = 'vapor:failed
+    protected $signature = 'vapor:queue-failed
                             {--limit= : The number of failed jobs to return}
                             {--page=1 : The page of failed jobs to return}
                             {--queue= : The queue to filter by}
