@@ -37,5 +37,9 @@ jobs:
           max_attempts: 5
           command: composer update --prefer-stable --prefer-dist --no-interaction --no-progress
 
+      - name: Install Octane
+        run: |
+           composer require laravel/octane --dev
+
       - name: Execute type checking
         run: vendor/bin/phpstan

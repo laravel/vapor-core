@@ -87,7 +87,7 @@ class JobAttempts
      * Forget the number of times the job has been attempted.
      *
      * @param  \Illuminate\Contracts\Queue\Job|string  $job
-     * @return int
+     * @return null
      */
     public function forget($job)
     {
