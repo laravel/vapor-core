@@ -15,7 +15,7 @@ class JsonFormatter extends BaseJsonFormatter
         $context = ['aws_request_id' => ($_ENV['AWS_REQUEST_ID'] ?? null)];
 
         if ($record instanceof LogRecord) {
-            $record = new LogRecord(
+            $record = new LogRecord( // @phpstan-ignore-line
                 $record->datetime,
                 $record->channel,
                 $record->level,

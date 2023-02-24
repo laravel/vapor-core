@@ -23,7 +23,7 @@ class OctaneStatusCommand extends Command
     /**
      * Handle the command.
      *
-     * @return int
+     * @return void
      */
     public function handle()
     {
