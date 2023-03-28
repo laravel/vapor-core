@@ -4,6 +4,7 @@ namespace Laravel\Vapor\Console\Commands;
 
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Queue\ManuallyFailedException;
 use Illuminate\Support\Str;
 
 class VaporQueueListFailedCommand extends Command
@@ -16,6 +17,7 @@ class VaporQueueListFailedCommand extends Command
     protected $signature = 'vapor:queue-failed
                             {--limit= : The number of failed jobs to return}
                             {--page=1 : The page of failed jobs to return}
+                            {--id= : The job ID filter by}
                             {--queue= : The queue to filter by}
                             {--query= : The search query to filter by}
                             {--start= : The start timestamp to filter by}';
@@ -43,26 +45,16 @@ class VaporQueueListFailedCommand extends Command
     {
         $failed = $this->laravel['queue.failer']->all();
 
-        $failedJobs = collect($failed)
-            ->reverse();
-
-        if ($queue = $this->option('queue')) {
-            $failedJobs = $failedJobs->filter(function ($job) use ($queue) {
-                return Str::afterLast($job->queue, '/') === $queue;
+        $options = collect($this->options())
+            ->filter(function ($value, $option) {
+                return ! is_null($value) && in_array($option, ['id', 'queue', 'query', 'start']);
             });
-        }
 
-        if ($query = $this->option('query')) {
-            $failedJobs = $failedJobs->filter(function ($job) use ($query) {
-                return Str::contains(json_encode($job), $query);
+        $failedJobs = collect($failed)->filter(function ($job) use ($options) {
+            return $options->every(function ($value, $option) use ($job) {
+                return $this->filter($job, $option, $value);
             });
-        }
-
-        if ($startTime = $this->option('start')) {
-            $failedJobs = $failedJobs->filter(function ($job) use ($startTime) {
-                return Carbon::parse($job->failed_at)->timestamp >= $startTime;
-            });
-        }
+        });
 
         $total = count($failedJobs);
 
@@ -75,17 +67,19 @@ class VaporQueueListFailedCommand extends Command
 
         $failedJobs = $failedJobs->map(function ($failed) {
             return array_merge((array) $failed, [
-                'payload' => Str::limit($failed->payload, 1000),
+                'payload' => $failed->payload,
                 'exception' => Str::limit($failed->exception, 1000),
                 'name' => $this->extractJobName($failed->payload),
                 'queue' => Str::afterLast($failed->queue, '/'),
-                'exception_title' => Str::before($failed->exception, "\n"),
+                'message' => $this->extractMessage($failed->exception),
+                'connection' => $failed->connection,
             ]);
         })->values()->toArray();
 
         $failedJobs = [
             'failed_jobs' => $failedJobs,
             'total' => $total,
+            'total_pages' => $limit ? ceil($total / $limit) : 1,
             'has_next_page' => $limit && $total > $limit * $page,
             'has_previous_page' => $limit && $page > 1 && $total > $limit * ($page - 1),
         ];
@@ -113,6 +107,29 @@ class VaporQueueListFailedCommand extends Command
     }
 
     /**
+     * Extract the failed job message from exception.
+     *
+     * @param  string  $exception
+     * @return string
+     */
+    private function extractMessage($exception)
+    {
+        if (Str::startsWith($exception, ManuallyFailedException::class)) {
+            $message = 'Manually failed';
+        } else {
+            [$_, $message] = explode(':', $exception);
+            [$message] = explode(' in /', $message);
+            [$message] = explode(' in closure', $message);
+        }
+
+        if (! empty($message)) {
+            return trim($message);
+        }
+
+        return '';
+    }
+
+    /**
      * Match the job name from the payload.
      *
      * @param  array  $payload
@@ -123,5 +140,34 @@ class VaporQueueListFailedCommand extends Command
         preg_match('/"([^"]+)"/', $payload['data']['command'], $matches);
 
         return $matches[1] ?? $payload['job'] ?? null;
+    }
+
+    /**
+     * Determine whether the given job matches the given filter.
+     *
+     * @param  stdClass  $job
+     * @param  string  $option
+     * @param  string  $value
+     * @return bool
+     */
+    protected function filter($job, $option, $value)
+    {
+        if ($option === 'id') {
+            return $job->id === $value;
+        }
+
+        if ($option === 'queue') {
+            return Str::afterLast($job->queue, '/') === $value;
+        }
+
+        if ($option === 'query') {
+            return Str::contains(json_encode($job), $value);
+        }
+
+        if ($option === 'start') {
+            return Carbon::parse($job->failed_at)->timestamp >= $value;
+        }
+
+        return false;
     }
 }
