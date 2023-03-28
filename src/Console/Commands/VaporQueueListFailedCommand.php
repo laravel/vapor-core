@@ -79,7 +79,8 @@ class VaporQueueListFailedCommand extends Command
         $failedJobs = [
             'failed_jobs' => $failedJobs,
             'total' => $total,
-            'total_pages' => $limit ? ceil($total / $limit) : 1,
+            'from' => $limit ? ($page - 1) * $limit + 1 : 1,
+            'to' => $limit ? min($page * $limit, $total) : $total,
             'has_next_page' => $limit && $total > $limit * $page,
             'has_previous_page' => $limit && $page > 1 && $total > $limit * ($page - 1),
         ];
