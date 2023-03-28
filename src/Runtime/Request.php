@@ -32,6 +32,7 @@ class Request
      *
      * @param  array  $serverVariables
      * @param  string  $body
+     *
      * @parama array  $headers
      *
      * @return void
