@@ -32,8 +32,7 @@ class Request
      *
      * @param  array  $serverVariables
      * @param  string  $body
-     * @parama array  $headers
-     *
+     * @param  array  $headers
      * @return void
      */
     public function __construct(array $serverVariables, $body, $headers)

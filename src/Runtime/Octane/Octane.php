@@ -72,7 +72,7 @@ class Octane implements Client
         $databaseSessionTtl = (int) $databaseSessionTtl;
 
         static::$worker = tap(new Worker(
-                new ApplicationFactory($basePath), new self)
+            new ApplicationFactory($basePath), new self)
         )->boot()->onRequestHandled(static::manageDatabaseSessions($databaseSessionPersist, $databaseSessionTtl));
 
         if ($databaseSessionPersist && $databaseSessionTtl > 0) {

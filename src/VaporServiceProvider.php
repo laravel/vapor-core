@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use InvalidArgumentException;
 use Laravel\Vapor\Console\Commands\OctaneStatusCommand;
+use Laravel\Vapor\Console\Commands\VaporQueueListFailedCommand;
 use Laravel\Vapor\Console\Commands\VaporWorkCommand;
 use Laravel\Vapor\Http\Controllers\SignedStorageUrlController;
 use Laravel\Vapor\Http\Middleware\ServeStaticAssets;
@@ -163,7 +164,11 @@ class VaporServiceProvider extends ServiceProvider
             return new VaporWorkCommand($app['queue.vaporWorker']);
         });
 
-        $this->commands(['command.vapor.work']);
+        $this->app->singleton('command.vapor.queue-failed', function () {
+            return new VaporQueueListFailedCommand;
+        });
+
+        $this->commands(['command.vapor.work', 'command.vapor.queue-failed']);
     }
 
     /**
