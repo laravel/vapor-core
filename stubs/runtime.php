@@ -21,8 +21,6 @@ $appRoot = $_ENV['LAMBDA_TASK_ROOT'];
 
 require $appRoot.'/vendor/autoload.php';
 
-__vapor_debug('Loaded Composer autoload file');
-
 /*
 |--------------------------------------------------------------------------
 | Bootstrap The Runtime

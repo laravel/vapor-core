@@ -31,8 +31,6 @@ $appRoot = $_ENV['LAMBDA_TASK_ROOT'];
 */
 
 if (! file_exists('/tmp/vendor')) {
-    __vapor_debug('Downloading the application vendor archive...');
-
     exec(sprintf('/opt/awscli/aws s3 cp s3://%s/%s-vendor.zip /tmp/vendor.zip',
         $_ENV['VAPOR_ARTIFACT_BUCKET_NAME'],
         $_ENV['VAPOR_ARTIFACT_NAME']
