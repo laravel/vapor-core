@@ -8,3 +8,4 @@ parameters:
   ignoreErrors:
     - "#Unsafe usage of new static\\(\\)#"
     - "#\\(void\\) is used.#"
+    - "#__vapor_debug not found.#"
