@@ -24,7 +24,7 @@ class LambdaContainer
                 Octane::terminate();
             }
 
-            echo 'Killing container. Container has processed '.$invocationLimit.' invocations. ('.$_ENV['AWS_REQUEST_ID'].')'.PHP_EOL;
+            __vapor_debug('Killing container. Container has processed '.$invocationLimit.' invocations. ('.$_ENV['AWS_REQUEST_ID'].')');
 
             exit(0);
         }

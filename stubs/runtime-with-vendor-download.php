@@ -4,6 +4,15 @@ ini_set('display_errors', '1');
 
 error_reporting(E_ALL);
 
+if (! function_exists('__vapor_debug')) {
+    function __vapor_debug($message)
+    {
+        if (isset($_ENV['VAPOR_DEBUG']) && $_ENV('VAPOR_DEBUG') === true) {
+            __vapor_debug($message);
+        }
+    }
+}
+
 if (! file_exists('/tmp/opcache')) {
     mkdir('/tmp/opcache');
 }
@@ -22,7 +31,7 @@ $appRoot = $_ENV['LAMBDA_TASK_ROOT'];
 */
 
 if (! file_exists('/tmp/vendor')) {
-    fwrite(STDERR, 'Downloading the application vendor archive...'.PHP_EOL);
+    __vapor_debug('Downloading the application vendor archive...');
 
     exec(sprintf('/opt/awscli/aws s3 cp s3://%s/%s-vendor.zip /tmp/vendor.zip',
         $_ENV['VAPOR_ARTIFACT_BUCKET_NAME'],

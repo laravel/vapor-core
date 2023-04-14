@@ -60,12 +60,12 @@ if (isset($_ENV['VAPOR_MAINTENANCE_MODE']) &&
     file_put_contents($app->storagePath().'/framework/down', '[]');
 }
 
-echo 'Caching Laravel configuration'.PHP_EOL;
+__vapor_debug('Caching Laravel configuration');
 
 try {
     $app->make(ConsoleKernelContract::class)->call('config:cache');
 } catch (Throwable $e) {
-    echo 'Failing caching Laravel configuration: '.$e->getMessage().PHP_EOL;
+    __vapor_debug('Failing caching Laravel configuration: '.$e->getMessage());
 }
 
 /*

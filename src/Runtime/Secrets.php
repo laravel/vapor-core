@@ -34,7 +34,6 @@ class Secrets
      * Get all of the secret parameters (AWS SSM) at the given path.
      *
      * @param  string  $path
-     * @param  array  $parameters
      * @return array
      */
     public static function all($path, array $parameters = [])
@@ -65,7 +64,6 @@ class Secrets
     /**
      * Parse the secret names and values into an array.
      *
-     * @param  array  $secrets
      * @return array
      */
     protected static function parseSecrets(array $secrets)

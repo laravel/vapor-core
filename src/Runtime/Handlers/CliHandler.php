@@ -14,7 +14,6 @@ class CliHandler implements LambdaEventHandler
     /**
      * Handle an incoming Lambda event.
      *
-     * @param  array  $event
      * @return \Laravel\Vapor\Contracts\LambdaResponse
      */
     public function handle(array $event)
@@ -32,7 +31,7 @@ class CliHandler implements LambdaEventHandler
             if (! Str::containsAll($line, ['{"message":', '"level":'])) {
                 $output .= $line;
             } else {
-                echo $line.PHP_EOL;
+                __vapor_debug($line);
             }
         });
 

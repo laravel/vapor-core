@@ -22,7 +22,7 @@ $app = require __DIR__.'/bootstrap/app.php';
 |
 */
 
-fwrite(STDERR, 'Preparing to add secrets to runtime'.PHP_EOL);
+__vapor_debug('Preparing to add secrets to runtime');
 
 Secrets::addToEnvironment(
     $_ENV['VAPOR_SSM_PATH'],
@@ -58,7 +58,7 @@ StorageDirectories::create();
 
 $app->useStoragePath(StorageDirectories::PATH);
 
-fwrite(STDERR, 'Caching Laravel configuration'.PHP_EOL);
+__vapor_debug('Caching Laravel configuration');
 
 $app->make(ConsoleKernelContract::class)->call('config:cache');
 
@@ -72,7 +72,7 @@ $app->make(ConsoleKernelContract::class)->call('config:cache');
 | for Lambda invocations to be received for this Vapor application.
 |
 */
-fwrite(STDERR, 'Preparing to boot Octane'.PHP_EOL);
+__vapor_debug('Preparing to boot Octane');
 
 Octane::boot(
     __DIR__,
