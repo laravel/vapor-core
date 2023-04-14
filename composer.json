@@ -37,7 +37,10 @@
     "autoload": {
         "psr-4": {
             "Laravel\\Vapor\\": "src"
-        }
+        },
+        "files": [
+            "src/debug.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
