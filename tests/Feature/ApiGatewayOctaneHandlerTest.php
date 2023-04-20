@@ -390,7 +390,6 @@ Content-Disposition: form-data; name="file"; filename="my_uploaded.txt"
 Content-Type: text/plain
 
 foo
-
 -----------------------------317050813134112680482597024243--
 EOF
         ]);
@@ -435,7 +434,6 @@ Content-Disposition: form-data; name="file"; filename="my_uploaded.txt"
 Content-Type: text/plain
 
 foo
-
 -----------------------------317050813134112680482597024243--
 EOF
         ]);
