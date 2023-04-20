@@ -25,7 +25,7 @@ class VaporHealthCheckCommand extends Command
      *
      * @var bool
      */
-    protected $hidden = false;
+    protected $hidden = true;
 
     /**
      * Execute the console command.
