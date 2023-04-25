@@ -3,6 +3,8 @@
 if (! function_exists('__vapor_debug')) {
     function __vapor_debug($message)
     {
-        fwrite(STDERR, $message.PHP_EOL);
+        if (isset($_ENV['VAPOR_DEBUG']) && $_ENV['VAPOR_DEBUG'] === 'true') {
+            fwrite(STDERR, $message.PHP_EOL);
+        }
     }
 }
