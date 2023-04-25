@@ -66,7 +66,7 @@ jobs:
 
       - name: Install Octane
         run: |
-           composer require laravel/octane --dev
+           composer require laravel/octane --with-all-dependencies --dev
         if:  |
            matrix.php >= 8.0 && (matrix.laravel == '^8.0' || matrix.laravel == '^9.0' || matrix.laravel == '^10.0')
 
