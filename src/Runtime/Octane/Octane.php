@@ -254,8 +254,8 @@ class Octane implements Client
                 $app[ExceptionHandler::class]->render($request, $e)
             );
         } catch (Throwable $throwable) {
-            __vapor_debug($throwable->getMessage());
-            __vapor_debug($e->getMessage());
+            function_exists('__vapor_debug') && __vapor_debug($throwable->getMessage());
+            function_exists('__vapor_debug') && __vapor_debug($e->getMessage());
 
             static::$response = new OctaneResponse(
                 new \Illuminate\Http\Response('', 500)

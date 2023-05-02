@@ -31,7 +31,7 @@ class CliHandler implements LambdaEventHandler
             if (! Str::containsAll($line, ['{"message":', '"level":'])) {
                 $output .= $line;
             } else {
-                __vapor_debug($line);
+                function_exists('__vapor_debug') && __vapor_debug($line);
             }
         });
 

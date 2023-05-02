@@ -111,7 +111,7 @@ class Fpm
             $this->killExistingFpm();
         }
 
-        __vapor_debug('Ensuring ready to start FPM');
+        function_exists('__vapor_debug') && __vapor_debug('Ensuring ready to start FPM');
 
         $this->ensureReadyToStart();
 
@@ -123,12 +123,12 @@ class Fpm
             self::CONFIG,
         ]);
 
-        __vapor_debug('Starting FPM Process...');
+        function_exists('__vapor_debug') && __vapor_debug('Starting FPM Process...');
 
         $this->fpm->disableOutput()
             ->setTimeout(null)
             ->start(function ($type, $output) {
-                __vapor_debug($output);
+                function_exists('__vapor_debug') && __vapor_debug($output);
             });
 
         $this->ensureFpmHasStarted();
@@ -162,7 +162,7 @@ class Fpm
     public function handle($request)
     {
         return (new FpmApplication($this->client, $this->socketConnection))
-                    ->handle($request);
+            ->handle($request);
     }
 
     /**
@@ -215,7 +215,7 @@ class Fpm
                 throw new Exception('PHP-FPM has stopped unexpectedly.');
             }
         } catch (Throwable $e) {
-            __vapor_debug($e->getMessage());
+            function_exists('__vapor_debug') && __vapor_debug($e->getMessage());
 
             exit(1);
         }
@@ -240,7 +240,7 @@ class Fpm
      */
     protected function killExistingFpm()
     {
-        __vapor_debug('Killing existing FPM');
+        function_exists('__vapor_debug') && __vapor_debug('Killing existing FPM');
 
         if (! file_exists(static::PID_FILE)) {
             return unlink(static::SOCKET);

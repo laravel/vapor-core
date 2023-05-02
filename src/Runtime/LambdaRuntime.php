@@ -68,7 +68,7 @@ class LambdaRuntime
                     ? 'Uncaught '.get_class($error).': '.$error->getMessage()
                     : $error->getMessage();
 
-        __vapor_debug(sprintf(
+        function_exists('__vapor_debug') && __vapor_debug(sprintf(
             "Fatal error: %s in %s:%d\nStack trace:\n%s",
             $errorMessage,
             $error->getFile(),

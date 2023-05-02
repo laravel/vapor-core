@@ -93,7 +93,7 @@ class Environment
 
             $this->loadEnvironment();
         } catch (Throwable $e) {
-            __vapor_debug($e->getMessage());
+            function_exists('__vapor_debug') && __vapor_debug($e->getMessage());
         }
     }
 
@@ -109,13 +109,13 @@ class Environment
         }
 
         if (version_compare($this->app->version(), '9.37.0', '<')) {
-            __vapor_debug('Decrypt command not available.');
+            function_exists('__vapor_debug') && __vapor_debug('Decrypt command not available.');
 
             return false;
         }
 
         if (! file_exists($this->app->basePath($this->encryptedFile))) {
-            __vapor_debug('Encrypted environment file not found.');
+            function_exists('__vapor_debug') && __vapor_debug('Encrypted environment file not found.');
 
             return false;
         }
@@ -143,7 +143,7 @@ class Environment
      */
     public function decryptFile()
     {
-        __vapor_debug('Decrypting environment variables.');
+        function_exists('__vapor_debug') && __vapor_debug('Decrypting environment variables.');
 
         $this->console()->call('env:decrypt', ['--env' => $this->environment, '--path' => $this->writePath]);
     }
@@ -155,7 +155,7 @@ class Environment
      */
     public function loadEnvironment()
     {
-        __vapor_debug('Loading decrypted environment variables.');
+        function_exists('__vapor_debug') && __vapor_debug('Loading decrypted environment variables.');
 
         Dotenv::createMutable($this->writePath, $this->environmentFile)->load();
     }
