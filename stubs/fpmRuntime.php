@@ -22,7 +22,7 @@ $app = require __DIR__.'/bootstrap/app.php';
 |
 */
 
-__vapor_debug('Preparing to add secrets to runtime');
+function_exists('__vapor_debug') && __vapor_debug('Preparing to add secrets to runtime');
 
 Secrets::addToEnvironment(
     $_ENV['VAPOR_SSM_PATH'],
@@ -58,7 +58,7 @@ StorageDirectories::create();
 
 $app->useStoragePath(StorageDirectories::PATH);
 
-__vapor_debug('Caching Laravel configuration');
+function_exists('__vapor_debug') && __vapor_debug('Caching Laravel configuration');
 
 $app->make(ConsoleKernelContract::class)->call('config:cache');
 
@@ -73,7 +73,7 @@ $app->make(ConsoleKernelContract::class)->call('config:cache');
 |
 */
 
-__vapor_debug('Preparing to boot FPM');
+function_exists('__vapor_debug') && __vapor_debug('Preparing to boot FPM');
 
 $fpm = Fpm::boot(
     __DIR__.'/httpHandler.php'
@@ -97,8 +97,8 @@ $lambdaRuntime = LambdaRuntime::fromEnvironmentVariable();
 while (true) {
     $lambdaRuntime->nextInvocation(function ($invocationId, $event) {
         return FpmHttpHandlerFactory::make($event)
-                    ->handle($event)
-                    ->toApiGatewayFormat();
+            ->handle($event)
+            ->toApiGatewayFormat();
     });
 
     $fpm->ensureRunning();

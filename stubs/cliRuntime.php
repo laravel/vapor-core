@@ -60,12 +60,12 @@ if (isset($_ENV['VAPOR_MAINTENANCE_MODE']) &&
     file_put_contents($app->storagePath().'/framework/down', '[]');
 }
 
-__vapor_debug('Caching Laravel configuration');
+function_exists('__vapor_debug') && __vapor_debug('Caching Laravel configuration');
 
 try {
     $app->make(ConsoleKernelContract::class)->call('config:cache');
 } catch (Throwable $e) {
-    __vapor_debug('Failing caching Laravel configuration: '.$e->getMessage());
+    function_exists('__vapor_debug') && __vapor_debug('Failing caching Laravel configuration: '.$e->getMessage());
 }
 
 /*
@@ -86,8 +86,8 @@ $lambdaRuntime = LambdaRuntime::fromEnvironmentVariable();
 while (true) {
     $lambdaRuntime->nextInvocation(function ($invocationId, $event) {
         return CliHandlerFactory::make($event)
-                        ->handle($event)
-                        ->toApiGatewayFormat();
+            ->handle($event)
+            ->toApiGatewayFormat();
     });
 
     LambdaContainer::terminateIfInvocationLimitHasBeenReached(
