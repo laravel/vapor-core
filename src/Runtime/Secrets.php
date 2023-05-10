@@ -22,8 +22,6 @@ class Secrets
 
         return tap(static::all($path, (array) $parameters), function ($variables) {
             foreach ($variables as $key => $value) {
-                echo "Injecting secret [{$key}] into runtime.".PHP_EOL;
-
                 $_ENV[$key] = $value;
                 $_SERVER[$key] = $value;
             }
@@ -34,7 +32,6 @@ class Secrets
      * Get all of the secret parameters (AWS SSM) at the given path.
      *
      * @param  string  $path
-     * @param  array  $parameters
      * @return array
      */
     public static function all($path, array $parameters = [])
@@ -65,7 +62,6 @@ class Secrets
     /**
      * Parse the secret names and values into an array.
      *
-     * @param  array  $secrets
      * @return array
      */
     protected static function parseSecrets(array $secrets)

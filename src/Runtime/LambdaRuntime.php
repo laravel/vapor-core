@@ -40,7 +40,6 @@ class LambdaRuntime
     /**
      * Handle the next Lambda invocation.
      *
-     * @param  callable  $callback
      * @return void
      */
     public function nextInvocation(callable $callback)
@@ -61,8 +60,6 @@ class LambdaRuntime
     /**
      * Inform Lambda of an invocation failure.
      *
-     * @param  string  $invocationId
-     * @param  \Throwable  $error
      * @return void
      */
     public function handleException(string $invocationId, Throwable $error)
@@ -71,8 +68,8 @@ class LambdaRuntime
                     ? 'Uncaught '.get_class($error).': '.$error->getMessage()
                     : $error->getMessage();
 
-        fwrite(STDERR, sprintf(
-            "Fatal error: %s in %s:%d\nStack trace:\n%s".PHP_EOL,
+        function_exists('__vapor_debug') && __vapor_debug(sprintf(
+            "Fatal error: %s in %s:%d\nStack trace:\n%s",
             $errorMessage,
             $error->getFile(),
             $error->getLine(),

@@ -39,7 +39,7 @@ jobs:
 
       - name: Install Octane
         run: |
-           composer require laravel/octane --dev
+           composer require laravel/octane --with-all-dependencies --dev
 
       - name: Execute type checking
         run: vendor/bin/phpstan
