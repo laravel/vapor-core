@@ -129,15 +129,7 @@ class Fpm
         $this->fpm->disableOutput()
             ->setTimeout(null)
             ->start(function ($type, $output) {
-                if (Str::contains($output, [
-                    'Executing warming requests...',
-                    'fpm is running, pid',
-                    'ready to handle connections',
-                ])) {
-                    function_exists('__vapor_debug') && __vapor_debug($output);
-                } else {
-                    fwrite(STDERR, $output.PHP_EOL);
-                }
+                fwrite(STDERR, $output.PHP_EOL);
             });
 
         $this->ensureFpmHasStarted();
