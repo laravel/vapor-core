@@ -130,6 +130,7 @@ class Fpm
             ->setTimeout(null)
             ->start(function ($type, $output) {
                 if (Str::contains($output, [
+                    'Executing warming requests...',
                     'fpm is running, pid',
                     'ready to handle connections',
                 ])) {
