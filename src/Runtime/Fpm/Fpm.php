@@ -5,6 +5,7 @@ namespace Laravel\Vapor\Runtime\Fpm;
 use Exception;
 use hollodotme\FastCGI\Client;
 use hollodotme\FastCGI\SocketConnections\UnixDomainSocket;
+use Illuminate\Support\Str;
 use Symfony\Component\Process\Process;
 use Throwable;
 
