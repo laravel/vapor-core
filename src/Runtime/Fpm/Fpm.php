@@ -128,7 +128,7 @@ class Fpm
         $this->fpm->disableOutput()
             ->setTimeout(null)
             ->start(function ($type, $output) {
-                function_exists('__vapor_debug') && __vapor_debug($output);
+                fwrite(STDERR, $output.PHP_EOL);
             });
 
         $this->ensureFpmHasStarted();
