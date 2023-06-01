@@ -107,7 +107,7 @@ while (true) {
             if (Str::contains($e->getMessage(), 'Failed to write request to socket [broken pipe]')) {
                 function_exists('__vapor_debug') && __vapor_debug($e->getMessage());
 
-                return (new LambdaResponse(500, [], ''))
+                return (new LambdaResponse(403, [], ''))
                     ->toApiGatewayFormat();
             }
 
