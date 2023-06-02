@@ -19,7 +19,7 @@ class FpmHandler implements LambdaEventHandler
         $request = $this->request($event);
         $method = isset($request->serverVariables['REQUEST_METHOD']) ? $request->serverVariables['REQUEST_METHOD'] : null;
 
-        if ($request->body && $method === 'GET') {
+        if ($request->body !== '' && $method === 'GET') {
             return new LambdaResponse(403, [], '');
         }
 
