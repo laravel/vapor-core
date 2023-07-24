@@ -50,17 +50,6 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
     }
 
     /**
-     * Get key for the given UUID.
-     *
-     * @param string $uuid
-     * @return string
-     */
-    protected function getKey(string $uuid)
-    {
-        return 'tmp/'.$uuid;
-    }
-
-    /**
      * Create a command for the PUT operation.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -150,6 +139,17 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
         }
 
         return new S3Client($config);
+    }
+
+    /**
+     * Get key for the given UUID.
+     *
+     * @param  string  $uuid
+     * @return string
+     */
+    protected function getKey(string $uuid)
+    {
+        return 'tmp/'.$uuid;
     }
 
     /**
