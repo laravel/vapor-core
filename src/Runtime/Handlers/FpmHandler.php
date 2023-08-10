@@ -15,7 +15,7 @@ class FpmHandler implements LambdaEventHandler
      * @return \Laravel\Vapor\Contracts\LambdaResponse
      */
     public function handle(array $event)
-    {   
+    {
         return $this->response(
             Fpm::resolve()->handle($this->request($event))
         );
@@ -28,9 +28,7 @@ class FpmHandler implements LambdaEventHandler
      * @return \Laravel\Vapor\Runtime\Fpm\FpmRequest
      */
     public function request($event)
-    {
-        info('Event', $event);
-        
+    {        
         return FpmRequest::fromLambdaEvent(
             $event, $this->serverVariables(), Fpm::resolve()->handler()
         );
