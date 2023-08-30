@@ -23,6 +23,7 @@ use Laravel\Vapor\Runtime\Response;
 use Laravel\Vapor\Runtime\StorageDirectories;
 use PDO;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
 class Octane implements Client
@@ -166,6 +167,10 @@ class Octane implements Client
             ? $response->getFile()->getContent()
             : $response->getContent();
 
+        if ($response instanceof StreamedResponse) {
+            $content = static::captureContent($response);
+        }
+
         return tap(new Response(
             $content,
             $response->headers->all(),
@@ -283,5 +288,18 @@ class Octane implements Client
     public static function worker()
     {
         return static::$worker;
+    }
+
+    /**
+     * Capture the content from a streamed response.
+     */
+    protected static function captureContent(StreamedResponse $response): string
+    {
+        ob_start();
+        $response->sendContent();
+        $content = ob_get_contents();
+        ob_end_clean();
+
+        return $content;
     }
 }
