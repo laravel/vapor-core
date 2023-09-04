@@ -104,8 +104,7 @@ while (true) {
                 ->handle($event)
                 ->toApiGatewayFormat();
         } catch (WriteFailedException $e) {
-            $method = $event['httpMethod'] ?? $event['requestContext']['http']['method'] ?? null;
-            if (Str::contains($e->getMessage(), 'Failed to write request to socket [broken pipe]') && $method === 'GET' && $event['body'] !== null) {
+            if (Str::contains($e->getMessage(), 'Failed to write request to socket [broken pipe]')) {
                 function_exists('__vapor_debug') && __vapor_debug($e->getMessage());
 
                 return (new LambdaResponse(403, [], ''))
