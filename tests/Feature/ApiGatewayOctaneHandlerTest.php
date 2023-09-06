@@ -17,6 +17,7 @@ use Laravel\Vapor\Runtime\Octane\Octane;
 use Laravel\Vapor\Tests\TestCase;
 use Mockery;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ApiGatewayOctaneHandlerTest extends TestCase
 {
@@ -600,5 +601,25 @@ EOF
 
         static::assertEquals('application/json', $response->toApiGatewayFormat()['headers']['Content-Type']);
         static::assertEquals(['message' => 'We are currently down for maintenance.'], json_decode($response->toApiGatewayFormat()['body'], true));
+    }
+
+    public function test_streamed_responses()
+    {
+        $handler = new OctaneHandler();
+
+        Route::get('/', function () {
+            return new StreamedResponse(function () {
+                echo 'Hello World';
+            }, 200, ['mime-type' => 'image/png']);
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/',
+            'headers' => [],
+        ]);
+
+        static::assertEquals('image/png', $response->toApiGatewayFormat()['headers']['Mime-Type']);
+        static::assertEquals('Hello World', $response->toApiGatewayFormat()['body']);
     }
 }
