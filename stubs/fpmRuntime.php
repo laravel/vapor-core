@@ -1,10 +1,13 @@
 <?php
 
+use hollodotme\FastCGI\Exceptions\WriteFailedException;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
+use Illuminate\Support\Str;
 use Laravel\Vapor\Runtime\Environment;
 use Laravel\Vapor\Runtime\Fpm\Fpm;
 use Laravel\Vapor\Runtime\Fpm\FpmHttpHandlerFactory;
 use Laravel\Vapor\Runtime\LambdaContainer;
+use Laravel\Vapor\Runtime\LambdaResponse;
 use Laravel\Vapor\Runtime\LambdaRuntime;
 use Laravel\Vapor\Runtime\Secrets;
 use Laravel\Vapor\Runtime\StorageDirectories;
@@ -96,9 +99,20 @@ $lambdaRuntime = LambdaRuntime::fromEnvironmentVariable();
 
 while (true) {
     $lambdaRuntime->nextInvocation(function ($invocationId, $event) {
-        return FpmHttpHandlerFactory::make($event)
-            ->handle($event)
-            ->toApiGatewayFormat();
+        try {
+            return FpmHttpHandlerFactory::make($event)
+                ->handle($event)
+                ->toApiGatewayFormat();
+        } catch (WriteFailedException $e) {
+            if (Str::contains($e->getMessage(), 'Failed to write request to socket [broken pipe]')) {
+                function_exists('__vapor_debug') && __vapor_debug($e->getMessage());
+
+                return (new LambdaResponse(403, [], ''))
+                    ->toApiGatewayFormat();
+            }
+
+            throw $e;
+        }
     });
 
     $fpm->ensureRunning();
