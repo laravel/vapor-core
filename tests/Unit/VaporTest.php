@@ -37,7 +37,9 @@ class VaporTest extends TestCase
     {
         $_ENV['VAPOR_SSM_PATH'] = '/my-project-production';
 
-        $this->assertSame('active', Vapor::whenActive(function () { return 'active'; }, 'inactive'));
+        $this->assertSame('active', Vapor::whenActive(function () {
+            return 'active';
+        }, 'inactive'));
     }
 
     public function test_vapor_when_inactive()
@@ -47,6 +49,8 @@ class VaporTest extends TestCase
 
     public function test_vapor_when_inactive_with_callback()
     {
-        $this->assertSame('inactive', Vapor::whenInactive(function () { return 'inactive'; }, 'active'));
+        $this->assertSame('inactive', Vapor::whenInactive(function () {
+            return 'inactive';
+        }, 'active'));
     }
 }
