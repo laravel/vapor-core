@@ -23,7 +23,7 @@ class Vapor
     /**
      * Apply the callback if the environment is Vapor.
      */
-    public static function whenActive(mixed $whenActive, mixed $whenInactive = null): mixed
+    public static function whenActive($whenActive, $whenInactive = null)
     {
         if (static::active()) {
             return value($whenActive);
@@ -35,7 +35,7 @@ class Vapor
     /**
      * Apply the callback if the environment is not Vapor.
      */
-    public static function whenInactive(mixed $whenInactive, mixed $whenActive = null): mixed
+    public static function whenInactive($whenInactive, $whenActive = null)
     {
         return static::whenActive($whenActive, $whenInactive);
     }
