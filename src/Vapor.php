@@ -21,7 +21,7 @@ class Vapor
     }
 
     /**
-     * Apply the callback if the environment is Vapor.
+     * Execute the callback if the environment is Vapor.
      *
      * @param  mixed  $whenActive
      * @param  mixed  $whenInactive
@@ -37,7 +37,7 @@ class Vapor
     }
 
     /**
-     * Apply the callback if the environment is not Vapor.
+     * Execute the callback if the environment is not Vapor.
      *
      * @param  mixed  $whenInactive
      * @param  mixed  $whenActive
