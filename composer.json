@@ -59,7 +59,10 @@
         "laravel": {
             "providers": [
                 "Laravel\\Vapor\\VaporServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "Vapor": "Laravel\\Vapor\\Vapor"
+            }
         }
     },
     "config": {
