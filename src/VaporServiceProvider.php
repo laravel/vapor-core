@@ -13,6 +13,7 @@ use Laravel\Vapor\Console\Commands\OctaneStatusCommand;
 use Laravel\Vapor\Console\Commands\VaporHealthCheckCommand;
 use Laravel\Vapor\Console\Commands\VaporQueueListFailedCommand;
 use Laravel\Vapor\Console\Commands\VaporWorkCommand;
+use Laravel\Vapor\Http\Controllers\HealthCheckController;
 use Laravel\Vapor\Http\Controllers\SignedStorageUrlController;
 use Laravel\Vapor\Http\Middleware\ServeStaticAssets;
 use Laravel\Vapor\Queue\VaporConnector;
@@ -68,6 +69,11 @@ class VaporServiceProvider extends ServiceProvider
         $this->app->singleton(
             Contracts\SignedStorageUrlController::class,
             SignedStorageUrlController::class
+        );
+
+        $this->app->singleton(
+            Contracts\HealthCheckController::class,
+            HealthCheckController::class
         );
 
         $this->configure();
