@@ -44,7 +44,7 @@ class EnsureOnNakedDomainTest extends TestCase
         }
     }
 
-    public function useCases()
+    public static function useCases()
     {
         return [
             [[
