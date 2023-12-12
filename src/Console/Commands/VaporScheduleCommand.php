@@ -81,7 +81,9 @@ class VaporScheduleCommand extends Command
      */
     protected function obtainLock(Repository $cache, string $key): bool
     {
-        return $key === $cache->remember('vapor:schedule:lock', 60, function () use ($key) { return $key; });
+        return $key === $cache->remember('vapor:schedule:lock', 60, function () use ($key) {
+            return $key;
+        });
     }
 
     /**
