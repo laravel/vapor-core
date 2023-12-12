@@ -72,6 +72,8 @@ class VaporScheduleCommand extends Command
         if (in_array($manager->getDefaultDriver(), ['memcached', 'redis', 'dynamodb', 'database'])) {
             return $manager->driver();
         }
+
+        return null;
     }
 
     /**
