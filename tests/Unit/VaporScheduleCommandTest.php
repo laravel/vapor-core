@@ -32,10 +32,11 @@ class VaporScheduleCommandTest extends TestCase
 
     public function test_scheduler_is_invoked_when_invalid_cache_is_configured()
     {
+        $fake = Mockery::mock(Repository::class);
         Cache::shouldReceive('getDefaultDriver')->once()->andReturn('array');
-        Cache::shouldReceive('driver')->once()->andReturn($fake = Mockery::mock(Repository::class));
         $fake->shouldNotReceive('remember');
         if (version_compare($this->app->version(), 10, '>=')) {
+            Cache::shouldReceive('driver')->once()->andReturn($fake);
             $fake->shouldReceive('forget')->once()->with('illuminate:schedule:interrupt')->andReturn(true);
         }
         $fake->shouldNotReceive('forget')->with('vapor:schedule:lock');
@@ -47,7 +48,7 @@ class VaporScheduleCommandTest extends TestCase
     public function test_scheduler_is_called_at_the_top_of_the_minute()
     {
         Cache::shouldReceive('getDefaultDriver')->once()->andReturn('dynamodb');
-        Cache::shouldReceive('driver')->twice()->andReturn($fake = Mockery::mock(Repository::class));
+        Cache::shouldReceive('driver')->andReturn($fake = Mockery::mock(Repository::class));
         $fake->shouldReceive('remember')->once()->with('vapor:schedule:lock', 60, Mockery::any())->andReturn('test-schedule-lock-key');
         if (version_compare($this->app->version(), 10, '>=')) {
             $fake->shouldReceive('forget')->once()->with('illuminate:schedule:interrupt')->andReturn(true);
