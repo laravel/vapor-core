@@ -36,8 +36,10 @@ class VaporScheduleCommandTest extends TestCase
         Cache::shouldReceive('getDefaultDriver')->once()->andReturn('array');
         $fake->shouldNotReceive('remember');
         if (version_compare($this->app->version(), 10, '>=')) {
-            Cache::shouldReceive('driver')->once()->andReturn($fake);
             $fake->shouldReceive('forget')->once()->with('illuminate:schedule:interrupt')->andReturn(true);
+        }
+        if (version_compare($this->app->version(), 9, '!=')) {
+            Cache::shouldReceive('driver')->once()->andReturn($fake);
         }
         $fake->shouldNotReceive('forget')->with('vapor:schedule:lock');
 
