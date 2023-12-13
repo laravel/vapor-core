@@ -4,7 +4,6 @@ namespace Laravel\Vapor\Tests\Unit;
 
 use Carbon\Carbon;
 use Illuminate\Cache\Repository;
-use Illuminate\Foundation\Testing\WithConsoleEvents;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Laravel\Vapor\VaporServiceProvider;
@@ -13,8 +12,6 @@ use Orchestra\Testbench\TestCase;
 
 class VaporScheduleCommandTest extends TestCase
 {
-    use WithConsoleEvents;
-
     protected function setUp(): void
     {
         parent::setUp();
