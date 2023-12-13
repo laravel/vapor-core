@@ -20,7 +20,7 @@ class VaporScheduleCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Run a more granular scheduler for Vapor';
+    protected $description = 'Normalize the Vapor scheduler to run at the top of every minute';
 
     /**
      * Indicates whether the command should be shown in the Artisan command list.
@@ -31,15 +31,13 @@ class VaporScheduleCommand extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return void
      */
-    public function handle()
+    public function handle(): int
     {
         if (! $cache = $this->ensureValidCacheDriver()) {
             $this->call('schedule:run');
 
-            return self::SUCCESS;
+            return 0;
         }
 
         $key = (string) Str::uuid();
@@ -51,11 +49,15 @@ class VaporScheduleCommand extends Command
             }
 
             if ($lockObtained && now()->second === 0) {
-                $this->call('schedule:run');
-
                 $this->releaseLock($cache);
 
-                return self::SUCCESS;
+                $this->call('schedule:run');
+
+                return 0;
+            }
+
+            if (! $lockObtained && now()->second === 0) {
+                return 1;
             }
 
             usleep(10000);
@@ -88,8 +90,6 @@ class VaporScheduleCommand extends Command
 
     /**
      * Release the lock for the schedule.
-     *
-     * @param  string  $key
      */
     protected function releaseLock(Repository $cache): void
     {
