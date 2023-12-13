@@ -38,7 +38,7 @@ class VaporScheduleCommandTest extends TestCase
         if (version_compare($this->app->version(), 10, '>=')) {
             $fake->shouldReceive('forget')->once()->with('illuminate:schedule:interrupt')->andReturn(true);
         }
-        if (version_compare($this->app->version(), 9, '!=')) {
+        if (! Str::startsWith($this->app->version(), '9')) {
             Cache::shouldReceive('driver')->once()->andReturn($fake);
         }
         $fake->shouldNotReceive('forget')->with('vapor:schedule:lock');
