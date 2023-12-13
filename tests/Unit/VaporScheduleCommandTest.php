@@ -61,7 +61,7 @@ class VaporScheduleCommandTest extends TestCase
     public function test_scheduler_is_not_invoked_if_lock_cannot_be_obtained()
     {
         Cache::shouldReceive('getDefaultDriver')->once()->andReturn('dynamodb');
-        Cache::shouldReceive('driver')->once()->andReturn($fake = Mockery::mock(Repository::class));
+        Cache::shouldReceive('driver')->andReturn($fake = Mockery::mock(Repository::class));
         $fake->shouldReceive('remember')->once()->with('vapor:schedule:lock', 60, Mockery::any())->andReturn('test-locked-schedule-lock-key');
         $fake->shouldNotReceive('forget')->with('illuminate:schedule:interrupt')->andReturn(true);
         $fake->shouldNotReceive('forget')->with('vapor:schedule:lock');
