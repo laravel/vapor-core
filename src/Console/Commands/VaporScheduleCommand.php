@@ -20,7 +20,7 @@ class VaporScheduleCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Normalize the Vapor scheduler to run at the top of every minute';
+    protected $description = 'Run the scheduled commands at the beginning of every minute';
 
     /**
      * Indicates whether the command should be shown in the Artisan command list.
