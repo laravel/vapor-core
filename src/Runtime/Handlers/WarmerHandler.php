@@ -3,7 +3,7 @@
 namespace Laravel\Vapor\Runtime\Handlers;
 
 use Aws\Lambda\LambdaClient;
-use GuzzleHttp\Promise;
+use GuzzleHttp\Promise\Utils;
 use Laravel\Vapor\Contracts\LambdaEventHandler;
 use Laravel\Vapor\Runtime\ArrayLambdaResponse;
 use Laravel\Vapor\Runtime\Logger;
@@ -14,7 +14,6 @@ class WarmerHandler implements LambdaEventHandler
     /**
      * Handle an incoming Lambda event.
      *
-     * @param  array  $event
      * @return \Laravel\Vapor\Contracts\LambdaResponse
      */
     public function handle(array $event)
@@ -22,7 +21,7 @@ class WarmerHandler implements LambdaEventHandler
         try {
             Logger::info('Executing warming requests...');
 
-            Promise\settle(
+            Utils::settle(
                 $this->buildPromises($this->lambdaClient(), $event)
             )->wait();
         } catch (Throwable $e) {
@@ -37,21 +36,19 @@ class WarmerHandler implements LambdaEventHandler
     /**
      * Build the array of warmer invocation promises.
      *
-     * @param  \Aws\Lambda\LambdaClient  $lambda
-     * @param  array  $event
      * @return array
      */
     protected function buildPromises(LambdaClient $lambda, array $event)
     {
         return collect(range(1, $event['concurrency'] - 1))
-                ->mapWithKeys(function ($i) use ($lambda, $event) {
-                    return ['warmer-'.$i => $lambda->invokeAsync([
-                        'FunctionName' => $event['functionName'],
-                        'Qualifier' => $event['functionAlias'],
-                        'LogType' => 'None',
-                        'Payload' => json_encode(['vaporWarmerPing' => true]),
-                    ])];
-                })->all();
+            ->mapWithKeys(function ($i) use ($lambda, $event) {
+                return ['warmer-'.$i => $lambda->invokeAsync([
+                    'FunctionName' => $event['functionName'],
+                    'Qualifier' => $event['functionAlias'],
+                    'LogType' => 'None',
+                    'Payload' => json_encode(['vaporWarmerPing' => true]),
+                ])];
+            })->all();
     }
 
     /**
