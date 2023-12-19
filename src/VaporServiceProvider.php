@@ -12,6 +12,7 @@ use InvalidArgumentException;
 use Laravel\Vapor\Console\Commands\OctaneStatusCommand;
 use Laravel\Vapor\Console\Commands\VaporHealthCheckCommand;
 use Laravel\Vapor\Console\Commands\VaporQueueListFailedCommand;
+use Laravel\Vapor\Console\Commands\VaporScheduleCommand;
 use Laravel\Vapor\Console\Commands\VaporWorkCommand;
 use Laravel\Vapor\Http\Controllers\SignedStorageUrlController;
 use Laravel\Vapor\Http\Middleware\ServeStaticAssets;
@@ -173,7 +174,11 @@ class VaporServiceProvider extends ServiceProvider
             return new VaporHealthCheckCommand;
         });
 
-        $this->commands(['command.vapor.work', 'command.vapor.queue-failed', 'command.vapor.health-check']);
+        $this->app->singleton('command.vapor.schedule', function () {
+            return new VaporScheduleCommand;
+        });
+
+        $this->commands(['command.vapor.work', 'command.vapor.queue-failed', 'command.vapor.health-check', 'command.vapor.schedule']);
     }
 
     /**
