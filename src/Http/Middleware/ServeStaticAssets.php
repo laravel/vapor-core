@@ -27,6 +27,15 @@ class ServeStaticAssets
                 return $response;
             }
 
+            if (file_exists($path = public_path($requestUri))) {
+                $content = file_get_contents($path);
+
+                return response($content)->withHeaders([
+                    'Content-Length' => strlen($content),
+                    'Content-Type' => mime_content_type($path),
+                ]);
+            }
+
             $asset = null;
 
             try {
