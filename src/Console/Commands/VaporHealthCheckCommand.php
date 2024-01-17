@@ -2,7 +2,11 @@
 
 namespace Laravel\Vapor\Console\Commands;
 
+use Aws\DynamoDb\Exception\DynamoDbException;
+use Exception;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 class VaporHealthCheckCommand extends Command
 {
@@ -34,6 +38,40 @@ class VaporHealthCheckCommand extends Command
      */
     public function handle()
     {
+        $this->ensureBaseConfigurationFilesWereHarmonized();
+
+        $this->ensureCacheIsWorking();
+
         return $this->info('Health check complete!');
+    }
+
+    /**
+     * Ensure the configuration files were harmonized.
+     *
+     * @return void
+     */
+    protected function ensureBaseConfigurationFilesWereHarmonized()
+    {
+        if (! file_exists($filename = __DIR__.'/../../../../framework/config/cache.php')) {
+            return;
+        }
+
+        $configuration = file_get_contents($filename);
+
+        if (! Str::contains($configuration, "'key' => env('NULL_AWS_ACCESS_KEY_ID')")) {
+            throw new Exception(
+                'Laravel 11 or higher requires the latest version of Vapor CLI.'
+            );
+        }
+    }
+
+    /**
+     * Ensure cache calls are working as expected.
+     *
+     * @return void
+     */
+    protected function ensureCacheIsWorking()
+    {
+        Cache::get('vapor-health-check');
     }
 }
