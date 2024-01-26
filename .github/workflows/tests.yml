@@ -13,17 +13,21 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: ['8.0', 8.1, 8.2]
-        laravel: [8, 9, 10]
+        php: ['8.0', 8.1, 8.2, 8.3]
+        laravel: [8, 9, 10, 11]
         exclude:
           - php: '8.0'
             laravel: 10
+          - php: 8.3
+            laravel: 8
+          - php: 8.3
+            laravel: 9
 
     name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2

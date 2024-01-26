@@ -23,6 +23,7 @@ use Laravel\Vapor\Runtime\Response;
 use Laravel\Vapor\Runtime\StorageDirectories;
 use PDO;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
 class Octane implements Client
@@ -166,6 +167,10 @@ class Octane implements Client
             ? $response->getFile()->getContent()
             : $response->getContent();
 
+        if ($response instanceof StreamedResponse) {
+            $content = static::captureContent($response);
+        }
+
         return tap(new Response(
             $content,
             $response->headers->all(),
@@ -227,9 +232,6 @@ class Octane implements Client
 
     /**
      * Marshal the given Octane request context into an Laravel foundation request.
-     *
-     * @param  \Laravel\Octane\RequestContext  $context
-     * @return array
      */
     public function marshalRequest(RequestContext $context): array
     {
@@ -241,10 +243,6 @@ class Octane implements Client
 
     /**
      * Stores the response in the instance.
-     *
-     * @param  \Laravel\Octane\RequestContext  $context
-     * @param  \Laravel\Octane\OctaneResponse  $response
-     * @return void
      */
     public function respond(RequestContext $context, OctaneResponse $response): void
     {
@@ -253,12 +251,6 @@ class Octane implements Client
 
     /**
      * Send an error message to the server.
-     *
-     * @param  \Throwable  $e
-     * @param  \Illuminate\Foundation\Application  $app
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Laravel\Octane\RequestContext  $context
-     * @return void
      */
     public function error(Throwable $e, Application $app, Request $request, RequestContext $context): void
     {
@@ -267,8 +259,8 @@ class Octane implements Client
                 $app[ExceptionHandler::class]->render($request, $e)
             );
         } catch (Throwable $throwable) {
-            fwrite(STDERR, $throwable->getMessage());
-            fwrite(STDERR, $e->getMessage());
+            function_exists('__vapor_debug') && __vapor_debug($throwable->getMessage());
+            function_exists('__vapor_debug') && __vapor_debug($e->getMessage());
 
             static::$response = new OctaneResponse(
                 new \Illuminate\Http\Response('', 500)
@@ -296,5 +288,18 @@ class Octane implements Client
     public static function worker()
     {
         return static::$worker;
+    }
+
+    /**
+     * Capture the content from a streamed response.
+     */
+    protected static function captureContent(StreamedResponse $response): string
+    {
+        ob_start();
+        $response->sendContent();
+        $content = ob_get_contents();
+        ob_end_clean();
+
+        return $content;
     }
 }

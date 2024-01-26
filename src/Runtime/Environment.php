@@ -54,7 +54,6 @@ class Environment
     /**
      * Create a new environment manager instance.
      *
-     * @param  \Illuminate\Contracts\Foundation\Application  $app
      * @return void
      */
     public function __construct(Application $app)
@@ -94,7 +93,7 @@ class Environment
 
             $this->loadEnvironment();
         } catch (Throwable $e) {
-            fwrite(STDERR, $e->getMessage().PHP_EOL);
+            function_exists('__vapor_debug') && __vapor_debug($e->getMessage());
         }
     }
 
@@ -110,13 +109,13 @@ class Environment
         }
 
         if (version_compare($this->app->version(), '9.37.0', '<')) {
-            fwrite(STDERR, 'Decrypt command not available.'.PHP_EOL);
+            function_exists('__vapor_debug') && __vapor_debug('Decrypt command not available.');
 
             return false;
         }
 
         if (! file_exists($this->app->basePath($this->encryptedFile))) {
-            fwrite(STDERR, 'Encrypted environment file not found.'.PHP_EOL);
+            function_exists('__vapor_debug') && __vapor_debug('Encrypted environment file not found.');
 
             return false;
         }
@@ -144,7 +143,7 @@ class Environment
      */
     public function decryptFile()
     {
-        fwrite(STDERR, 'Decrypting environment variables.'.PHP_EOL);
+        function_exists('__vapor_debug') && __vapor_debug('Decrypting environment variables.');
 
         $this->console()->call('env:decrypt', ['--env' => $this->environment, '--path' => $this->writePath]);
     }
@@ -156,7 +155,7 @@ class Environment
      */
     public function loadEnvironment()
     {
-        fwrite(STDERR, 'Loading decrypted environment variables.'.PHP_EOL);
+        function_exists('__vapor_debug') && __vapor_debug('Loading decrypted environment variables.');
 
         Dotenv::createMutable($this->writePath, $this->environmentFile)->load();
     }

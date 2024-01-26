@@ -28,7 +28,7 @@ class StorageDirectories
 
         foreach ($directories as $directory) {
             if (! is_dir($directory)) {
-                echo "Creating storage directory: $directory".PHP_EOL;
+                function_exists('__vapor_debug') && __vapor_debug("Creating storage directory: $directory");
 
                 mkdir($directory, 0755, true);
             }

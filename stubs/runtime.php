@@ -12,8 +12,6 @@ $appRoot = $_ENV['LAMBDA_TASK_ROOT'];
 
 require $appRoot.'/vendor/autoload.php';
 
-fwrite(STDERR, 'Loaded Composer autoload file'.PHP_EOL);
-
 /*
 |--------------------------------------------------------------------------
 | Bootstrap The Runtime

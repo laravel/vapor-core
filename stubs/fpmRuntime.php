@@ -1,10 +1,13 @@
 <?php
 
+use hollodotme\FastCGI\Exceptions\WriteFailedException;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
+use Illuminate\Support\Str;
 use Laravel\Vapor\Runtime\Environment;
 use Laravel\Vapor\Runtime\Fpm\Fpm;
 use Laravel\Vapor\Runtime\Fpm\FpmHttpHandlerFactory;
 use Laravel\Vapor\Runtime\LambdaContainer;
+use Laravel\Vapor\Runtime\LambdaResponse;
 use Laravel\Vapor\Runtime\LambdaRuntime;
 use Laravel\Vapor\Runtime\Secrets;
 use Laravel\Vapor\Runtime\StorageDirectories;
@@ -22,7 +25,7 @@ $app = require __DIR__.'/bootstrap/app.php';
 |
 */
 
-fwrite(STDERR, 'Preparing to add secrets to runtime'.PHP_EOL);
+function_exists('__vapor_debug') && __vapor_debug('Preparing to add secrets to runtime');
 
 Secrets::addToEnvironment(
     $_ENV['VAPOR_SSM_PATH'],
@@ -58,7 +61,7 @@ StorageDirectories::create();
 
 $app->useStoragePath(StorageDirectories::PATH);
 
-fwrite(STDERR, 'Caching Laravel configuration'.PHP_EOL);
+function_exists('__vapor_debug') && __vapor_debug('Caching Laravel configuration');
 
 $app->make(ConsoleKernelContract::class)->call('config:cache');
 
@@ -73,7 +76,7 @@ $app->make(ConsoleKernelContract::class)->call('config:cache');
 |
 */
 
-fwrite(STDERR, 'Preparing to boot FPM'.PHP_EOL);
+function_exists('__vapor_debug') && __vapor_debug('Preparing to boot FPM');
 
 $fpm = Fpm::boot(
     __DIR__.'/httpHandler.php'
@@ -96,9 +99,20 @@ $lambdaRuntime = LambdaRuntime::fromEnvironmentVariable();
 
 while (true) {
     $lambdaRuntime->nextInvocation(function ($invocationId, $event) {
-        return FpmHttpHandlerFactory::make($event)
-                    ->handle($event)
+        try {
+            return FpmHttpHandlerFactory::make($event)
+                ->handle($event)
+                ->toApiGatewayFormat();
+        } catch (WriteFailedException $e) {
+            if (Str::contains($e->getMessage(), 'Failed to write request to socket [broken pipe]')) {
+                function_exists('__vapor_debug') && __vapor_debug($e->getMessage());
+
+                return (new LambdaResponse(502, [], ''))
                     ->toApiGatewayFormat();
+            }
+
+            throw $e;
+        }
     });
 
     $fpm->ensureRunning();

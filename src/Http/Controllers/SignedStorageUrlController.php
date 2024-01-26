@@ -34,7 +34,7 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
         $expiresAfter = config('vapor.signed_storage_url_expires_after', 5);
 
         $signedRequest = $client->createPresignedRequest(
-            $this->createCommand($request, $client, $bucket, $key = ('tmp/'.$uuid)),
+            $this->createCommand($request, $client, $bucket, $key = $this->getKey($uuid)),
             sprintf('+%s minutes', $expiresAfter)
         );
 
@@ -139,6 +139,17 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
         }
 
         return new S3Client($config);
+    }
+
+    /**
+     * Get key for the given UUID.
+     *
+     * @param  string  $uuid
+     * @return string
+     */
+    protected function getKey(string $uuid)
+    {
+        return 'tmp/'.$uuid;
     }
 
     /**

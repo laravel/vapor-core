@@ -11,7 +11,9 @@ use Throwable;
 class Fpm
 {
     public const SOCKET = '/tmp/.vapor/php-fpm.sock';
+
     public const CONFIG = '/tmp/.vapor/php-fpm.conf';
+
     public const PID_FILE = '/tmp/.vapor/php-fpm.pid';
 
     /**
@@ -61,8 +63,6 @@ class Fpm
      *
      * @param  \Hoa\Socket\Client  $handler
      * @param  \Hoa\FastCGI\SocketConnections\UnixDomainSocket  $socketConnection
-     * @param  string  $handler
-     * @param  array  $serverVariables
      * @return void
      */
     public function __construct(Client $client, UnixDomainSocket $socketConnection, string $handler, array $serverVariables = [])
@@ -77,7 +77,6 @@ class Fpm
      * Boot FPM with the given handler.
      *
      * @param  string  $handler
-     * @param  array  $serverVariables
      * @return static
      */
     public static function boot($handler, array $serverVariables = [])
@@ -112,7 +111,7 @@ class Fpm
             $this->killExistingFpm();
         }
 
-        fwrite(STDERR, 'Ensuring ready to start FPM'.PHP_EOL);
+        function_exists('__vapor_debug') && __vapor_debug('Ensuring ready to start FPM');
 
         $this->ensureReadyToStart();
 
@@ -124,7 +123,7 @@ class Fpm
             self::CONFIG,
         ]);
 
-        fwrite(STDERR, 'Starting FPM Process...'.PHP_EOL);
+        function_exists('__vapor_debug') && __vapor_debug('Starting FPM Process...');
 
         $this->fpm->disableOutput()
             ->setTimeout(null)
@@ -163,7 +162,7 @@ class Fpm
     public function handle($request)
     {
         return (new FpmApplication($this->client, $this->socketConnection))
-                    ->handle($request);
+            ->handle($request);
     }
 
     /**
@@ -216,7 +215,7 @@ class Fpm
                 throw new Exception('PHP-FPM has stopped unexpectedly.');
             }
         } catch (Throwable $e) {
-            echo $e->getMessage().PHP_EOL;
+            function_exists('__vapor_debug') && __vapor_debug($e->getMessage());
 
             exit(1);
         }
@@ -241,7 +240,7 @@ class Fpm
      */
     protected function killExistingFpm()
     {
-        fwrite(STDERR, 'Killing existing FPM'.PHP_EOL);
+        function_exists('__vapor_debug') && __vapor_debug('Killing existing FPM');
 
         if (! file_exists(static::PID_FILE)) {
             return unlink(static::SOCKET);
