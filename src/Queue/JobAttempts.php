@@ -104,6 +104,6 @@ class JobAttempts
     {
         $jobId = $job instanceof Job ? $job->getJobId() : $job;
 
-        return 'laravel_vapor_job_attempts:'.$jobId;
+        return 'laravel_vapor_job_attemps:'.$jobId;
     }
 }
