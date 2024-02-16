@@ -22,7 +22,6 @@ class JobAttempts
     /**
      * Create a new job attempts instance.
      *
-     * @param  \Illuminate\Contracts\Cache\Repository  $cache
      * @return void
      */
     public function __construct(Cache $cache)
@@ -104,6 +103,15 @@ class JobAttempts
     {
         $jobId = $job instanceof Job ? $job->getJobId() : $job;
 
-        return 'laravel_vapor_job_attemps:'.$jobId;
+        $oldKey = 'laravel_vapor_job_attemps:'.$jobId;
+        $newKey = 'laravel_vapor_job_attempts:'.$jobId;
+
+        if (($value = $this->cache->get($oldKey)) !== null) {
+            $this->cache->put($newKey, $value, static::TTL);
+
+            $this->cache->forget($oldKey);
+        }
+
+        return $newKey;
     }
 }
