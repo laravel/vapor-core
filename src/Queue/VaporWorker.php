@@ -18,6 +18,8 @@ class VaporWorker extends Worker
      */
     public function runVaporJob($job, $connectionName, WorkerOptions $options)
     {
+        app()->forgetScopedInstances();
+
         pcntl_async_signals(true);
 
         pcntl_signal(SIGALRM, function () use ($job) {

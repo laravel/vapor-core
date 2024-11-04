@@ -5,6 +5,7 @@ namespace Laravel\Vapor;
 use Illuminate\Cache\NullStore;
 use Illuminate\Cache\Repository;
 use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Support\Facades\Facade;
 use Laravel\Vapor\Queue\JobAttempts;
 use Laravel\Vapor\Queue\VaporWorker;
 
