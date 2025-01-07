@@ -65,10 +65,12 @@ class Arr
                 return $array;
             }
 
+            $segment = substr($segment, 0, -1);
+
             // If the segment is empty after trimming off the closing bracket, it means
             // we are at the end of the segment and are ready to set the value so we
             // can grab a pointer to the array location and set it after the loop.
-            if (empty($segment = substr($segment, 0, -1))) {
+            if ($segment === '') {
                 $pointer = &$pointer[];
             } else {
                 $pointer = &$pointer[$segment];
