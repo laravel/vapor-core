@@ -136,6 +136,10 @@ class SignedStorageUrlController extends Controller implements SignedStorageUrlC
                 $config['url'] = $_ENV['AWS_URL'];
                 $config['endpoint'] = $_ENV['AWS_URL'];
             }
+
+            if (array_key_exists('AWS_ENDPOINT', $_ENV) && ! is_null($_ENV['AWS_ENDPOINT'])) {
+                $config['endpoint'] = $_ENV['AWS_ENDPOINT'];
+            }
         }
 
         return new S3Client($config);
