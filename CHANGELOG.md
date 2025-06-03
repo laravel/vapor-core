@@ -1,6 +1,11 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.37.9...2.0)
+## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.38.0...2.0)
+
+## [v2.38.0](https://github.com/laravel/vapor-core/compare/v2.37.9...v2.38.0) - 2025-06-02
+
+* Fix missing write permission for changelog updater by [@olivernybroe](https://github.com/olivernybroe) in https://github.com/laravel/vapor-core/pull/189
+* [2.x] Fixes support for S3-Compatible Storage like Herd minio by [@pintend](https://github.com/pintend) in https://github.com/laravel/vapor-core/pull/190
 
 ## [v2.37.9](https://github.com/laravel/vapor-core/compare/v2.37.8...v2.37.9) - 2025-01-07
 
