@@ -207,4 +207,14 @@ class VaporWorkCommand extends Command
 
         return false;
     }
+
+    /**
+     * Reset static variables.
+     *
+     * @return void
+     */
+    public static function flushState()
+    {
+        static::$listeningForEvents = false;
+    }
 }
