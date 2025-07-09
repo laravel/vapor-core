@@ -275,7 +275,6 @@ class Request
      * Extracts the time (millisecond epoch) when the request was received by the API Gateway.
      *
      * @param  array  $event
-     *
      * @return int|null
      */
     protected static function extractRequestTimestamp(array $event)
