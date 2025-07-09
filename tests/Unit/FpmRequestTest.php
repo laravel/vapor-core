@@ -2,12 +2,20 @@
 
 namespace Laravel\Vapor\Tests\Unit;
 
+use Carbon\Carbon;
 use Laravel\Vapor\Runtime\Fpm\FpmRequest;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class FpmRequestTest extends TestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        Carbon::setTestNow('2021-01-01 00:00:00');
+    }
+
     protected function tearDown(): void
     {
         Mockery::close();
@@ -181,5 +189,42 @@ class FpmRequestTest extends TestCase
         ]);
 
         $this->assertSame(0, $request->getContentLength());
+    }
+
+    public function test_api_gateway_v1_request_time_is_set()
+    {
+        $epoch = Carbon::now()->getPreciseTimestamp(3);
+
+        $request = FpmRequest::fromLambdaEvent([
+            'httpMethod' => 'GET',
+            'requestContext' => [
+                'requestTimeEpoch' => $epoch,
+            ],
+        ]);
+
+        $this->assertSame($epoch, $request->serverVariables['AWS_API_GATEWAY_REQUEST_TIME']);
+    }
+
+    public function test_api_gateway_v2_request_time_is_set()
+    {
+        $epoch = Carbon::now()->getPreciseTimestamp(3);
+
+        $request = FpmRequest::fromLambdaEvent([
+            'httpMethod' => 'GET',
+            'requestContext' => [
+                'timeEpoch' => $epoch,
+            ],
+        ]);
+
+        $this->assertSame($epoch, $request->serverVariables['AWS_API_GATEWAY_REQUEST_TIME']);
+    }
+
+    public function test_elb_request_time_is_not_set()
+    {
+        $request = FpmRequest::fromLambdaEvent([
+            'httpMethod' => 'GET',
+        ]);
+
+        $this->assertArrayNotHasKey('AWS_API_GATEWAY_REQUEST_TIME', $request->serverVariables);
     }
 }
