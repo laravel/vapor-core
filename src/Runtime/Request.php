@@ -79,6 +79,10 @@ class Request
             $serverVariables['SCRIPT_FILENAME'] = $handler;
         }
 
+        if ($timestamp = self::extractRequestTimestamp($event)) {
+            $serverVariables['AWS_API_GATEWAY_REQUEST_TIME'] = $timestamp;
+        }
+
         [$headers, $serverVariables] = static::ensureContentTypeIsSet(
             $event, $headers, $serverVariables
         );
@@ -265,5 +269,22 @@ class Request
         }
 
         return $headers;
+    }
+
+    /**
+     * Extracts the time (millisecond epoch) when the request was received by the API Gateway.
+     *
+     * @param  array  $event
+     * @return int|null
+     */
+    protected static function extractRequestTimestamp(array $event)
+    {
+        if (! isset($event['requestContext'])) {
+            return null;
+        }
+
+        return $event['requestContext']['requestTimeEpoch'] // REST API (V1)
+            ?? $event['requestContext']['timeEpoch']        // HTTP API (V2)
+            ?? null;
     }
 }
