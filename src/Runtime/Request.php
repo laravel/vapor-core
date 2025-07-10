@@ -280,11 +280,11 @@ class Request
     protected static function extractRequestTimestamp(array $event)
     {
         if (! isset($event['requestContext'])) {
-            return null; // No requestContext, so no timestamp available
+            return null;
         }
 
         return $event['requestContext']['requestTimeEpoch'] // REST API (V1)
             ?? $event['requestContext']['timeEpoch']        // HTTP API (V2)
-            ?? null; // ELB doesn't add a timestamp
+            ?? null;
     }
 }
