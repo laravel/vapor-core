@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.38.2...2.0)
+## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.39.0...2.0)
+
+## [v2.39.0](https://github.com/laravel/vapor-core/compare/v2.38.2...v2.39.0) - 2025-07-10
+
+* Add API Gateway request timestamp to server variables by [@mortenhauberg](https://github.com/mortenhauberg) in https://github.com/laravel/vapor-core/pull/192
 
 ## [v2.38.2](https://github.com/laravel/vapor-core/compare/v2.38.1...v2.38.2) - 2025-07-04
 
