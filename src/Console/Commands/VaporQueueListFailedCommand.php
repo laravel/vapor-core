@@ -43,12 +43,25 @@ class VaporQueueListFailedCommand extends Command
      */
     public function handle()
     {
-        $failed = $this->laravel['queue.failer']->all();
-
         $options = collect($this->options())
             ->filter(function ($value, $option) {
                 return ! is_null($value) && in_array($option, ['id', 'queue', 'query', 'start']);
             });
+
+        $failer = $this->laravel['queue.failer'];
+        $start = $this->option('start');
+
+        if (is_callable([$failer, 'getTable']) && $start) {
+            $failed = $failer->getTable()
+                ->where('failed_at', '>=', Carbon::createFromTimestamp($start)->toDateTimeString())
+                ->get();
+
+            $options = $options->reject(function ($value, $name) {
+                return $name === 'start';
+            });
+        } else {
+            $failed = $failer->all();
+        }
 
         $failedJobs = collect($failed)->filter(function ($job) use ($options) {
             return $options->every(function ($value, $option) use ($job) {
