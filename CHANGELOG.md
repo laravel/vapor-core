@@ -1,6 +1,8 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.39.0...2.0)
+## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.40.0...2.0)
+
+## [v2.40.0](https://github.com/laravel/vapor-core/compare/v2.39.0...v2.40.0) - 2025-08-04
 
 ## [v2.39.0](https://github.com/laravel/vapor-core/compare/v2.38.2...v2.39.0) - 2025-07-10
 
