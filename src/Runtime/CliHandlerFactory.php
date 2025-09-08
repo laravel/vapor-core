@@ -15,7 +15,10 @@ class CliHandlerFactory
      */
     public static function make(array $event)
     {
-        return isset($event['Records'][0]['messageId'])
+        $messageId = $event['Records'][0]['messageId'] ?? null;
+        $job = json_decode($event['Records'][0]['body'] ?? '')->job ?? null;
+
+        return $messageId && $job
                     ? new QueueHandler
                     : new CliHandler;
     }

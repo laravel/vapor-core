@@ -1,0 +1,20 @@
+{
+    "Records": [
+        {
+            "messageId": "ddccab4e-f6fe-4a9a-aa18-b67ca8724d01",
+            "receiptHandle": "AQEBq42fiVBuPsL7mSHaAX7JqRNPgx\/5a1o\/ku1DFfrowMGI32C+1IHyaF9uHXjjJiLWE7JL8aUu0tb5yZoXbY+gEP\/tyfONuOEqxqiU6UnWT8aBMtqRnuz+F4Y2BN\/0lYxEJg4Pz849zxHtjvtkDw7zoB6SMCxAgE26UbSvIxAzNBLlU6sEQX24eKVBngEktA+i3TY9sCSuFy3lQte7yO+9ccmwbndxJ\/HV9An9KOE3FtBVIoUCx6Oum4dm5MQoMcoqBUvYDbQLM8dLfAVFT72aOu3J+WbBbOfi7bMbvkPodvfQUcum9nWnpXbci0F91R4GDnyDJfzw5oCGKazeLbjUzr8zWSy8qX\/bu3b99dE3nORQyI87OK7x8b3t+iFWzWPmCZwXh\/MvWLn9CUntj0qMPw==",
+            "body": "{\"test\": \"123\"}",
+            "attributes": {
+                "ApproximateReceiveCount": "1",
+                "SentTimestamp": "1757361341318",
+                "SenderId":"AROATHDQZYADPZZTHGFLF:vapor-laravel-staging",
+                "ApproximateFirstReceiveTimestamp": "1757361341319"
+            },
+            "messageAttributes": [],
+            "md5OfBody": "9e536d7703a805854db06bdf6169656c",
+            "eventSource": "aws:sqs",
+            "eventSourceARN":"arn:aws:sqs:eu-west-3:221427384326:laravel-staging",
+            "awsRegion": "us-east-1"
+        }
+    ]
+}
