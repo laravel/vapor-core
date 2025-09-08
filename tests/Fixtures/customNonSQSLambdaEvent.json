@@ -12,7 +12,7 @@
             "messageAttributes": [],
             "md5OfBody": "9e536d7703a805854db06bdf6169656c",
             "eventSource": "aws:s3",
-            "eventSourceARN":"arn:aws:sqs:eu-west-3:221427384326:laravel-staging",
+            "eventSourceARN":"arn:aws:s3:eu-west-3:221427384326:laravel-staging",
             "awsRegion": "us-east-1"
         }
     ]
