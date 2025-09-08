@@ -1,4 +1,5 @@
 <?php
+
 namespace Laravel\Vapor\Tests\Unit\Runtime;
 
 use Laravel\Vapor\Runtime\CliHandlerFactory;
@@ -8,7 +9,6 @@ use Orchestra\Testbench\TestCase;
 
 class CliHandlerFactoryTest extends TestCase
 {
-
     protected function setUp(): void
     {
         parent::setUp();
