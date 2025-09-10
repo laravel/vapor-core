@@ -16,6 +16,7 @@ class CliHandlerFactory
     public static function make(array $event)
     {
         $messageId = $event['Records'][0]['messageId'] ?? null;
+
         $job = json_decode($event['Records'][0]['body'] ?? '')->job ?? null;
 
         return $messageId && $job
