@@ -74,7 +74,7 @@ class VaporWorkCommandTest extends TestCase
     protected function getEvent()
     {
         return new LambdaEvent(json_decode(
-            file_get_contents(__DIR__.'/../Fixtures/lambdaEvent.json'),
+            file_get_contents(__DIR__.'/../Fixtures/jobLambdaEventFromSQS.json'),
             true
         ));
     }

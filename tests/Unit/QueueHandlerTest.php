@@ -78,7 +78,7 @@ class QueueHandlerTest extends TestCase
     protected function getEvent()
     {
         return json_decode(
-            file_get_contents(__DIR__.'/../Fixtures/lambdaEvent.json'),
+            file_get_contents(__DIR__.'/../Fixtures/jobLambdaEventFromSQS.json'),
             true
         );
     }
