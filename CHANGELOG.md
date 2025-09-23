@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.40.0...2.0)
+## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.41.0...2.0)
+
+## [v2.41.0](https://github.com/laravel/vapor-core/compare/v2.40.0...v2.41.0) - 2025-09-10
+
+* fix: Allow custom Lambda events from SQS by [@mathiasgrimm](https://github.com/mathiasgrimm) in https://github.com/laravel/vapor-core/pull/194
 
 ## [v2.40.0](https://github.com/laravel/vapor-core/compare/v2.39.0...v2.40.0) - 2025-08-04
 
