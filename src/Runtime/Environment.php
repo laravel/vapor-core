@@ -43,7 +43,7 @@ class Environment
      * @var string
      */
     protected $encryptedFile;
-    
+
     /**
      * The environment cipher algorithm for decryption.
      *
@@ -154,9 +154,9 @@ class Environment
     public function decryptFile()
     {
         function_exists('__vapor_debug') && __vapor_debug('Decrypting environment variables.');
-        
+
         $arguments = ['--env' => $this->environment, '--path' => $this->writePath];
-        
+
         if ($this->cipher !== null) {
             $arguments['--cipher'] = $this->cipher;
         }
