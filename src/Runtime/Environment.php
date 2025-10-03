@@ -43,6 +43,15 @@ class Environment
      * @var string
      */
     protected $encryptedFile;
+    
+    /**
+     * The environment cipher algorithm for decryption.
+     *
+     * When null, the `env:decrypt` command will use its own default cipher.
+     *
+     * @var string|null
+     */
+    protected $cipher = null;
 
     /**
      * The console kernel instance.
@@ -63,6 +72,7 @@ class Environment
         $this->environment = $_ENV['VAPOR_ENV'] ?? $_ENV['APP_ENV'] ?? 'production';
         $this->environmentFile = '.env.'.$this->environment;
         $this->encryptedFile = '.env.'.$this->environment.'.encrypted';
+        $this->cipher = $_ENV['VAPOR_ENV_ENCRYPTION_CIPHER'] ?? null;
     }
 
     /**
@@ -144,8 +154,14 @@ class Environment
     public function decryptFile()
     {
         function_exists('__vapor_debug') && __vapor_debug('Decrypting environment variables.');
+        
+        $arguments = ['--env' => $this->environment, '--path' => $this->writePath];
+        
+        if ($this->cipher !== null) {
+            $arguments['--cipher'] = $this->cipher;
+        }
 
-        $this->console()->call('env:decrypt', ['--env' => $this->environment, '--path' => $this->writePath]);
+        $this->console()->call('env:decrypt', $arguments);
     }
 
     /**
