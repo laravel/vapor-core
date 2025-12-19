@@ -4,7 +4,6 @@ namespace Laravel\Vapor;
 
 class Vapor
 {
-
     use HasAwsContext;
 
     /**
