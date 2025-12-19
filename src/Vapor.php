@@ -4,6 +4,9 @@ namespace Laravel\Vapor;
 
 class Vapor
 {
+
+    use HasAwsContext;
+
     /**
      * Determine whether the environment is Vapor.
      */
