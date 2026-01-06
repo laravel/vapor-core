@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.41.0...2.0)
+## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.42.0...2.0)
+
+## [v2.42.0](https://github.com/laravel/vapor-core/compare/v2.41.0...v2.42.0) - 2025-12-19
+
+* Expose AWS Lambda execution context for Vapor logging by [@sahil7194](https://github.com/sahil7194) in https://github.com/laravel/vapor-core/pull/196
 
 ## [v2.41.0](https://github.com/laravel/vapor-core/compare/v2.40.0...v2.41.0) - 2025-09-10
 
