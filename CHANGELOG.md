@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.42.0...2.0)
+## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.43.0...2.0)
+
+## [v2.43.0](https://github.com/laravel/vapor-core/compare/v2.42.0...v2.43.0) - 2026-01-08
+
+* Add dynamic cli handler factory. by [@Sfonxs](https://github.com/Sfonxs) in https://github.com/laravel/vapor-core/pull/197
 
 ## [v2.42.0](https://github.com/laravel/vapor-core/compare/v2.41.0...v2.42.0) - 2025-12-19
 
