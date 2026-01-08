@@ -8,11 +8,11 @@ use Laravel\Vapor\Runtime\Handlers\QueueHandler;
 class CliHandlerFactory
 {
     /**
-     * The custom handler resolver callback.
+     * The custom handler factory callback.
      *
      * @var callable|null
      */
-    protected static $customHandlerResolver;
+    protected static $customHandlerFactory;
 
     /**
      * Create a new handler for the given CLI event.
@@ -22,50 +22,37 @@ class CliHandlerFactory
      */
     public static function make(array $event)
     {
-        return static::shouldHandleAsQueueJob($event)
-                    ? new QueueHandler
-                    : new CliHandler;
-    }
-
-    /**
-     * Determine if the event should be handled as a queue job.
-     *
-     * @param  array  $event
-     * @return bool
-     */
-    protected static function shouldHandleAsQueueJob(array $event)
-    {
-        if (static::$customHandlerResolver) {
-            return call_user_func(static::$customHandlerResolver, $event);
+        if (static::$customHandlerFactory) {
+            return call_user_func(static::$customHandlerFactory, $event);
         }
 
         $messageId = $event['Records'][0]['messageId'] ?? null;
 
         $job = json_decode($event['Records'][0]['body'] ?? '')->job ?? null;
 
-        return $messageId && $job;
+        return $messageId && $job
+                    ? new QueueHandler
+                    : new CliHandler;
     }
 
     /**
-     * Set a custom handler resolver callback.
-     *
-     * The callback should return true for queue jobs, false for CLI events.
+     * Set a custom handler factory callback.
      *
      * @param  callable  $callback
      * @return void
      */
-    public static function resolveHandlerUsing(callable $callback)
+    public static function createHandlerUsing(callable $callback)
     {
-        static::$customHandlerResolver = $callback;
+        static::$customHandlerFactory = $callback;
     }
 
     /**
-     * Reset the handler resolver to its default behavior.
+     * Reset the handler factory to its default behavior.
      *
      * @return void
      */
-    public static function resolveHandlersNormally()
+    public static function createHandlersNormally()
     {
-        static::$customHandlerResolver = null;
+        static::$customHandlerFactory = null;
     }
 }

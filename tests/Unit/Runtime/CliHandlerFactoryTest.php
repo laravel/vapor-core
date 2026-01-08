@@ -20,7 +20,7 @@ class CliHandlerFactoryTest extends TestCase
     {
         parent::tearDown();
 
-        CliHandlerFactory::resolveHandlersNormally();
+        CliHandlerFactory::createHandlersNormally();
     }
 
     public function test_custom_sqs_events_use_cli_handler()
@@ -38,23 +38,23 @@ class CliHandlerFactoryTest extends TestCase
         $this->assertInstanceOf(QueueHandler::class, CliHandlerFactory::make($this->getSQSJobEvent()));
     }
 
-    public function test_custom_handler_resolver_is_used_when_set()
+    public function test_custom_handler_factory_is_used_when_set()
     {
-        CliHandlerFactory::resolveHandlerUsing(function ($event) {
-            return false;
+        CliHandlerFactory::createHandlerUsing(function ($event) {
+            return new CliHandler;
         });
 
         $this->assertInstanceOf(CliHandler::class, CliHandlerFactory::make($this->getSQSJobEvent()));
     }
 
-    public function test_custom_handler_resolver_receives_event()
+    public function test_custom_handler_factory_receives_event()
     {
         $receivedEvent = null;
 
-        CliHandlerFactory::resolveHandlerUsing(function ($event) use (&$receivedEvent) {
+        CliHandlerFactory::createHandlerUsing(function ($event) use (&$receivedEvent) {
             $receivedEvent = $event;
 
-            return false;
+            return new CliHandler;
         });
 
         $expectedEvent = $this->getSQSJobEvent();
@@ -65,11 +65,11 @@ class CliHandlerFactoryTest extends TestCase
 
     public function test_default_behavior_is_restored_after_reset()
     {
-        CliHandlerFactory::resolveHandlerUsing(function ($event) {
-            return false;
+        CliHandlerFactory::createHandlerUsing(function ($event) {
+            return new CliHandler;
         });
 
-        CliHandlerFactory::resolveHandlersNormally();
+        CliHandlerFactory::createHandlersNormally();
 
         $this->assertInstanceOf(QueueHandler::class, CliHandlerFactory::make($this->getSQSJobEvent()));
     }
