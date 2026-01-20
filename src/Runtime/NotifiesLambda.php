@@ -75,6 +75,10 @@ trait NotifiesLambda
 
         curl_reset($handler);
 
-        curl_close($handler);
+        if (PHP_VERSION_ID >= 80000) {
+            unset($handler);
+        } else {
+            curl_close($handler);
+        }
     }
 }
