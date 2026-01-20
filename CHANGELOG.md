@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.43.0...2.0)
+## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.43.1...2.0)
+
+## [v2.43.1](https://github.com/laravel/vapor-core/compare/v2.43.0...v2.43.1) - 2026-01-20
+
+* fix: `curl_close()` is deprecated by [@mortenhauberg](https://github.com/mortenhauberg) in https://github.com/laravel/vapor-core/pull/198
 
 ## [v2.43.0](https://github.com/laravel/vapor-core/compare/v2.42.0...v2.43.0) - 2026-01-08
 
