@@ -19,10 +19,10 @@
         "guzzlehttp/promises": "^1.4|^2.0",
         "guzzlehttp/guzzle": "^6.3|^7.0",
         "hollodotme/fast-cgi-client": "^3.0",
-        "illuminate/container": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0",
-        "illuminate/http": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0",
-        "illuminate/queue": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0",
-        "illuminate/support": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0",
+        "illuminate/container": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
+        "illuminate/http": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
+        "illuminate/queue": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
+        "illuminate/support": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
         "monolog/monolog": "^1.12|^2.0|^3.2",
         "nyholm/psr7": "^1.0",
         "riverline/multipart-parser": "^2.0.9",
@@ -32,9 +32,9 @@
     "require-dev": {
         "laravel/octane": "*",
         "mockery/mockery": "^1.2",
-        "orchestra/testbench": "^4.0|^5.0|^6.0|^7.0|^8.0|^9.0|^10.0",
+        "orchestra/testbench": "^4.0|^5.0|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
         "phpstan/phpstan": "^1.10|^2.1",
-        "phpunit/phpunit": "^8.0|^9.0|^10.4|^11.5.3"
+        "phpunit/phpunit": "^8.0|^9.0|^10.4|^11.5.3|^12.5.12"
     },
     "autoload": {
         "psr-4": {
