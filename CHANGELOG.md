@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.43.1...2.0)
+## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.43.2...2.0)
+
+## [v2.43.2](https://github.com/laravel/vapor-core/compare/v2.43.1...v2.43.2) - 2026-02-21
+
+* Laravel 13.x Compatibility by [@laravel-shift](https://github.com/laravel-shift) in https://github.com/laravel/vapor-core/pull/199
 
 ## [v2.43.1](https://github.com/laravel/vapor-core/compare/v2.43.0...v2.43.1) - 2026-01-20
 
