@@ -123,9 +123,15 @@ class Octane implements Client
                 return $hasSession;
             })->map->getRawPdo()->filter(function ($pdo) {
                 return $pdo instanceof PDO;
-            })->each->exec(sprintf(
-                'SET SESSION wait_timeout=%s', $databaseSessionTtl
-            ));
+            })->each(function ($pdo) use ($databaseSessionTtl) {
+                try {
+                    $pdo->exec(sprintf(
+                        'SET SESSION wait_timeout=%s', $databaseSessionTtl
+                    ));
+                } catch (Throwable $e) {
+                    // Connection already gone away, safe to ignore...
+                }
+            });
         };
     }
 
