@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.43.2...2.0)
+## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.43.3...2.0)
+
+## [v2.43.3](https://github.com/laravel/vapor-core/compare/v2.43.2...v2.43.3) - 2026-03-09
+
+* [2.0] Catch PDOException when MySQL server has gone away during SET SESSION wait_timeout reset by [@rizalpahlevii](https://github.com/rizalpahlevii) in https://github.com/laravel/vapor-core/pull/200
 
 ## [v2.43.2](https://github.com/laravel/vapor-core/compare/v2.43.1...v2.43.2) - 2026-02-21
 
