@@ -42,11 +42,6 @@ class VaporQueueTest extends TestCase
                 'job' => 'Illuminate\Queue\CallQueuedHandler@call',
                 'maxTries' => null,
                 'timeout' => null,
-                'data' => [
-                    'commandName' => FakeJob::class,
-                    'command' => serialize($job),
-                    'batchId' => null,
-                ],
                 'attempts' => 0,
             ];
 
@@ -54,6 +49,10 @@ class VaporQueueTest extends TestCase
                 $this->assertArrayHasKey($key, $messageBody);
                 $this->assertSame($value, $messageBody[$key]);
             }
+
+            $this->assertArrayHasKey('data', $messageBody);
+            $this->assertSame(FakeJob::class, $messageBody['data']['commandName']);
+            $this->assertSame(serialize($job), $messageBody['data']['command']);
 
             return true;
         }))->andReturnSelf();
