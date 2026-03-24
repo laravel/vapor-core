@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Vapor\Runtime\Http\Middleware\EnsureOnNakedDomain;
 use Laravel\Vapor\VaporServiceProvider;
 use Orchestra\Testbench\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class EnsureOnNakedDomainTest extends TestCase
 {
@@ -27,9 +28,7 @@ class EnsureOnNakedDomainTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider useCases
-     */
+    #[DataProvider('useCases')]
     public function test_redirects($useCase)
     {
         config()->set('vapor.redirect_to_root', $useCase['redirect_to_root']);

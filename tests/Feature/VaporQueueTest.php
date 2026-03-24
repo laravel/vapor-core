@@ -45,6 +45,7 @@ class VaporQueueTest extends TestCase
                 'data' => [
                     'commandName' => FakeJob::class,
                     'command' => serialize($job),
+                    'batchId' => null,
                 ],
                 'attempts' => 0,
             ];
