@@ -17,7 +17,7 @@ class OctaneManageDatabaseSessionsTest extends TestCase
                 'SQLSTATE[HY000]: General error: 2006 MySQL server has gone away'
             ));
 
-        $this->assertDoesntThrow(function () use ($stalePdo) {
+        try {
             collect([$stalePdo])
                 ->filter(fn ($pdo) => $pdo instanceof PDO)
                 ->each(function ($pdo) {
@@ -27,7 +27,11 @@ class OctaneManageDatabaseSessionsTest extends TestCase
                         // Connection already gone away, safe to ignore...
                     }
                 });
-        });
+        } catch (\Throwable $e) {
+            $this->fail('Expected no exception, but caught: '.$e->getMessage());
+        }
+
+        $this->assertTrue(true);
     }
 
     public function test_it_proves_bug_exists_without_fix()
@@ -81,7 +85,7 @@ class OctaneManageDatabaseSessionsTest extends TestCase
                 'SQLSTATE[HY000]: General error: 2006 MySQL server has gone away'
             ));
 
-        $this->assertDoesntThrow(function () use ($livePdo, $stalePdo) {
+        try {
             collect([$livePdo, $stalePdo])
                 ->filter(fn ($pdo) => $pdo instanceof PDO)
                 ->each(function ($pdo) {
@@ -91,6 +95,10 @@ class OctaneManageDatabaseSessionsTest extends TestCase
                         //
                     }
                 });
-        });
+        } catch (\Throwable $e) {
+            $this->fail('Expected no exception, but caught: '.$e->getMessage());
+        }
+
+        $this->assertTrue(true);
     }
 }
