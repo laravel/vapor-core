@@ -44,6 +44,9 @@ class VaporScheduleCommandTest extends TestCase
             Cache::shouldReceive('driver')->once()->andReturn($fake);
         }
         $fake->shouldNotReceive('forget')->with('vapor:schedule:lock');
+        if (version_compare($this->app->version(), '13.0.0', '>=')) {
+            $fake->shouldReceive('get')->with('illuminate:schedule:paused', false)->andReturn(false);
+        }
 
         $this->artisan('vapor:schedule')
             ->assertExitCode(0);
@@ -58,6 +61,9 @@ class VaporScheduleCommandTest extends TestCase
             $fake->shouldReceive('forget')->once()->with('illuminate:schedule:interrupt')->andReturn(true);
         }
         $fake->shouldReceive('forget')->once()->with('vapor:schedule:lock')->andReturn(true);
+        if (version_compare($this->app->version(), '13.0.0', '>=')) {
+            $fake->shouldReceive('get')->with('illuminate:schedule:paused', false)->andReturn(false);
+        }
 
         $this->artisan('vapor:schedule')
             ->assertExitCode(0);
