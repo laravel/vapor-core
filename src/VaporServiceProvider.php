@@ -200,7 +200,7 @@ class VaporServiceProvider extends ServiceProvider
             return laravel_cloud();
         }
 
-        return (($_ENV['LARAVEL_CLOUD'] ?? $_SERVER['LARAVEL_CLOUD'] ?? null)) === '1';
+        return ($_ENV['LARAVEL_CLOUD'] ?? $_SERVER['LARAVEL_CLOUD'] ?? null) === '1';
     }
 
     /**
