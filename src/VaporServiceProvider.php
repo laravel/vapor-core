@@ -29,6 +29,10 @@ class VaporServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if ($this->runningOnLaravelCloud()) {
+            return;
+        }
+
         $this->ensureRoutesAreDefined();
         $this->registerOctaneCommands();
 
@@ -66,6 +70,10 @@ class VaporServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        if ($this->runningOnLaravelCloud()) {
+            return;
+        }
+
         $this->app->singleton(
             Contracts\SignedStorageUrlController::class,
             SignedStorageUrlController::class
@@ -179,6 +187,20 @@ class VaporServiceProvider extends ServiceProvider
         });
 
         $this->commands(['command.vapor.work', 'command.vapor.queue-failed', 'command.vapor.health-check', 'command.vapor.schedule']);
+    }
+
+    /**
+     * Determine if the application is running on Laravel Cloud.
+     *
+     * @return bool
+     */
+    protected function runningOnLaravelCloud()
+    {
+        if (function_exists('laravel_cloud')) {
+            return laravel_cloud();
+        }
+
+        return (($_ENV['LARAVEL_CLOUD'] ?? $_SERVER['LARAVEL_CLOUD'] ?? null)) === '1';
     }
 
     /**
