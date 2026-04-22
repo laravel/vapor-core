@@ -1,6 +1,11 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.43.3...2.0)
+## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.43.4...2.0)
+
+## [v2.43.4](https://github.com/laravel/vapor-core/compare/v2.43.3...v2.43.4) - 2026-04-22
+
+* [2.x] Fix test compatibility across Laravel 10-13 and PHPUnit 10-12 by [@JoshSalway](https://github.com/JoshSalway) in https://github.com/laravel/vapor-core/pull/201
+* Skip VaporServiceProvider registration on Laravel Cloud by [@kieranbrown](https://github.com/kieranbrown) in https://github.com/laravel/vapor-core/pull/202
 
 ## [v2.43.3](https://github.com/laravel/vapor-core/compare/v2.43.2...v2.43.3) - 2026-03-09
 
