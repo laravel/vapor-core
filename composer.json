@@ -26,8 +26,8 @@
         "monolog/monolog": "^1.12|^2.0|^3.2",
         "nyholm/psr7": "^1.0",
         "riverline/multipart-parser": "^2.0.9",
-        "symfony/process": "^4.3|^5.0|^6.0|^7.0",
-        "symfony/psr-http-message-bridge": "^1.0|^2.0|^6.4|^7.0"
+        "symfony/process": "^4.3|^5.0|^6.0|^7.0|^8.0",
+        "symfony/psr-http-message-bridge": "^1.0|^2.0|^6.4|^7.0|^8.0"
     },
     "require-dev": {
         "laravel/octane": "*",
