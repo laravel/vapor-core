@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.43.4...2.0)
+## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.43.5...2.0)
+
+## [v2.43.5](https://github.com/laravel/vapor-core/compare/v2.43.4...v2.43.5) - 2026-05-01
+
+* Allow Symfony 8 components for Laravel 13 support by [@jaumebalust](https://github.com/jaumebalust) in https://github.com/laravel/vapor-core/pull/203
 
 ## [v2.43.4](https://github.com/laravel/vapor-core/compare/v2.43.3...v2.43.4) - 2026-04-22
 
