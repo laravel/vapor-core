@@ -227,4 +227,70 @@ class FpmRequestTest extends TestCase
 
         $this->assertArrayNotHasKey('AWS_API_GATEWAY_REQUEST_TIME', $request->serverVariables);
     }
+
+    public function test_multi_value_cookie_header_preserves_all_cookies()
+    {
+        $request = FpmRequest::fromLambdaEvent([
+            'httpMethod' => 'GET',
+            'multiValueHeaders' => [
+                'Cookie' => [
+                    'cookie_a=abc',
+                    'cookie_b=def',
+                ],
+            ],
+        ]);
+
+        $this->assertSame('cookie_a=abc; cookie_b=def', $request->serverVariables['HTTP_COOKIE']);
+    }
+
+    public function test_api_gateway_rest_modern_tls_payload_preserves_all_cookies()
+    {
+        $request = FpmRequest::fromLambdaEvent([
+            'resource' => '/{proxy+}',
+            'path' => '/api/shared/auth/who-am-i-cookie',
+            'httpMethod' => 'GET',
+            'headers' => [
+                'cookie' => 'cookie_b=refresh-value',
+            ],
+            'multiValueHeaders' => [
+                'cookie' => [
+                    'cookie_a=access-value',
+                    'cookie_b=refresh-value',
+                ],
+            ],
+            'requestContext' => [
+                'protocol' => 'HTTP/1.1',
+            ],
+        ]);
+
+        $this->assertSame(
+            'cookie_a=access-value; cookie_b=refresh-value',
+            $request->serverVariables['HTTP_COOKIE']
+        );
+    }
+
+    public function test_api_gateway_rest_legacy_tls_payload_preserves_all_cookies()
+    {
+        $request = FpmRequest::fromLambdaEvent([
+            'resource' => '/{proxy+}',
+            'path' => '/api/shared/auth/who-am-i-cookie',
+            'httpMethod' => 'GET',
+            'headers' => [
+                'cookie' => 'cookie_a=access-value; cookie_b=refresh-value',
+            ],
+            'multiValueHeaders' => [
+                'cookie' => [
+                    'cookie_a=access-value; cookie_b=refresh-value',
+                ],
+            ],
+            'requestContext' => [
+                'protocol' => 'HTTP/1.1',
+            ],
+        ]);
+
+        $this->assertSame(
+            'cookie_a=access-value; cookie_b=refresh-value',
+            $request->serverVariables['HTTP_COOKIE']
+        );
+    }
 }

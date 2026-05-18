@@ -186,6 +186,10 @@ class Request
         return array_change_key_case(
             collect($event['multiValueHeaders'] ?? [])
                 ->mapWithKeys(function ($headers, $name) {
+                    if (strtolower($name) === 'cookie') {
+                        return [$name => implode('; ', $headers)];
+                    }
+
                     return [$name => Arr::last($headers)];
                 })->all(), CASE_LOWER
         );
