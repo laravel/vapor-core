@@ -356,6 +356,34 @@ EOF
         );
     }
 
+    public function test_request_cookies_from_multi_value_headers()
+    {
+        $handler = new OctaneHandler();
+
+        Route::get('/', function (Request $request) {
+            return $request->cookies->all();
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'path' => '/',
+            'headers' => [
+                'cookie' => 'cookie_b=def',
+            ],
+            'multiValueHeaders' => [
+                'cookie' => [
+                    'cookie_a=abc',
+                    'cookie_b=def',
+                ],
+            ],
+        ]);
+
+        static::assertEquals(
+            ['cookie_a' => 'abc', 'cookie_b' => 'def'],
+            json_decode($response->toApiGatewayFormat()['body'], true)
+        );
+    }
+
     public function test_request_file_uploads()
     {
         $handler = new OctaneHandler();
