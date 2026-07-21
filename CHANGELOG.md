@@ -1,6 +1,17 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.43.5...2.0)
+## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.44.0...2.0)
+
+## [v2.44.0](https://github.com/laravel/vapor-core/compare/v2.43.5...v2.44.0) - 2026-06-23
+
+* Pin GitHub Actions to commit SHAs and add Dependabot config by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/vapor-core/pull/204
+* fix(api-gateway): handle multi-value cookies correctly by [@BoyeMagnus](https://github.com/BoyeMagnus) in https://github.com/laravel/vapor-core/pull/205
+* Bump shivammathur/setup-php from 2.37.0 to 2.37.1 in the github-actions group across 1 directory by [@dependabot](https://github.com/dependabot)[bot] in https://github.com/laravel/vapor-core/pull/206
+* Add Dependabot cooldown of 5 days by [@nunomaduro](https://github.com/nunomaduro) in https://github.com/laravel/vapor-core/pull/207
+* Enable Dependabot auto-merge by [@nunomaduro](https://github.com/nunomaduro) in https://github.com/laravel/vapor-core/pull/208
+* Bump actions/checkout from 6.0.2 to 6.0.3 in the github-actions group by [@dependabot](https://github.com/dependabot)[bot] in https://github.com/laravel/vapor-core/pull/209
+* Bump shivammathur/setup-php from 2.37.1 to 2.37.2 in the github-actions group by [@dependabot](https://github.com/dependabot)[bot] in https://github.com/laravel/vapor-core/pull/210
+* Bump actions/checkout from 6.0.3 to 7.0.0 in the github-actions group by [@dependabot](https://github.com/dependabot)[bot] in https://github.com/laravel/vapor-core/pull/211
 
 ## [v2.43.5](https://github.com/laravel/vapor-core/compare/v2.43.4...v2.43.5) - 2026-05-01
 
