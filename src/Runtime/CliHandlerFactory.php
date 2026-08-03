@@ -28,7 +28,10 @@ class CliHandlerFactory
 
         $messageId = $event['Records'][0]['messageId'] ?? null;
 
-        $job = json_decode($event['Records'][0]['body'] ?? '')->job ?? null;
+        $body = json_decode($event['Records'][0]['body'] ?? '');
+
+        // An overflowed payload is stored outside of SQS, leaving only a pointer in the message body...
+        $job = $body->job ?? $body->{'@pointer'} ?? null;
 
         return $messageId && $job
                     ? new QueueHandler
