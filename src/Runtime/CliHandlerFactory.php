@@ -30,7 +30,7 @@ class CliHandlerFactory
 
         $body = json_decode($event['Records'][0]['body'] ?? '');
 
-        // An overflowed payload is stored outside of SQS, leaving only a pointer in the message body...
+        // SQS payload overflow replaces the message body with a pointer to the stored payload
         $job = $body->job ?? $body->{'@pointer'} ?? null;
 
         return $messageId && $job
