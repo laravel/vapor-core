@@ -73,7 +73,7 @@ class VaporJob extends SqsJob
     {
         $body = json_encode($payload);
 
-        if (! method_exists($this, 'overflowPointer')) {
+        if (! method_exists($this, 'overflowPointer') || ! method_exists($this, 'overflowStore')) {
             return $body;
         }
 
