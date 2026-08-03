@@ -106,7 +106,7 @@ class VaporWorkCommand extends Command
 
         return new VaporJob(
             $this->laravel, $queue->getSqs(), $normalizedMessage,
-            'sqs', $this->queueUrl($message)
+            'sqs', $this->queueUrl($message), $queue->getOverflowStorage()
         );
     }
 

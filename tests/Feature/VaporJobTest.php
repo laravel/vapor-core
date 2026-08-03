@@ -28,6 +28,11 @@ class VaporJobTest extends TestCase
         ];
     }
 
+    protected function getEnvironmentSetUp($app)
+    {
+        $app['config']->set('cache.stores.sqs-payloads', ['driver' => 'array']);
+    }
+
     public function test_job_release_attempts_without_cache()
     {
         unset($_ENV['VAPOR_CACHE_JOB_ATTEMPTS']);
@@ -92,6 +97,47 @@ class VaporJobTest extends TestCase
 
         $this->assertSame(0, resolve(JobAttempts::class)->get('my-job-id'));
         $this->assertSame(2, resolve(JobAttempts::class)->get('my-released-job-id'));
+    }
+
+    public function test_job_release_keeps_the_payload_offloaded()
+    {
+        if (! property_exists(VaporJob::class, 'overflowStorage')) {
+            $this->markTestSkipped('Requires Laravel 13.');
+        }
+
+        unset($_ENV['VAPOR_CACHE_JOB_ATTEMPTS']);
+
+        $sqs = Mockery::mock(SqsClient::class);
+
+        $store = $this->app['cache']->store('sqs-payloads');
+
+        $store->put($pointer = 'laravel:sqs-payloads:my-job-uuid', json_encode(['attempts' => 1]));
+
+        $sqs->shouldReceive('deleteMessage')->once()->with([
+            'QueueUrl' => 'test-vapor-queue-url',
+            'ReceiptHandle' => 'test-receipt-handle',
+        ]);
+
+        $sqs->shouldReceive('sendMessage')->once()->with([
+            'QueueUrl' => 'test-vapor-queue-url',
+            'MessageBody' => json_encode(['@pointer' => $pointer]),
+            'DelaySeconds' => 0,
+        ])->andReturn(new Result([
+            'MessageId' => 'my-released-job-id',
+        ]));
+
+        $job = new VaporJob($this->app, $sqs, [
+            'ReceiptHandle' => 'test-receipt-handle',
+            'Body' => json_encode(['@pointer' => $pointer]),
+            'MessageId' => 'my-job-id',
+        ], 'sqs', 'test-vapor-queue-url', [
+            'enabled' => true,
+            'store' => 'sqs-payloads',
+        ]);
+
+        $job->release();
+
+        $this->assertSame(json_encode(['attempts' => 2]), $store->get($pointer));
     }
 
     public function test_job_attempts_without_cache()
