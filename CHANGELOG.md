@@ -1,6 +1,11 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.44.0...2.0)
+## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.45.0...2.0)
+
+## [v2.45.0](https://github.com/laravel/vapor-core/compare/v2.44.0...v2.45.0) - 2026-08-04
+
+* Bump actions/checkout from 7.0.0 to 7.0.1 in the github-actions group by [@dependabot](https://github.com/dependabot)[bot] in https://github.com/laravel/vapor-core/pull/212
+* [2.x] Add support for Laravel 13 SQS overflow by [@MarcEspiard](https://github.com/MarcEspiard) in https://github.com/laravel/vapor-core/pull/213
 
 ## [v2.44.0](https://github.com/laravel/vapor-core/compare/v2.43.5...v2.44.0) - 2026-06-23
 
