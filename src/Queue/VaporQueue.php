@@ -22,7 +22,7 @@ class VaporQueue extends SqsQueue
         if (! is_null($response['Messages']) && count($response['Messages']) > 0) {
             return tap(new VaporJob(
                 $this->container, $this->sqs, $response['Messages'][0],
-                $this->connectionName, $queue
+                $this->connectionName, $queue, $this->getOverflowStorage()
             ), function ($job) {
                 $this->container
                      ->make(JobAttempts::class)
@@ -44,5 +44,15 @@ class VaporQueue extends SqsQueue
         return array_merge(parent::createPayloadArray($job, $queue, $data), [
             'attempts' => 0,
         ]);
+    }
+
+    /**
+     * Get the overflow storage options for large payload offloading.
+     *
+     * @return array
+     */
+    public function getOverflowStorage()
+    {
+        return property_exists($this, 'overflowStorage') ? $this->overflowStorage : [];
     }
 }

@@ -38,6 +38,15 @@ class CliHandlerFactoryTest extends TestCase
         $this->assertInstanceOf(QueueHandler::class, CliHandlerFactory::make($this->getSQSJobEvent()));
     }
 
+    public function test_laravel_jobs_with_sqs_overflow_payloads_use_queue_handler()
+    {
+        $event = $this->getSQSJobEvent();
+
+        $event['Records'][0]['body'] = json_encode(['@pointer' => 'laravel:sqs-payloads:my-job-uuid']);
+
+        $this->assertInstanceOf(QueueHandler::class, CliHandlerFactory::make($event));
+    }
+
     public function test_custom_handler_factory_is_used_when_set()
     {
         CliHandlerFactory::createHandlerUsing(function ($event) {

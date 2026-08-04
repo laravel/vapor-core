@@ -54,12 +54,35 @@ class VaporJob extends SqsJob
 
         $jobId = $this->sqs->sendMessage([
             'QueueUrl' => $this->queue,
-            'MessageBody' => json_encode($payload),
+            'MessageBody' => $this->releasedMessageBody($payload),
             'DelaySeconds' => $this->secondsUntil($delay),
         ])->get('MessageId');
 
         $this->container
              ->make(JobAttempts::class)
              ->transfer($this, $jobId);
+    }
+
+    /**
+     * Get the message body for the released job.
+     *
+     * @param  array  $payload
+     * @return string
+     */
+    protected function releasedMessageBody(array $payload)
+    {
+        $body = json_encode($payload);
+
+        if (! method_exists($this, 'overflowPointer') || ! method_exists($this, 'overflowStore')) {
+            return $body;
+        }
+
+        if (! $pointer = $this->overflowPointer()) {
+            return $body;
+        }
+
+        $this->overflowStore()->put($pointer, $body);
+
+        return json_encode(['@pointer' => $pointer]);
     }
 }
