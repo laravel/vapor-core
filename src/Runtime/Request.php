@@ -130,6 +130,10 @@ class Request
      */
     protected static function getQueryString(array $event)
     {
+        if (isset($event['rawQueryString'])) {
+            return $event['rawQueryString'];
+        }
+
         if (isset($event['version']) && $event['version'] === '2.0') {
             return http_build_query(
                 collect($event['queryStringParameters'] ?? [])
