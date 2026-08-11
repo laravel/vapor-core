@@ -1,6 +1,12 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.45.0...2.0)
+## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.46.0...2.0)
+
+## [v2.46.0](https://github.com/laravel/vapor-core/compare/v2.45.0...v2.46.0) - 2026-08-11
+
+* Use raw query string when present by [@timacdonald](https://github.com/timacdonald) in https://github.com/laravel/vapor-core/pull/214
+* Revert "Use raw query string when present (#214)" by [@timacdonald](https://github.com/timacdonald) in https://github.com/laravel/vapor-core/pull/215
+* Provide the raw query string as a custom server variable by [@timacdonald](https://github.com/timacdonald) in https://github.com/laravel/vapor-core/pull/216
 
 ## [v2.45.0](https://github.com/laravel/vapor-core/compare/v2.44.0...v2.45.0) - 2026-08-04
 
