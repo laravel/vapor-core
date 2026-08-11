@@ -650,7 +650,7 @@ EOF
         $handler = new OctaneHandler;
 
         Route::get('/', function (Request $request) {
-            return $request->has('VAPOR_RAW_QUERY_STRING') ? 'has' : 'missing';
+            return $request->server->has('VAPOR_RAW_QUERY_STRING') ? 'has' : 'missing';
         });
 
         $response = $handler->handle([
