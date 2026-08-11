@@ -75,6 +75,10 @@ class Request
             'SERVER_SOFTWARE' => 'vapor',
         ]);
 
+        if (isset($event['rawQueryString'])) {
+            $serverVariables['VAPOR_RAW_QUERY_STRING'] = $event['rawQueryString'];
+        }
+
         if ($handler) {
             $serverVariables['SCRIPT_FILENAME'] = $handler;
         }

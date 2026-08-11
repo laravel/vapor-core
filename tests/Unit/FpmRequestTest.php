@@ -116,6 +116,34 @@ class FpmRequestTest extends TestCase
         );
     }
 
+    public function test_vapor_raw_query_string_server_variable_is_set_when_raw_query_string_is_present()
+    {
+        $request = FpmRequest::fromLambdaEvent([
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                    'protocol' => 'HTTP/1.1',
+                ],
+            ],
+            'rawQueryString' => 'key1=value1&key2[]=value2&key2[]=value3',
+        ]);
+
+        $this->assertSame(
+            'key1=value1&key2[]=value2&key2[]=value3',
+            $request->serverVariables['VAPOR_RAW_QUERY_STRING']
+        );
+    }
+
+    public function test_vapor_raw_query_string_server_variable_is_not_set_when_raw_query_string_is_absent()
+    {
+        $request = FpmRequest::fromLambdaEvent([
+            'httpMethod' => 'GET',
+        ]);
+
+        $this->assertArrayNotHasKey('VAPOR_RAW_QUERY_STRING', $request->serverVariables);
+    }
+
     public function test_load_balancer_headers_are_over_spoofed_headers()
     {
         $request = FpmRequest::fromLambdaEvent([
