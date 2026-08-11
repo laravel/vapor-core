@@ -623,6 +623,49 @@ EOF
         ], json_decode($response->toApiGatewayFormat()['body'], true));
     }
 
+    public function test_vapor_raw_query_string_server_variable_is_set_when_raw_query_string_is_available()
+    {
+        $handler = new OctaneHandler;
+
+        Route::get('/', function (Request $request) {
+            return $request->server('VAPOR_RAW_QUERY_STRING');
+        });
+
+        $response = $handler->handle([
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                    'path' => '/',
+                ],
+            ],
+            'rawQueryString' => 'param1=value1&param2[]=value1&param2[]=value2',
+        ]);
+
+        static::assertEquals('param1=value1&param2[]=value1&param2[]=value2', $response->toApiGatewayFormat()['body']);
+    }
+
+    public function test_vapor_raw_query_string_server_variable_is_not_set_when_raw_query_string_is_unavailable()
+    {
+        $handler = new OctaneHandler;
+
+        Route::get('/', function (Request $request) {
+            return $request->has('VAPOR_RAW_QUERY_STRING') ? 'has' : 'missing';
+        });
+
+        $response = $handler->handle([
+            'version' => '2.0',
+            'requestContext' => [
+                'http' => [
+                    'method' => 'GET',
+                    'path' => '/',
+                ],
+            ],
+        ]);
+
+        static::assertEquals('missing', $response->toApiGatewayFormat()['body']);
+    }
+
     public function test_request_headers()
     {
         $handler = new OctaneHandler();
