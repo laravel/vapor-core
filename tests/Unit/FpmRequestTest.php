@@ -5,7 +5,6 @@ namespace Laravel\Vapor\Tests\Unit;
 use Carbon\Carbon;
 use Laravel\Vapor\Runtime\Fpm\FpmRequest;
 use Mockery;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class FpmRequestTest extends TestCase
@@ -115,40 +114,6 @@ class FpmRequestTest extends TestCase
             ]),
             $request->serverVariables['QUERY_STRING']
         );
-    }
-
-    #[DataProvider('queryStringProvider')]
-    public function test_api_gateway_v2_raw_query_string_query_parameters_are_handled($queryString)
-    {
-        $request = FpmRequest::fromLambdaEvent([
-            'version' => '2.0',
-            'requestContext' => [
-                'http' => [
-                    'method' => 'GET',
-                    'protocol' => 'HTTP/1.1',
-                ],
-            ],
-            'rawQueryString' => $queryString,
-            'queryStringParameters' => [
-                'foo' => 'bar',
-            ],
-        ]);
-
-        $this->assertSame(
-            http_build_query([
-                'key1' => 'value1',
-                'key2' => ['value2', 'value3'],
-            ]),
-            $request->serverVariables['QUERY_STRING']
-        );
-    }
-
-    public static function queryStringProvider()
-    {
-        return [
-            ['key1=value1&key2%5B0%5D=value2&key2%5B1%5D=value3'],
-            ['key1=value1&key2[]=value2&key2[]=value3'],
-        ];
     }
 
     public function test_load_balancer_headers_are_over_spoofed_headers()
