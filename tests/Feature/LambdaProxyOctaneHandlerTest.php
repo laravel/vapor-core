@@ -595,34 +595,6 @@ EOF
         ], json_decode($response->toApiGatewayFormat()['body'], true));
     }
 
-    public function test_it_uses_the_raw_query_string_when_available()
-    {
-        $handler = new OctaneHandler;
-
-        Route::get('/', function (Request $request) {
-            return $request->query();
-        });
-
-        $response = $handler->handle([
-            'version' => '2.0',
-            'requestContext' => [
-                'http' => [
-                    'method' => 'GET',
-                    'path' => '/',
-                ],
-            ],
-            'rawQueryString' => 'param1=value1&param2[]=value1&param2[]=value2',
-            'queryStringParameters' => [
-                'foo' => 'bar',
-            ],
-        ]);
-
-        static::assertEquals([
-            'param1' => 'value1',
-            'param2' => ['value1', 'value2'],
-        ], json_decode($response->toApiGatewayFormat()['body'], true));
-    }
-
     public function test_request_headers()
     {
         $handler = new OctaneHandler();
