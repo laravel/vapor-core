@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.46.0...2.0)
+## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.47.0...2.0)
+
+## [v2.47.0](https://github.com/laravel/vapor-core/compare/v2.46.0...v2.47.0) - 2026-08-26
+
+* Supports Guzzle 8 by [@crynobone](https://github.com/crynobone) in https://github.com/laravel/vapor-core/pull/217
 
 ## [v2.46.0](https://github.com/laravel/vapor-core/compare/v2.45.0...v2.46.0) - 2026-08-11
 
