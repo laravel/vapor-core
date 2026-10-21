@@ -23,5 +23,12 @@ trait DefinesRoutes
                 Contracts\SignedStorageUrlController::class.'@store'
             )->middleware(config('vapor.middleware', 'web'));
         }
+
+        if (config('vapor.health_check', true)) {
+            Route::get(
+                '/vapor/health-check',
+                Contracts\HealthCheckController::class
+            )->middleware(config('vapor.middleware', 'web'));
+        }
     }
 }
