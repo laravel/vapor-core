@@ -1,5 +1,6 @@
 .env
 .phpunit.result.cache
+.idea
 phpunit.xml
 build
 composer.lock
