@@ -95,12 +95,12 @@ class Request
             $event, $headers, $serverVariables, $requestBody
         );
 
-        $headers = static::ensureSourceIpAddressIsSet(
-            $event, $headers
-        );
-
         foreach ($headers as $header => $value) {
             $serverVariables['HTTP_'.strtoupper(str_replace('-', '_', $header))] = $value;
+        }
+
+        if ($sourceIP = static::extractSourceIP($event)) {
+            $serverVariables['HTTP_X_VAPOR_SOURCE_IP'] = $sourceIP;
         }
 
         return new static($serverVariables, $requestBody, $headers);
@@ -263,20 +263,19 @@ class Request
      * Ensure the request headers contain a source IP address.
      *
      * @param  array  $event
-     * @param  array  $headers
      * @return array
      */
-    protected static function ensureSourceIpAddressIsSet(array $event, array $headers)
+    protected static function extractSourceIP(array $event)
     {
         if (isset($event['requestContext']['identity']['sourceIp'])) {
-            $headers['x-vapor-source-ip'] = $event['requestContext']['identity']['sourceIp'];
+            return $event['requestContext']['identity']['sourceIp'];
         }
 
         if (isset($event['requestContext']['http']['sourceIp'])) {
-            $headers['x-vapor-source-ip'] = $event['requestContext']['http']['sourceIp'];
+            return $event['requestContext']['http']['sourceIp'];
         }
 
-        return $headers;
+        return null;
     }
 
     /**
