@@ -77,16 +77,24 @@ class Octane implements Client
         )->boot()->onRequestHandled(static::manageDatabaseSessions($databaseSessionPersist, $databaseSessionTtl));
 
         if ($databaseSessionPersist && $databaseSessionTtl > 0) {
-            static::worker()->application()->make('db')->beforeExecuting(function ($query, $bindings, $connection) {
-                if ($connection instanceof MySqlConnection && ! in_array($connection->getName(), static::$databaseSessions)) {
-                    static::$databaseSessions[] = $connection->getName();
-
-                    $connection->unprepared(sprintf(
-                        'SET SESSION wait_timeout=%s', static::DB_SESSION_DEFAULT_TTL
-                    ));
-                }
-            });
+            static::worker()->application()->make('db')->beforeExecuting(static::extendDatabaseSessions());
         }
+    }
+
+    /**
+     * Restore the default time-to-live on the database sessions used by the request.
+     *
+     * @return callable
+     */
+    protected static function extendDatabaseSessions()
+    {
+        return function ($query, $bindings, $connection) {
+            if ($connection instanceof MySqlConnection && ! in_array($connection->getName(), static::$databaseSessions)) {
+                static::$databaseSessions[] = $connection->getName();
+
+                static::setDatabaseSessionTtl($connection, static::DB_SESSION_DEFAULT_TTL);
+            }
+        };
     }
 
     /**
@@ -121,18 +129,38 @@ class Octane implements Client
                 }
 
                 return $hasSession;
-            })->map->getRawPdo()->filter(function ($pdo) {
-                return $pdo instanceof PDO;
-            })->each(function ($pdo) use ($databaseSessionTtl) {
-                try {
-                    $pdo->exec(sprintf(
-                        'SET SESSION wait_timeout=%s', $databaseSessionTtl
-                    ));
-                } catch (Throwable $e) {
-                    // Connection already gone away, safe to ignore...
-                }
+            })->each(function ($connection) use ($databaseSessionTtl) {
+                static::setDatabaseSessionTtl($connection, $databaseSessionTtl);
             });
         };
+    }
+
+    /**
+     * Set the session time-to-live on the open write and read PDOs of the connection.
+     *
+     * The raw PDOs are used so the statement does not mark the connection as
+     * modified, which would send the reads of "sticky" connections to the writer.
+     *
+     * @param  \Illuminate\Database\Connection  $connection
+     * @param  int  $ttl
+     * @return void
+     */
+    protected static function setDatabaseSessionTtl($connection, $ttl)
+    {
+        $pdo = $connection->getRawPdo();
+        $readPdo = $connection->getRawReadPdo();
+
+        foreach ($readPdo === $pdo ? [$pdo] : [$pdo, $readPdo] as $candidate) {
+            if (! $candidate instanceof PDO) {
+                continue;
+            }
+
+            try {
+                $candidate->exec(sprintf('SET SESSION wait_timeout=%s', $ttl));
+            } catch (Throwable $e) {
+                // Connection already gone away, safe to ignore...
+            }
+        }
     }
 
     /**
