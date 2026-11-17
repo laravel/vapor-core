@@ -1,6 +1,15 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.47.1...2.0)
+## [Unreleased](https://github.com/laravel/vapor-core/compare/v2.48.0...2.0)
+
+## [v2.48.0](https://github.com/laravel/vapor-core/compare/v2.47.1...v2.48.0) - 2026-11-17
+
+### What's Changed
+
+* Dependency floor bump by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/vapor-core/pull/223
+* Filter non-compliant header names to prevent spoofing by [@crynobone](https://github.com/crynobone) in https://github.com/laravel/vapor-core/pull/224
+
+**Full Changelog**: https://github.com/laravel/vapor-core/compare/v2.47.1...v2.48.0
 
 ## [v2.47.1](https://github.com/laravel/vapor-core/compare/v2.47.0...v2.47.1) - 2026-10-30
 
