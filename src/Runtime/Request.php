@@ -182,20 +182,26 @@ class Request
     protected static function getHeaders(array $event)
     {
         if (! isset($event['multiValueHeaders'])) {
-            return array_change_key_case(
+            $headers = array_change_key_case(
                 $event['headers'] ?? [], CASE_LOWER
+            );
+        } else {
+            $headers = array_change_key_case(
+                collect($event['multiValueHeaders'] ?? [])
+                    ->mapWithKeys(function ($headers, $name) {
+                        if (strtolower($name) === 'cookie') {
+                            return [$name => implode('; ', $headers)];
+                        }
+
+                        return [$name => Arr::last($headers)];
+                    })->all(), CASE_LOWER
             );
         }
 
-        return array_change_key_case(
-            collect($event['multiValueHeaders'] ?? [])
-                ->mapWithKeys(function ($headers, $name) {
-                    if (strtolower($name) === 'cookie') {
-                        return [$name => implode('; ', $headers)];
-                    }
-
-                    return [$name => Arr::last($headers)];
-                })->all(), CASE_LOWER
+        return array_filter(
+            $headers,
+            fn ($header) => preg_match('/^[a-z0-9-]+$/', (string) $header) === 1,
+            ARRAY_FILTER_USE_KEY
         );
     }
 

@@ -321,4 +321,71 @@ class FpmRequestTest extends TestCase
             $request->serverVariables['HTTP_COOKIE']
         );
     }
+
+    public function test_underscore_header_names_are_filtered_out()
+    {
+        $request = FpmRequest::fromLambdaEvent([
+            'httpMethod' => 'POST',
+            'multiValueHeaders' => [
+                'X-Vapor-Source-Ip' => ['5.6.7.8'],
+                'X_Vapor_Source_Ip' => ['9.9.9.9'],
+            ],
+        ]);
+
+        // The legitimate header should be set, spoofed underscore header should not override it
+        $this->assertSame('5.6.7.8', $request->serverVariables['HTTP_X_VAPOR_SOURCE_IP']);
+    }
+
+    public function test_period_header_names_are_filtered_out()
+    {
+        $request = FpmRequest::fromLambdaEvent([
+            'httpMethod' => 'POST',
+            'headers' => [
+                'x-vapor-source-ip' => '5.6.7.8',
+                'x.vapor.source.ip' => '9.9.9.9',
+            ],
+        ]);
+
+        // The legitimate header should be set, spoofed period header should be filtered
+        $this->assertSame('5.6.7.8', $request->serverVariables['HTTP_X_VAPOR_SOURCE_IP']);
+    }
+
+    public function test_x_forwarded_for_header_is_not_overridden_by_underscore_variant()
+    {
+        $request = FpmRequest::fromLambdaEvent([
+            'httpMethod' => 'GET',
+            'multiValueHeaders' => [
+                'X-Forwarded-For' => ['172.105.167.153'],
+                'X_Forwarded_For' => ['7.7.7.7'],
+            ],
+        ]);
+
+        $this->assertSame('172.105.167.153', $request->serverVariables['HTTP_X_FORWARDED_FOR']);
+    }
+
+    public function test_x_forwarded_port_header_is_not_overridden_by_underscore_variant()
+    {
+        $request = FpmRequest::fromLambdaEvent([
+            'httpMethod' => 'GET',
+            'multiValueHeaders' => [
+                'X-Forwarded-Port' => ['443'],
+                'X_Forwarded_Port' => ['1337'],
+            ],
+        ]);
+
+        $this->assertSame('443', $request->serverVariables['HTTP_X_FORWARDED_PORT']);
+    }
+
+    public function test_x_forwarded_proto_header_is_not_overridden_by_underscore_variant()
+    {
+        $request = FpmRequest::fromLambdaEvent([
+            'httpMethod' => 'GET',
+            'multiValueHeaders' => [
+                'X-Forwarded-Proto' => ['https'],
+                'X_Forwarded_Proto' => ['http'],
+            ],
+        ]);
+
+        $this->assertSame('https', $request->serverVariables['HTTP_X_FORWARDED_PROTO']);
+    }
 }
