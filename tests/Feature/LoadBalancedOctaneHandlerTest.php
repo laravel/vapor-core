@@ -16,6 +16,7 @@ use Laravel\Vapor\Runtime\Handlers\LoadBalancedOctaneHandler;
 use Laravel\Vapor\Runtime\Octane\Octane;
 use Laravel\Vapor\Tests\TestCase;
 use Mockery;
+use PHPUnit\Framework\Attributes\DataProvider;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -79,6 +80,33 @@ class LoadBalancedOctaneHandlerTest extends TestCase
         ]);
 
         static::assertEquals('Hello World', $response->toApiGatewayFormat()['body']);
+    }
+
+    public function test_malformed_host_returns_bad_request_and_worker_continues()
+    {
+        $handler = new LoadBalancedOctaneHandler();
+
+        Route::get('/', function () {
+            return 'Hello World';
+        });
+
+        $event = [
+            'httpMethod' => 'GET',
+            'path' => '/',
+            'multiValueHeaders' => ['Host' => ['invalid host']],
+        ];
+
+        $response = $handler->handle($event)->toApiGatewayFormat();
+
+        static::assertSame(400, $response['statusCode']);
+        static::assertSame(['application/json'], $response['multiValueHeaders']['Content-Type']);
+        static::assertSame(['message' => 'Malformed HTTP request.'], json_decode($response['body'], true));
+
+        $event['multiValueHeaders']['Host'] = ['127.0.0.1'];
+        $response = $handler->handle($event)->toApiGatewayFormat();
+
+        static::assertSame(200, $response['statusCode']);
+        static::assertSame('Hello World', $response['body']);
     }
 
     public function test_response_fires_events()
@@ -308,6 +336,38 @@ EOF
             'name' => 'nuno',
             'email' => 'nuno@laravel.com',
         ], json_decode($response->toApiGatewayFormat()['body'], true));
+    }
+
+    #[DataProvider('malformedMultipartBodies')]
+    public function test_malformed_multipart_requests_return_bad_request(string $body)
+    {
+        $handler = new LoadBalancedOctaneHandler();
+        $uploads = glob(sys_get_temp_dir().'/vapor_upload_*');
+        $file = "--outer\r\nContent-Disposition: form-data; name=\"file\"; filename=\"test.txt\"\r\n"
+            ."Content-Type: text/plain\r\n\r\nfile contents\r\n";
+
+        $response = $handler->handle([
+            'httpMethod' => 'POST',
+            'multiValueHeaders' => ['Content-Type' => ['multipart/form-data; boundary=outer']],
+            'body' => $file.$body,
+        ])->toApiGatewayFormat();
+
+        static::assertSame(400, $response['statusCode']);
+        static::assertSame(['application/json'], $response['multiValueHeaders']['Content-Type']);
+        static::assertSame(['message' => 'Malformed HTTP request.'], json_decode($response['body'], true));
+        static::assertSame($uploads, glob(sys_get_temp_dir().'/vapor_upload_*'));
+    }
+
+    public static function malformedMultipartBodies()
+    {
+        return [
+            'missing closing boundary' => ["--outer\r\nContent-Disposition: form-data; name=\"field\"\r\n\r\nvalue"],
+            'missing field name' => ["--outer\r\nContent-Disposition: form-data\r\n\r\nvalue\r\n--outer--\r\n"],
+            'nested multipart' => ["--outer\r\nContent-Disposition: form-data; name=\"field\"\r\n"
+                ."Content-Type: multipart/mixed; boundary=inner\r\n\r\n"
+                ."--inner\r\nContent-Disposition: attachment; name=\"nested\"\r\n\r\nvalue\r\n--inner--\r\n"
+                ."--outer--\r\n"],
+        ];
     }
 
     public function test_request_file_uploads()

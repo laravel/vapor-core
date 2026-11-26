@@ -7,6 +7,9 @@ use Laravel\Vapor\Contracts\LambdaEventHandler;
 use Laravel\Vapor\Runtime\LambdaResponse;
 use Laravel\Vapor\Runtime\Octane\Octane;
 use Laravel\Vapor\Runtime\Octane\OctaneRequestContextFactory;
+use Laravel\Vapor\Runtime\Response;
+use Symfony\Component\HttpFoundation\Exception\RequestExceptionInterface;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class OctaneHandler implements LambdaEventHandler
 {
@@ -20,11 +23,19 @@ class OctaneHandler implements LambdaEventHandler
      */
     public function handle(array $event)
     {
-        $request = $this->request($event);
+        try {
+            $request = $this->request($event);
 
-        return $this->response(
-            Octane::handle($request)
-        );
+            return $this->response(
+                Octane::handle($request)
+            );
+        } catch (RequestExceptionInterface|BadRequestHttpException $e) {
+            return $this->response(new Response(
+                json_encode(['message' => 'Malformed HTTP request.']),
+                ['content-type' => ['application/json']],
+                400
+            ));
+        }
     }
 
     /**

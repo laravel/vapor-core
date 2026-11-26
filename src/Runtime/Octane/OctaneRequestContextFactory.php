@@ -8,9 +8,11 @@ use Illuminate\Support\Str;
 use Laravel\Octane\RequestContext;
 use Laravel\Vapor\Arr;
 use Laravel\Vapor\Runtime\Request;
+use LogicException;
 use Nyholm\Psr7\ServerRequest;
 use Nyholm\Psr7\UploadedFile;
 use Riverline\MultiPartParser\Part;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class OctaneRequestContextFactory
 {
@@ -114,6 +116,32 @@ class OctaneRequestContextFactory
     }
 
     /**
+     * Parse and validate the incoming document.
+     *
+     * @param  string  $contentType
+     * @param  string  $body
+     * @return \Riverline\MultiPartParser\Part
+     */
+    protected static function parseDocument($contentType, $body)
+    {
+        try {
+            $document = new Part("Content-Type: $contentType\r\n\r\n".$body);
+        } catch (LogicException $e) {
+            throw new BadRequestHttpException('Malformed multipart request.', $e);
+        }
+
+        if ($document->isMultiPart()) {
+            foreach ($document->getParts() as $part) {
+                if ($part->isMultiPart() || $part->getName() === null) {
+                    throw new BadRequestHttpException('Malformed multipart request.');
+                }
+            }
+        }
+
+        return $document;
+    }
+
+    /**
      * Parse the files for the given HTTP request body.
      *
      * @param  string  $contentType
@@ -122,7 +150,7 @@ class OctaneRequestContextFactory
      */
     protected static function parseFiles($contentType, $body)
     {
-        $document = new Part("Content-Type: $contentType\r\n\r\n".$body);
+        $document = static::parseDocument($contentType, $body);
 
         if (! $document->isMultiPart()) {
             return [];
@@ -189,7 +217,7 @@ class OctaneRequestContextFactory
      */
     protected static function parseBody($contentType, $body)
     {
-        $document = new Part("Content-Type: $contentType\r\n\r\n".$body);
+        $document = static::parseDocument($contentType, $body);
 
         if (! $document->isMultiPart()) {
             return;

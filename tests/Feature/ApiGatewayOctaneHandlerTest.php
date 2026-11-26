@@ -384,6 +384,21 @@ EOF
         );
     }
 
+    public function test_malformed_multipart_request_returns_bad_request()
+    {
+        $handler = new OctaneHandler();
+
+        $response = $handler->handle([
+            'httpMethod' => 'POST',
+            'headers' => ['Content-Type' => 'multipart/form-data; boundary=test'],
+            'body' => "--test\r\nContent-Disposition: form-data; name=\"field\"\r\n\r\nvalue",
+        ])->toApiGatewayFormat();
+
+        static::assertSame(400, $response['statusCode']);
+        static::assertSame('application/json', $response['headers']['Content-Type']);
+        static::assertSame(['message' => 'Malformed HTTP request.'], json_decode($response['body'], true));
+    }
+
     public function test_request_file_uploads()
     {
         $handler = new OctaneHandler();
