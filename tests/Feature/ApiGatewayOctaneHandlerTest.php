@@ -81,6 +81,24 @@ class ApiGatewayOctaneHandlerTest extends TestCase
         static::assertEquals('Hello World', $response->toApiGatewayFormat()['body']);
     }
 
+    public function test_server_protocol()
+    {
+        $handler = new OctaneHandler();
+
+        Route::get('/', function (Request $request) {
+            return $request->server('SERVER_PROTOCOL');
+        });
+
+        $response = $handler->handle([
+            'httpMethod' => 'GET',
+            'requestContext' => [
+                'protocol' => 'HTTP/2.0',
+            ],
+        ]);
+
+        static::assertEquals('HTTP/2.0', $response->toApiGatewayFormat()['body']);
+    }
+
     public function test_response_file()
     {
         $handler = new OctaneHandler();
