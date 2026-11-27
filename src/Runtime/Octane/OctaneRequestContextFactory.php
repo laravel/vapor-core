@@ -34,7 +34,7 @@ class OctaneRequestContextFactory
             static::parseUri($request->serverVariables['REQUEST_URI']),
             $request->headers,
             $request->body,
-            $request->serverVariables['SERVER_PROTOCOL'],
+            static::protocolVersion($request->serverVariables['SERVER_PROTOCOL']),
             $request->serverVariables
         );
 
@@ -55,6 +55,17 @@ class OctaneRequestContextFactory
         return new RequestContext([
             'psr7Request' => $serverRequest,
         ]);
+    }
+
+    /**
+     * Get the PSR-7 protocol version (e.g. "1.1") from the given server protocol (e.g. "HTTP/1.1").
+     *
+     * @param  string  $serverProtocol
+     * @return string
+     */
+    protected static function protocolVersion($serverProtocol)
+    {
+        return Str::after($serverProtocol, 'HTTP/');
     }
 
     /**
